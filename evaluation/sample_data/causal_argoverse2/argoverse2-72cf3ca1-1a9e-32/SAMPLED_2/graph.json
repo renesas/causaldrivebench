@@ -1,0 +1,162 @@
+{
+  "scene_id": "scene_001",
+  "scene_context": {
+    "road_geometry": "Multi-lane road (3+ lanes each direction) approaching a signalized intersection with crosswalks. White lane dividers separate same-direction lanes. Yellow center line separates opposing directions. Right-hand traffic. Snow on shoulders and sidewalks. Buildings line the right side. Adjacent left lane has a truck with trailer and a stopped vehicle queuing for the intersection.",
+    "navigation_intent": "Go straight through the intersection"
+  },
+  "ego_state": {
+    "speed_mps": 7.591,
+    "inferred_acceleration": "decelerating",
+    "inferred_heading_change": "straight",
+    "behavior_matches_nav": true,
+    "behavior_explanation": "Ego is decelerating as it approaches a yellow traffic signal at the intersection ahead, consistent with preparing to stop or slow for the signal change. Speed has decreased from 9.47 to 7.59 m/s over the observation window."
+  },
+  "nodes": [
+    {
+      "id": "ego",
+      "type": "EGO",
+      "category": "vehicle.car",
+      "label": "Ego vehicle",
+      "state": "Decelerating while approaching intersection",
+      "position_relative_to_ego": "center",
+      "visible_in": "all cameras, BEV, STATE",
+      "motion": {
+        "is_static": false,
+        "direction": "same_direction",
+        "relative_speed": "N/A",
+        "trajectory_prediction": "Continuing straight, decelerating toward intersection"
+      }
+    },
+    {
+      "id": "n1",
+      "type": "TRAFFIC_CONTROL",
+      "category": "signal.yellow",
+      "label": "Yellow traffic signal at intersection",
+      "state": "Yellow/amber illuminated",
+      "position_relative_to_ego": "ahead, overhead at intersection",
+      "visible_in": "CAM_FRONT (all timesteps)",
+      "motion": {
+        "is_static": true,
+        "direction": "N/A",
+        "relative_speed": "N/A",
+        "trajectory_prediction": "Static infrastructure; signal may change to red"
+      }
+    },
+    {
+      "id": "n2",
+      "type": "TRAFFIC_CONTROL",
+      "category": "marking.crosswalk",
+      "label": "Crosswalk at intersection",
+      "state": "Unoccupied crosswalk markings on ego's straight path",
+      "position_relative_to_ego": "ahead at intersection, approximately 20m",
+      "visible_in": "CAM_FRONT, BEV (orange areas at intersection)",
+      "motion": {
+        "is_static": true,
+        "direction": "N/A",
+        "relative_speed": "N/A",
+        "trajectory_prediction": "Static marking"
+      }
+    },
+    {
+      "id": "vehicle_3",
+      "type": "OTHER_AGENT",
+      "category": "vehicle.car",
+      "label": "Sedan following behind ego in same lane",
+      "state": "Moving same direction as ego, behind ego",
+      "position_relative_to_ego": "behind, same lane",
+      "visible_in": "CAM_BACK_RIGHT, CAM_BACK_LEFT, BEV, STATE",
+      "motion": {
+        "is_static": false,
+        "direction": "same_direction",
+        "relative_speed": "slow",
+        "trajectory_prediction": "Continuing to follow ego in the same lane, will also decelerate for the intersection"
+      }
+    }
+  ],
+  "ego_edges": [
+    {
+      "source": "n1",
+      "target": "ego",
+      "effect_type": "INHIBITS_PROCEED",
+      "mechanism": "Yellow signal at approaching intersection requires ego to decelerate and prepare to stop",
+      "affected_state": [
+        "speed",
+        "heading",
+        "acceleration"
+      ],
+      "active": true,
+      "causal_status": "active_sustaining",
+      "justification": "Ego has been decelerating consistently from 9.47 to 7.59 m/s across the observation window while approaching the yellow signal. The signal is clearly visible as yellow in CAM_FRONT across all timesteps. Removing the yellow signal would allow ego to proceed at speed through the intersection."
+    },
+    {
+      "source": "n2",
+      "target": "ego",
+      "effect_type": "INHIBITS_PROCEED",
+      "mechanism": "Unoccupied crosswalk on ego's straight path at intersection",
+      "affected_state": [
+        "speed",
+        "heading",
+        "acceleration"
+      ],
+      "active": false,
+      "causal_status": "dormant",
+      "justification": "Crosswalk is on ego's straight path through the intersection, confirmed on BEV as orange area and visible in CAM_FRONT. Currently unoccupied, but a pedestrian could step onto it, making it an active constraint. The yellow signal already gates the intersection; this crosswalk becomes independently relevant if a pedestrian appears."
+    },
+    {
+      "source": "vehicle_3",
+      "target": "ego",
+      "effect_type": "CONSTRAINS_LONGITUDINAL",
+      "mechanism": "Same-lane follower constrains ego's braking freedom",
+      "affected_state": [
+        "speed",
+        "acceleration"
+      ],
+      "active": false,
+      "causal_status": "dormant",
+      "justification": "Vehicle_3 is behind ego in the same lane at x=-20.68, traveling same direction at 6.47 m/s. It is the closest same-lane follower. A single-step deceleration by vehicle_3 or sudden stop by ego would create a live constraint. Per TREE 5 Q10, both are in a proper lane (not intersection area)."
+    }
+  ],
+  "inter_node_edges": [
+    {
+      "source": "n1",
+      "target": "vehicle_3",
+      "relation": "AFFECTS",
+      "layer": 2,
+      "justification": "Yellow signal (at intersection, x≈20+ ahead of ego) governs vehicle_3 (x=-20.68 behind ego, same lane). Vehicle_3 is approaching the signal and would independently obey it regardless of ego's presence. Straddle independence test passed."
+    }
+  ],
+  "distractors": [
+    {
+      "id": "vehicle_1",
+      "type": "OTHER_AGENT",
+      "category": "vehicle.truck",
+      "position_relative_to_ego": "ahead-left, adjacent same-direction lane",
+      "rejection_reason": "TREE 7 PATH (b): Vehicle is in the immediately adjacent same-direction lane to ego's left at x=7.49, y=3.86. No BEV intrusion into ego's lane. No visible lateral shift by ego across 4 BEV frames (Q4=NO). Ego's nav command is GO STRAIGHT with no lane change needed (Q5=NO). Not merging (Q7). Classified as distractor."
+    },
+    {
+      "id": "vehicular_trailer_1",
+      "type": "OTHER_AGENT",
+      "category": "vehicle.trailer",
+      "position_relative_to_ego": "beside-left and slightly behind, adjacent same-direction lane",
+      "rejection_reason": "TREE 7 PATH (b): Trailer is in the adjacent same-direction lane to ego's left at x=-2.94, y=3.73. BEV shows trailer box close to but within the adjacent lane boundary. No visible lateral shift by ego across 4 BEV frames (Q4=NO). Ego's nav is GO STRAIGHT with no lane change (Q5=NO). Not merging (Q7). Classified as distractor."
+    },
+    {
+      "id": "vehicle_2",
+      "type": "OTHER_AGENT",
+      "category": "vehicle.car",
+      "position_relative_to_ego": "far ahead-left, adjacent same-direction lane",
+      "rejection_reason": "TREE 7 PATH (b): Vehicle is in the adjacent same-direction lane at x=20.12, y=3.61, nearly stationary (0.061 m/s). No intrusion into ego's lane on BEV. No lateral shift by ego (Q4=NO). Ego does not need to enter that lane (Q5=NO). Not merging (Q7). Distant in cameras. Classified as distractor."
+    },
+    {
+      "id": "vehicle_4",
+      "type": "OTHER_AGENT",
+      "category": "vehicle.car",
+      "position_relative_to_ego": "far behind-left, adjacent same-direction lane",
+      "rejection_reason": "TREE 7 PATH (b): Vehicle is in the adjacent same-direction lane behind ego at x=-25.39, y=3.46. No intrusion into ego's lane. No visible lateral shift by ego (Q4=NO). Ego does not need to enter that lane (Q5=NO). Not merging (Q7). Classified as distractor."
+    }
+  ],
+  "_usage": {
+    "prompt_tokens": 58622,
+    "completion_tokens": 8829
+  }
+}

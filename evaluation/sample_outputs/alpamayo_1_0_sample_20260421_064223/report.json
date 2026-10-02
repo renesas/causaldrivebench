@@ -1,0 +1,176 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-04-29T18:32:42.346087+00:00",
+  "level": "run",
+  "run_name": "alpamayo_1_0_sample_20260421_064223",
+  "n_questions": 8,
+  "metrics": {
+    "overall": {
+      "accuracy": 0.75,
+      "n": 8,
+      "correct": 6
+    },
+    "per_qa_type": {
+      "distractor": {
+        "accuracy": 0.5,
+        "n": 2,
+        "correct": 1
+      },
+      "dormant": {
+        "accuracy": 0.6666666666666666,
+        "n": 3,
+        "correct": 2
+      },
+      "ladder": {
+        "accuracy": 1.0,
+        "n": 3,
+        "correct": 3
+      }
+    },
+    "per_question_type": {
+      "AB": {
+        "accuracy": 0.0,
+        "n": 1,
+        "correct": 0
+      },
+      "CI": {
+        "accuracy": 0.0,
+        "n": 1,
+        "correct": 0
+      },
+      "CR": {
+        "accuracy": 1.0,
+        "n": 1,
+        "correct": 1
+      },
+      "CaI": {
+        "accuracy": 1.0,
+        "n": 1,
+        "correct": 1
+      },
+      "DQ": {
+        "accuracy": 1.0,
+        "n": 1,
+        "correct": 1
+      },
+      "EL": {
+        "accuracy": 1.0,
+        "n": 1,
+        "correct": 1
+      },
+      "NI": {
+        "accuracy": 1.0,
+        "n": 1,
+        "correct": 1
+      },
+      "SC": {
+        "accuracy": 1.0,
+        "n": 1,
+        "correct": 1
+      }
+    },
+    "per_graph_structure": {
+      "": {
+        "accuracy": 0.6,
+        "n": 5,
+        "correct": 3
+      },
+      "Direct": {
+        "accuracy": 1.0,
+        "n": 3,
+        "correct": 3
+      }
+    },
+    "per_rung": {
+      "0": {
+        "accuracy": 1.0,
+        "n": 2,
+        "correct": 2
+      },
+      "1": {
+        "accuracy": 0.5,
+        "n": 2,
+        "correct": 1
+      },
+      "2": {
+        "accuracy": 0.5,
+        "n": 2,
+        "correct": 1
+      },
+      "3": {
+        "accuracy": 1.0,
+        "n": 2,
+        "correct": 2
+      }
+    },
+    "answer_stats": {
+      "gt_distribution": {
+        "A": {
+          "count": 1,
+          "pct": 12.5
+        },
+        "NO": {
+          "count": 5,
+          "pct": 62.5
+        },
+        "YES": {
+          "count": 2,
+          "pct": 25.0
+        }
+      },
+      "predicted_distribution": {
+        "A": {
+          "count": 1,
+          "pct": 12.5
+        },
+        "NO": {
+          "count": 5,
+          "pct": 62.5
+        },
+        "YES": {
+          "count": 2,
+          "pct": 25.0
+        }
+      },
+      "per_answer_accuracy": {
+        "A": {
+          "n": 1,
+          "correct": 1,
+          "accuracy": 1.0
+        },
+        "NO": {
+          "n": 5,
+          "correct": 4,
+          "accuracy": 0.8
+        },
+        "YES": {
+          "n": 2,
+          "correct": 1,
+          "accuracy": 0.5
+        }
+      },
+      "answer_bias": 29.17,
+      "n_answer_classes": 3
+    },
+    "binary_metrics": {
+      "n": 7,
+      "accuracy": 0.7143,
+      "precision": 0.5,
+      "recall": 0.5,
+      "f1": 0.5,
+      "tp": 1,
+      "fp": 1,
+      "fn": 1,
+      "tn": 4
+    }
+  },
+  "dataset_summaries": [
+    {
+      "dataset": "causal_nuscenes",
+      "n_samples": 1,
+      "n_questions": 8,
+      "accuracy": 0.75,
+      "correct": 6
+    }
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "questions": [
+    {
+      "id": "CaI1",
+      "graph_structure": "Direct",
+      "rung": 0,
+      "category": "CaI",
+      "difficulty": "easy",
+      "isolation_safe": true,
+      "counterfactual_frame": null,
+      "question": "What is the primary reason you are easing off the speed right now as you approach this intersection?",
+      "answer_format": "mcq",
+      "options": [
+        "A) The crosswalk markings spanning my forward path through the intersection",
+        "B) The pedestrian on the far sidewalk who is walking parallel to the road",
+        "C) The pedestrian crossing warning sign posted on the right side of the road",
+        "D) The parked truck and car visible behind me in the adjacent lot"
+      ],
+      "correct_answer": "A",
+      "reasoning": "I am decelerating because of the crosswalk markings that lie directly across my forward path at this intersection. The crosswalk creates a zone where pedestrians may enter at any moment, requiring me to slow to a cautious speed before proceeding. The pedestrian visible ahead is currently on the far sidewalk and not stepping into the crosswalk, so while I am monitoring them, they are not the direct constraint right now. The pedestrian warning sign is informational but does not itself restrict my movement. The truck and car behind me in the parking area are not on my road and have no bearing on my forward speed.",
+      "meta": {
+        "subgraph_id": "D0",
+        "referenced_elements": [
+          "n1"
+        ],
+        "causal_status": "active_sustaining",
+        "effect_types": [
+          "INHIBITS_PROCEED"
+        ],
+        "full_graph_conditioned": false,
+        "redundancy_check": "none",
+        "behavioral_impact": "no_change",
+        "confounding_type": null,
+        "counterfactual_intervention": null,
+        "distractor_types": {
+          "A": "correct",
+          "B": "mis_visual",
+          "C": "mis_causal",
+          "D": "mis_causal_visual"
+        }
+      }
+    },
+    {
+      "id": "CR1",
+      "graph_structure": "Direct",
+      "rung": 3,
+      "category": "CR",
+      "difficulty": "hard",
+      "isolation_safe": true,
+      "counterfactual_frame": "sustaining_t0",
+      "question": "You are nearly at a stop approaching this intersection. Given the pedestrian's current position on the far sidewalk, if the crosswalk markings ahead were not there, would you still be decelerating this significantly at this point?",
+      "answer_format": "binary",
+      "correct_answer": "No",
+      "reasoning": "I am decelerating to near-stop speed specifically because the crosswalk markings ahead span my forward path, creating a protected pedestrian zone I must yield to before entering. The pedestrian is currently on the far sidewalk and not in the roadway, so without the crosswalk designation there would be no marked crossing zone compelling me to slow this aggressively. I would be proceeding through the intersection at a more normal approach speed since no obstacle or signal is blocking my straight-through path. The crosswalk is the sole active constraint producing my current heavy deceleration.",
+      "meta": {
+        "subgraph_id": "D0",
+        "referenced_elements": [
+          "n1"
+        ],
+        "causal_status": "active_sustaining",
+        "effect_types": [
+          "INHIBITS_PROCEED"
+        ],
+        "full_graph_conditioned": false,
+        "redundancy_check": "unique",
+        "behavioral_impact": "accelerate",
+        "confounding_type": null,
+        "counterfactual_intervention": {
+          "target_entity_id": "n1",
+          "target_entity_type": "infrastructure",
+          "operation": "remove",
+          "operation_detail": "Crosswalk marking ahead at intersection is removed",
+          "evaluation_mode": "llm",
+          "temporal_anchor": "t0",
+          "committed_maneuver": null,
+          "frozen_entities": [
+            "pedestrian_1"
+          ],
+          "propagated_descendants": [],
+          "trajectory_changes": true
+        }
+      },
+      "alternate_trajectory": {
+        "frame": "T=-1.5",
+        "rung": 3,
+        "waypoints": [
+          {
+            "t": 0.0,
+            "x": 0.0,
+            "y": 0.0,
+            "heading": 0.0,
+            "speed": 0.528
+          },
+          {
+            "t": 0.5,
+            "x": 0.582,
+            "y": -0.19,
+            "heading": -0.3156,
+            "speed": 1.8
+          },
+          {
+            "t": 1.0,
+            "x": 1.782,
+            "y": -0.16,
+            "heading": 0.025,
+            "speed": 3.0
+          },
+          {
+            "t": 1.5,
+            "x": 3.582,
+            "y": 0.0,
+            "heading": 0.0887,
+            "speed": 4.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "SC1",
+      "graph_structure": "Direct",
+      "rung": 3,
+      "category": "SC",
+      "difficulty": "hard",
+      "isolation_safe": true,
+      "counterfactual_frame": "sustaining_t0",
+      "question": "Forget every other element in this scene. With only the crosswalk ahead on your path and nothing else visible, would you still be slowing down the way you are right now?",
+      "answer_format": "binary",
+      "correct_answer": "Yes",
+      "reasoning": "I am decelerating because the crosswalk spans my forward path at this intersection. Even in complete isolation with no other vehicles, pedestrians, or signs present, the crosswalk markings alone would compel me to slow down before entering the crossing zone. A marked crosswalk requires cautious speed management regardless of whether anyone is visibly about to cross, because a pedestrian could appear from either side at any moment. My current deceleration profile is entirely consistent with what the crosswalk alone demands, so yes, this single element is sufficient to produce my observed behavior.",
+      "meta": {
+        "subgraph_id": "D0",
+        "referenced_elements": [
+          "n1"
+        ],
+        "causal_status": "active_sustaining",
+        "effect_types": [
+          "INHIBITS_PROCEED"
+        ],
+        "full_graph_conditioned": false,
+        "redundancy_check": "unique",
+        "behavioral_impact": "decelerate",
+        "confounding_type": null,
+        "counterfactual_intervention": null
+      }
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 51737,
+    "completion_tokens": 2564
+  }
+}

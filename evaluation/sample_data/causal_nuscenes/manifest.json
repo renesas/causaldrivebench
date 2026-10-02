@@ -1,0 +1,27 @@
+{
+  "data_root": "/path/to/data",
+  "records": "records/nuscenes",
+  "outputs": "outputs/causal_nuscenes",
+  "n_samples": 1,
+  "missing_graph": [],
+  "missing_qa": [],
+  "samples": [
+    {
+      "scene": "nuscenes-scene-0072",
+      "sample": "SAMPLED_1",
+      "files": {
+        "meta": true,
+        "state": true,
+        "calib": true,
+        "frames": true,
+        "graph": true,
+        "graph_structure": true,
+        "qa": {
+          "active_qa.json": true,
+          "dormant_qa.json": true,
+          "distractor_qa.json": true
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,232 @@
+# =====================================================================
+# Docker Compose for Orion
+#
+# Run all commands from the repo root (neurips-dataset/):
+#
+#   # 1. Download model weights
+#   docker compose -f evaluation/models/orion/docker-compose.yml \
+#     --env-file /path/to/env_files/models/orion/dev.env \
+#     --profile setup up -d
+#
+#   # 2. Build the image
+#   docker compose -f evaluation/models/orion/docker-compose.yml \
+#     --env-file /path/to/env_files/models/orion/dev.env build
+#
+#   # 3. Run inference
+#   docker compose -f evaluation/models/orion/docker-compose.yml \
+#     --env-file /path/to/env_files/models/orion/dev.env run --rm inference
+#
+#   # 4. Start Jupyter
+#   docker compose -f evaluation/models/orion/docker-compose.yml \
+#     --env-file /path/to/env_files/models/orion/dev.env \
+#     --profile jupyter up -d jupyter
+#
+# GPU memory: FP32 requires 32 GB; FP16 (default) requires 17 GB.
+# NOTE: eva02_petr_proj.pth must be downloaded manually from:
+#   https://github.com/NVlabs/OmniDrive/releases/tag/v1.0
+# =====================================================================
+
+x-gpu: &gpu-config
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+
+x-volumes: &shared-volumes
+  - type: bind
+    source: ${RAW_DATA_DIR}
+    target: /workspace/data/raw_data
+    read_only: true
+  - type: bind
+    source: ${CAUSAL_BENCH_DIR}
+    target: /workspace/data/causal_drive_bench
+    read_only: true
+  - type: bind
+    source: ${CDB_OUTPUTS_DIR}
+    target: /workspace/data/cdb_outputs
+  - type: bind
+    source: ${CDB_REPORTS_DIR}
+    target: /workspace/data/cdb_reports
+  - type: bind
+    source: ${WEIGHTS_DIR}
+    target: /workspace/weights
+
+x-common-env: &common-env
+  HF_HOME: /workspace/weights
+  HF_TOKEN: ${HF_TOKEN:-}
+  EVAL_RUNTIME: docker
+  DEVICE: ${DEVICE:-cuda}
+  MODE: ${MODE:-full}
+  SCENE: ${SCENE:-}
+  USE_LLM_JUDGE: ${USE_LLM_JUDGE:-false}
+  JUDGE_PROVIDER: ${JUDGE_PROVIDER:-azure_foundry}
+  JUDGE_MODEL: ${JUDGE_MODEL:-claude-opus-4-6}
+  ANTHROPIC_FOUNDRY_API_KEY: ${ANTHROPIC_FOUNDRY_API_KEY:-}
+  ANTHROPIC_FOUNDRY_RESOURCE: ${ANTHROPIC_FOUNDRY_RESOURCE:-}
+  FOUNDRY_BASE_URL: ${FOUNDRY_BASE_URL:-}
+  FORCE: ${FORCE:-false}
+  AZURE_OPENAI_API_KEY: ${AZURE_OPENAI_API_KEY:-}
+  AZURE_OPENAI_ENDPOINT: ${AZURE_OPENAI_ENDPOINT:-}
+  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+  OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+  WEIGHTS_DIR: /workspace/weights
+  MODEL_REPO: ${MODEL_REPO:-poleyzdk/Orion}
+  MODEL_CONFIG: ${MODEL_CONFIG:-/workspace/model/projects/configs/Orion/orion_stage3_fp16.py}
+  MODEL_CHECKPOINT: ${MODEL_CHECKPOINT:-/workspace/weights/Orion.pth}
+
+services:
+
+  # ------------------------------------------------------------------
+  # Main benchmark inference service
+  # ------------------------------------------------------------------
+  inference:
+    build:
+      context: ../../..
+      dockerfile: evaluation/models/orion/Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    image: benchmark-orion:latest
+
+    environment:
+      <<: *common-env
+
+    volumes: *shared-volumes
+    <<: *gpu-config
+    working_dir: /workspace/repo/evaluation/models/orion
+    restart: "no"
+    command:
+      - uv
+      - run
+      - python
+      - /workspace/repo/evaluation/models/orion/inference.py
+      - --bench-dir
+      - /workspace/data/causal_drive_bench/${DATASET:-causal_nuscenes}
+      - --output-base
+      - /workspace/data/cdb_outputs
+      - --weights-path
+      - /workspace/weights
+      - --model-config
+      - ${MODEL_CONFIG:-/workspace/model/projects/configs/Orion/orion_stage3_fp16.py}
+      - --device
+      - ${DEVICE:-cuda}
+      - --mode
+      - ${MODE:-full}
+      - --batch-size
+      - "${BATCH_SIZE:-1}"
+    depends_on:
+      weight-downloader:
+        condition: service_completed_successfully
+        required: false
+
+  # ------------------------------------------------------------------
+  # Original Orion inference (sanity check)
+  # Runs adzoo/orion/orion_dist_eval.sh with the FP16 config.
+  # ------------------------------------------------------------------
+  original:
+    build:
+      context: ../../..
+      dockerfile: evaluation/models/orion/Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    image: benchmark-orion:latest
+
+    environment:
+      <<: *common-env
+
+    volumes: *shared-volumes
+    <<: *gpu-config
+    working_dir: /workspace/model
+    restart: "no"
+    profiles: [original]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        bash adzoo/orion/orion_dist_eval.sh \
+          ${MODEL_CONFIG:-adzoo/orion/configs/orion_stage3_fp16.py} \
+          ${MODEL_CHECKPOINT:-/workspace/weights/Orion.pth} \
+          1
+
+  # ------------------------------------------------------------------
+  # Post-processing service (run with --profile postprocess)
+  # ------------------------------------------------------------------
+  postprocess:
+    image: benchmark-orion:latest
+
+    environment:
+      <<: *common-env
+
+    volumes: *shared-volumes
+    working_dir: /workspace/repo/evaluation/models/orion
+    restart: "no"
+    profiles: [postprocess]
+    command:
+      - uv
+      - run
+      - python
+      - /workspace/repo/evaluation/models/orion/postprocess.py
+      - --bench-dir
+      - /workspace/data/causal_drive_bench/${DATASET:-causal_nuscenes}
+      - --run-dir
+      - ${RUN_DIR:-/workspace/data/cdb_outputs/latest}
+      - --mode
+      - ${MODE:-full}
+
+  # ------------------------------------------------------------------
+  # Jupyter notebook server (run with --profile jupyter)
+  # Starts at http://localhost:8888 — token printed to console.
+  # ------------------------------------------------------------------
+  jupyter:
+    image: benchmark-orion:latest
+
+    environment:
+      <<: *common-env
+
+    ports:
+      - "${JUPYTER_PORT:-8888}:8888"
+    volumes: *shared-volumes
+    <<: *gpu-config
+    working_dir: /workspace/
+    restart: "no"
+    profiles: [jupyter]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        uv run jupyter notebook \
+          --ip=0.0.0.0 --port=8888 \
+          --no-browser --allow-root \
+          --NotebookApp.token=''
+
+  # ------------------------------------------------------------------
+  # Weight downloader (run with --profile setup)
+  # Downloads: poleyzdk/Orion, exiawsh/pretrain_qformer
+  # NOTE: eva02_petr_proj.pth must be downloaded manually from
+  #       https://github.com/NVlabs/OmniDrive/releases/tag/v1.0
+  # ------------------------------------------------------------------
+  weight-downloader:
+    image: python:3.11-slim
+
+    environment:
+      <<: *common-env
+
+    volumes:
+      - type: bind
+        source: ${WEIGHTS_DIR}
+        target: /workspace/weights
+    restart: "no"
+    profiles: [setup]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        pip install -q huggingface_hub && \
+        hf auth login --token "$HF_TOKEN" && \
+        hf download poleyzdk/Orion --local-dir /workspace/weights/Orion && \
+        hf download exiawsh/pretrain_qformer --local-dir /workspace/weights/pretrain_qformer && \
+        echo "NOTE: Download eva02_petr_proj.pth manually from OmniDrive GitHub releases."

@@ -1,0 +1,134 @@
+{
+  "scene_id": "scene",
+  "scene_context": {
+    "road_geometry": "Multi-lane road approaching a T-intersection or irregular intersection. Ego is in the rightmost travel lane heading straight (up on BEV). Yellow center lines separate opposing directions. An orange crosswalk area spans the intersection ahead on ego's straight path. Walkways/sidewalks border the road on both sides. Drivable surface areas and parking lots are visible to the right and behind ego.",
+    "navigation_intent": "Ego intends to go straight through the intersection."
+  },
+  "ego_state": {
+    "speed": "slow",
+    "inferred_acceleration": "decelerating",
+    "inferred_heading_change": "straight",
+    "behavior_matches_nav": true,
+    "behavior_explanation": "Ego is decelerating as it approaches the crosswalk marking (n1) ahead at the intersection, which is on ego's straight-through path and requires cautious speed management for any pedestrian who may enter. The crosswalk ahead acts as an active constraint, causing ego to slow nearly to a stop before proceeding."
+  },
+  "nodes": [
+    {
+      "id": "ego",
+      "type": "EGO",
+      "category": "vehicle.car",
+      "label": "Ego vehicle",
+      "state": "Slow speed, decelerating, heading straight",
+      "position_relative_to_ego": "N/A",
+      "visible_in": "BEV, all cameras",
+      "motion": {
+        "is_static": false,
+        "direction": "N/A",
+        "relative_speed": "N/A",
+        "trajectory_prediction": "Continuing straight through intersection, decelerating for crosswalk pedestrian"
+      }
+    },
+    {
+      "id": "pedestrian_1",
+      "type": "OTHER_AGENT",
+      "category": "human.pedestrian.adult",
+      "label": "Pedestrian crossing at crosswalk",
+      "state": "Crossing left-to-right at slow speed on crosswalk ahead of ego",
+      "position_relative_to_ego": "Ahead, ~22m, on crosswalk",
+      "visible_in": "CAM_FRONT (all timesteps), BEV (all timesteps), STATE",
+      "motion": {
+        "is_static": false,
+        "direction": "crossing",
+        "relative_speed": "slow",
+        "trajectory_prediction": "Will continue crossing left-to-right across crosswalk"
+      }
+    },
+    {
+      "id": "n1",
+      "type": "TRAFFIC_CONTROL",
+      "category": "marking.crosswalk",
+      "label": "Crosswalk marking ahead at intersection",
+      "state": "Occupied by pedestrian_1 crossing",
+      "position_relative_to_ego": "Ahead, at the intersection",
+      "visible_in": "CAM_FRONT, CAM_FRONT_RIGHT, BEV",
+      "motion": {
+        "is_static": true,
+        "direction": "N/A",
+        "relative_speed": "N/A",
+        "trajectory_prediction": "Static infrastructure"
+      }
+    }
+  ],
+  "ego_edges": [
+    {
+      "source": "pedestrian_1",
+      "target": "ego",
+      "effect_type": "INHIBITS_PROCEED",
+      "mechanism": "Pedestrian crossing on crosswalk in ego's forward path",
+      "affected_state": [
+        "speed",
+        "heading",
+        "acceleration"
+      ],
+      "active": false,
+      "causal_status": "dormant",
+      "justification": "Pedestrian_1 is on the other side of road sprinting on the sidewalk. Can potentially come onto the crosswalk in a single-step reach."
+    },
+    {
+      "source": "n1",
+      "target": "ego",
+      "effect_type": "INHIBITS_PROCEED",
+      "mechanism": "Crosswalk marking on ego's straight path, currently occupied by pedestrian",
+      "affected_state": [
+        "speed",
+        "heading",
+        "acceleration"
+      ],
+      "active": true,
+      "causal_status": "active_sustaining",
+      "justification": "The crosswalk is on ego's forward path and ego is cautiously moving to look out for any pedestrians who might cross."
+    }
+  ],
+  "inter_node_edges": [
+    {
+      "source": "n1",
+      "target": "pedestrian_1",
+      "relation": "AFFECTS",
+      "layer": 2,
+      "justification": "Crosswalk (n1, x>0 ahead of ego at intersection) governs pedestrian_1 (x>0, ~22m ahead) by providing the designated crossing area that pedestrian_1 is using to cross the road."
+    }
+  ],
+  "distractors": [
+    {
+      "id": "car_1",
+      "type": "OTHER_AGENT",
+      "category": "vehicle.car",
+      "position_relative_to_ego": "Behind-left, ~27m",
+      "rejection_reason": "TREE 1 Q6: Car is behind ego on a separate road segment visible in BEV, separated by walkway/median from ego's road. Stopped, not on ego's path. No causal path to ego."
+    },
+    {
+      "id": "car_2",
+      "type": "OTHER_AGENT",
+      "category": "vehicle.car",
+      "position_relative_to_ego": "Behind-right, ~21m",
+      "rejection_reason": "TREE 1 Q5/Q6: Car is behind ego on drivable surface to the right, separated from ego's lane by curb/walkway visible in cameras. Stopped, off the main roadway. No causal path to ego."
+    },
+    {
+      "id": "truck_1",
+      "type": "OTHER_AGENT",
+      "category": "vehicle.truck",
+      "position_relative_to_ego": "Behind-right, ~25m",
+      "rejection_reason": "TREE 1 Q5/Q6: Truck is behind ego on drivable surface/parking area to the right, separated by curb/walkway. Stopped, off roadway. No causal path to ego."
+    },
+    {
+      "id": "car_4",
+      "type": "OTHER_AGENT",
+      "category": "vehicle.car",
+      "position_relative_to_ego": "Behind-left, ~30m",
+      "rejection_reason": "TREE 1 Q6: Car is behind ego on a separate road segment to the left, separated by walkway from ego's road on BEV. Stopped. No causal path to ego."
+    }
+  ],
+  "_usage": {
+    "prompt_tokens": 51316,
+    "completion_tokens": 3107
+  }
+}

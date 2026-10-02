@@ -1,0 +1,698 @@
+## Singapore-Specific Driving Rules
+## Source: Land Transport Authority (LTA) — onemotoring.lta.gov.sg
+## These rules complement generic_rules.yaml and override or extend generic rules
+## where Singapore practice differs.
+
+metadata:
+  version: "1.0"
+  jurisdiction: "SG"
+  authority: "Land Transport Authority (LTA), Traffic Police, Singapore"
+  speed_unit: "km/h"
+  driving_side: "LEFT"  # Singapore drives on the left
+  last_updated: "2026-04-14"
+  description: >
+    Singapore-specific driving rules covering LTA road signs, road markings,
+    bus lane schemes, the RAG signal system, expressway rules, and parking
+    restrictions unique to Singapore Road Traffic Act.
+
+# ─────────────────────────────────────────────
+# SECTION 1 — LANE DISCIPLINE (SG)
+# ─────────────────────────────────────────────
+rules:
+
+  - rule_id: SG_KEEP_LEFT_OVERTAKE_RIGHT
+    name: "Keep Left — Right Lanes for Overtaking Only"
+    priority: 4
+    category: LANE_DISCIPLINE
+    subcategory: LANE_USAGE
+    jurisdiction: SG
+    description: >
+      Singapore drives on the left. Vehicles must normally keep to the
+      left lane. Right lanes are designated for overtaking only. After
+      completing an overtake, drivers must return to the left lane.
+    vision_cues:
+      - "Multi-lane road in Singapore"
+      - "Right lane(s) visible alongside vehicle"
+      - "Keep Left signs or road markings"
+    sign_names:
+      - SIGN_KEEP_LEFT
+    when_to_apply:
+      - "Any multi-lane road in Singapore"
+      - "After completing overtake — return to left"
+    required_action: >
+      Travel in leftmost available lane unless overtaking.
+      Move right only to overtake, then return left immediately.
+    related_rules:
+      - SIGNAL_BEFORE_LANE_CHANGE
+      - NO_PASSING_ON_HILLS_CURVES
+
+  - rule_id: SG_PART_DAY_BUS_LANE_RESTRICTION
+    name: "No Driving in Part-Day Bus Lane During Restricted Hours"
+    priority: 4
+    category: LANE_DISCIPLINE
+    subcategory: SPECIAL_LANES
+    jurisdiction: SG
+    description: >
+      Part-day bus lanes are restricted to buses (and authorised vehicles)
+      on weekdays during morning peak (7:30–9:30 AM) and evening peak
+      (5:00–8:00 PM). These lanes are unrestricted at other times and on
+      weekends and public holidays.
+    vision_cues:
+      - "Red lane marking with 'BUS LANE' text on road"
+      - "Bus Lane sign on roadside"
+      - "Red rectangular lane boundary lines"
+      - "Time restriction plate on Bus Lane sign"
+    sign_names:
+      - SIGN_BUS_LANE
+      - MARKING_BUS_LANE_RED
+    when_to_apply:
+      - "Weekdays 7:30–9:30 AM and 5:00–8:00 PM"
+      - "Road has Part-Day Bus Lane signage"
+    required_action: >
+      During restricted hours: do not enter bus lane.
+      Outside restricted hours or on weekends/holidays: may use lane normally.
+    causal_question_examples:
+      - "Why did the car avoid the red-marked lane on the left?"
+      - "Can the vehicle use this lane at this time of day?"
+    related_rules:
+      - SG_FULL_DAY_BUS_LANE_RESTRICTION
+      - SG_BUS_PRIORITY_BOX_YIELD
+
+  - rule_id: SG_FULL_DAY_BUS_LANE_RESTRICTION
+    name: "No Driving in Full-Day Bus Lane During Extended Hours"
+    priority: 4
+    category: LANE_DISCIPLINE
+    subcategory: SPECIAL_LANES
+    jurisdiction: SG
+    description: >
+      Full-day bus lanes are restricted from 7:30 AM to 11:00 PM on
+      weekdays. These lanes are unrestricted on Sundays and public holidays.
+    vision_cues:
+      - "Red lane marking with 'BUS LANE' text"
+      - "Full-day restriction sign (7:30 AM–11:00 PM)"
+    sign_names:
+      - SIGN_BUS_LANE
+      - SIGN_BUS_LANE_FULL_DAY
+      - MARKING_BUS_LANE_RED
+    when_to_apply:
+      - "Weekdays 7:30 AM – 11:00 PM"
+      - "Road has Full-Day Bus Lane signage"
+    required_action: >
+      Do not enter bus lane during restricted hours.
+      Permitted on Sundays and public holidays only.
+    related_rules:
+      - SG_PART_DAY_BUS_LANE_RESTRICTION
+      - SG_BUS_PRIORITY_BOX_YIELD
+
+  - rule_id: SG_BUS_PRIORITY_BOX_YIELD
+    name: "Yield to Buses Exiting Bus Priority Box"
+    priority: 2
+    category: RIGHT_OF_WAY
+    subcategory: SPECIAL_ROW
+    jurisdiction: SG
+    description: >
+      Yellow boxes marked with 'BUS PRIORITY' at certain junctions give
+      buses the right to re-enter the traffic flow. Vehicles must not
+      remain stationary in the yellow box and must yield to buses waiting
+      to enter traffic from the box.
+    vision_cues:
+      - "Yellow box painted on road with 'BUS PRIORITY' text"
+      - "Bus with indicator on, waiting to exit priority box"
+      - "Yellow line marking the bus priority area"
+    sign_names:
+      - MARKING_BUS_PRIORITY_BOX
+      - SIGN_BUS_GIVE_WAY
+    when_to_apply:
+      - "Bus Priority Box visible ahead at junction"
+      - "Bus is indicating to exit the priority box"
+    required_action: >
+      Do not stop in bus priority box. Yield to buses exiting the box.
+      Allow buses to merge into traffic before proceeding.
+    related_rules:
+      - SG_PART_DAY_BUS_LANE_RESTRICTION
+      - DO_NOT_BLOCK_INTERSECTION
+
+  - rule_id: SG_NO_REMAIN_IN_BUS_PRIORITY_BOX
+    name: "Do Not Stop or Remain in Bus Priority Box"
+    priority: 3
+    category: PARKING_AND_STOPPING
+    subcategory: PROHIBITED_PARKING
+    jurisdiction: SG
+    description: >
+      Vehicles must not be stationary in the Bus Priority Box at any time.
+      If traffic causes a queue, wait before the box until space ahead is clear.
+    vision_cues:
+      - "Yellow 'BUS PRIORITY' box marking on road surface"
+      - "Traffic congestion ahead of the box"
+    sign_names:
+      - MARKING_BUS_PRIORITY_BOX
+    when_to_apply:
+      - "Approaching Bus Priority Box with congestion ahead"
+    required_action: >
+      Stop before the box if traffic ahead is not clear.
+      Only enter the box when there is space to exit immediately.
+    related_rules:
+      - SG_BUS_PRIORITY_BOX_YIELD
+      - DO_NOT_BLOCK_INTERSECTION
+
+# ─────────────────────────────────────────────
+# SECTION 2 — PEDESTRIAN CROSSINGS (SG)
+# ─────────────────────────────────────────────
+
+  - rule_id: SG_ZEBRA_CROSSING_FULL_STOP
+    name: "Stop for Pedestrians at Zebra Crossing — Before Markings"
+    priority: 1
+    category: PEDESTRIAN_SAFETY
+    subcategory: CROSSWALK_RULES
+    jurisdiction: SG
+    description: >
+      At zebra crossings (alternating black and white stripes), vehicles
+      must stop before the white stop line and give way to any pedestrian
+      on or about to step onto the crossing. Overtaking is prohibited on
+      the approach to and at a zebra crossing.
+    vision_cues:
+      - "Black and white alternating stripe (zebra) crossing pattern"
+      - "White stop line before crossing"
+      - "Yellow Belisha beacons (orange globes on black and white poles)"
+      - "Pedestrian at curb edge or on crossing"
+    sign_names:
+      - MARKING_ZEBRA_CROSSING
+      - SIGN_PEDESTRIAN_CROSSING
+    when_to_apply:
+      - "Any zebra crossing with pedestrian present or about to cross"
+    required_action: >
+      Stop completely before white stop line. Allow pedestrian to cross
+      completely. Do not creep or roll forward.
+    causal_question_examples:
+      - "Why did the vehicle stop at the striped road markings?"
+      - "What is the vehicle waiting for at the zebra crossing?"
+    related_rules:
+      - STOP_FOR_PEDESTRIAN_AT_CROSSING
+      - SG_NO_OVERTAKE_NEAR_ZEBRA_CROSSING
+      - SG_NO_U_TURN_NEAR_ZEBRA_CROSSING
+
+  - rule_id: SG_NO_OVERTAKE_NEAR_ZEBRA_CROSSING
+    name: "No Overtaking on Approach to Zebra Crossing"
+    priority: 2
+    category: LANE_DISCIPLINE
+    subcategory: PASSING
+    jurisdiction: SG
+    description: >
+      Overtaking is prohibited on the approach to and at a zebra crossing.
+      The approaching vehicle may be concealing a pedestrian about to step out.
+    vision_cues:
+      - "Zebra crossing markings visible ahead"
+      - "White zigzag road markings flanking the crossing"
+      - "Vehicle ahead already slowing or stopped"
+    sign_names:
+      - MARKING_WHITE_ZIGZAG
+      - MARKING_ZEBRA_CROSSING
+    when_to_apply:
+      - "Within the zigzag approach zone to a zebra crossing"
+    required_action: >
+      Do not overtake. Slow and prepare to stop.
+    related_rules:
+      - SG_ZEBRA_CROSSING_FULL_STOP
+      - SG_WHITE_ZIGZAG_NO_STOPPING
+
+  - rule_id: SG_NO_U_TURN_NEAR_ZEBRA_CROSSING
+    name: "No U-Turn Near Raised or Zebra Crossing"
+    priority: 2
+    category: TURNING_AND_MANEUVERING
+    subcategory: U_TURNS
+    jurisdiction: SG
+    description: >
+      U-turns are prohibited in the approach zone of zebra crossings
+      and near raised crossings. The maneuver would cross the pedestrian path
+      and obscure pedestrian visibility.
+    vision_cues:
+      - "Zebra crossing or raised crossing visible ahead or behind"
+      - "White zigzag markings flanking the crossing"
+    sign_names:
+      - SIGN_NO_U_TURN
+      - MARKING_WHITE_ZIGZAG
+    when_to_apply:
+      - "Within approach zone (zigzag markings) of any pedestrian crossing"
+    required_action: >
+      Do not U-turn. Find the next legal U-turn location.
+    related_rules:
+      - SG_ZEBRA_CROSSING_FULL_STOP
+      - OBEY_NO_U_TURN_SIGN
+
+  - rule_id: SG_VISUALLY_HANDICAPPED_YIELD
+    name: "Yield to Visually Handicapped Pedestrians — White Cane"
+    priority: 1
+    category: PEDESTRIAN_SAFETY
+    subcategory: VULNERABLE_USERS
+    jurisdiction: SG
+    description: >
+      Under Singapore's Road Traffic Act, drivers must give way to
+      visually handicapped pedestrians carrying a white cane. This applies
+      at any location on or near the road.
+    vision_cues:
+      - "Pedestrian carrying or tapping a white cane"
+      - "May be crossing at unmarked location"
+    when_to_apply:
+      - "Any visually impaired pedestrian with white cane visible"
+    required_action: >
+      Stop immediately. Yield completely. Do not honk.
+    related_rules:
+      - GUIDE_DOG_ABSOLUTE_ROW
+      - NO_HONK_AT_BLIND_PEDESTRIANS
+
+  - rule_id: SG_CHILDREN_ZONE_REDUCE_SPEED
+    name: "Reduce Speed in Children / School Zones"
+    priority: 2
+    category: SPEED_REGULATION
+    subcategory: ZONE_LIMITS
+    jurisdiction: SG
+    description: >
+      Silver zones (elderly areas) and children/school zones have reduced
+      speed limits. Posted speed limit signs must be observed strictly.
+      Extra caution is required for unpredictable movement.
+    vision_cues:
+      - "School zone or children zone sign (SG: rectangular blue/white)"
+      - "Children or elderly pedestrians near road"
+      - "Silver Zone signs (for elderly residential areas)"
+    sign_names:
+      - SIGN_CHILDREN_ZONE
+      - SIGN_SILVER_ZONE
+      - SIGN_SCHOOL_ZONE
+    when_to_apply:
+      - "Within marked children zone, school zone, or silver zone"
+      - "When children or elderly are visibly present near road"
+    required_action: >
+      Reduce speed to posted zone limit. Watch for pedestrians.
+      Be prepared to stop at any time.
+    related_rules:
+      - OBEY_SPEED_LIMIT_SIGN
+      - STOP_FOR_PEDESTRIAN_AT_CROSSING
+
+# ─────────────────────────────────────────────
+# SECTION 3 — ROAD MARKINGS (SG)
+# ─────────────────────────────────────────────
+
+  - rule_id: SG_WHITE_ZIGZAG_NO_STOPPING
+    name: "No Parking, Waiting, or Stopping on White Zigzag Lines"
+    priority: 3
+    category: PARKING_AND_STOPPING
+    subcategory: PROHIBITED_PARKING
+    jurisdiction: SG
+    description: >
+      White zigzag lines on both sides of a zebra crossing indicate a
+      no-stopping zone. No vehicle may park, wait, or stop in this area.
+      This ensures pedestrian and driver visibility at the crossing.
+    vision_cues:
+      - "White zigzag lines painted along both sides of road near crossing"
+      - "Zone immediately approaching and receding from zebra crossing"
+    sign_names:
+      - MARKING_WHITE_ZIGZAG
+    when_to_apply:
+      - "Within white zigzag zone near any pedestrian crossing"
+    required_action: >
+      Do not park, wait, or stop in white zigzag zone.
+      No exceptions except to comply with traffic signals.
+    related_rules:
+      - SG_ZEBRA_CROSSING_FULL_STOP
+      - SG_NO_OVERTAKE_NEAR_ZEBRA_CROSSING
+
+  - rule_id: SG_YELLOW_ZIGZAG_NO_STOPPING
+    name: "No Stopping on Yellow Zigzag Lines (Demerit Points + Fine)"
+    priority: 3
+    category: PARKING_AND_STOPPING
+    subcategory: PROHIBITED_PARKING
+    jurisdiction: SG
+    description: >
+      Yellow zigzag lines indicate a no-stopping zone (e.g., near school
+      bus bays, junctions). Stopping incurs demerit points and a fine.
+      More restrictive than single yellow line.
+    vision_cues:
+      - "Yellow zigzag lines painted on road surface along curb"
+      - "Often near school zones, junctions, bus bays"
+    sign_names:
+      - MARKING_YELLOW_ZIGZAG
+    when_to_apply:
+      - "Vehicle is on or approaching road with yellow zigzag markings"
+    required_action: >
+      Do not stop, park, or wait on yellow zigzag lines at any time.
+    related_rules:
+      - SG_DOUBLE_YELLOW_ZIGZAG_NO_STOPPING
+      - SG_UNBROKEN_YELLOW_LINE_PARKING_HOURS
+
+  - rule_id: SG_DOUBLE_YELLOW_ZIGZAG_NO_STOPPING
+    name: "No Stopping Anytime on Double Yellow Zigzag Lines"
+    priority: 2
+    category: PARKING_AND_STOPPING
+    subcategory: PROHIBITED_PARKING
+    jurisdiction: SG
+    description: >
+      Double yellow zigzag lines are the most restrictive parking marking
+      in Singapore. No stopping at any time, without exception.
+      Incurs demerit points and fine.
+    vision_cues:
+      - "Double yellow zigzag markings on road (two parallel zigzag lines)"
+    sign_names:
+      - MARKING_DOUBLE_YELLOW_ZIGZAG
+    when_to_apply:
+      - "Any location with double yellow zigzag markings"
+    required_action: >
+      Never stop. Do not even drop off or pick up passengers.
+    related_rules:
+      - SG_YELLOW_ZIGZAG_NO_STOPPING
+      - SG_WHITE_ZIGZAG_NO_STOPPING
+
+  - rule_id: SG_UNBROKEN_YELLOW_LINE_PARKING_HOURS
+    name: "No Parking on Unbroken Yellow Line (7 AM–7 PM Weekdays)"
+    priority: 5
+    category: PARKING_AND_STOPPING
+    subcategory: RESTRICTED_PARKING
+    jurisdiction: SG
+    description: >
+      A single unbroken (solid) yellow line along the roadside means no
+      parking from 7:00 AM to 7:00 PM on weekdays. Parking is allowed
+      outside these hours and on Sundays and public holidays.
+    vision_cues:
+      - "Solid yellow line painted along the curb or road edge"
+      - "Time restriction sign alongside"
+    sign_names:
+      - MARKING_YELLOW_LINE_SOLID
+    when_to_apply:
+      - "Weekdays 7:00 AM – 7:00 PM"
+      - "Road has single unbroken yellow line"
+    required_action: >
+      Do not park 7 AM–7 PM weekdays.
+      May park outside these hours or on Sundays/public holidays.
+    related_rules:
+      - SG_DOUBLE_YELLOW_LINE_NO_PARK_ANYTIME
+
+  - rule_id: SG_DOUBLE_YELLOW_LINE_NO_PARK_ANYTIME
+    name: "No Parking Anytime on Double Yellow Lines (Immediate Pickup Only)"
+    priority: 4
+    category: PARKING_AND_STOPPING
+    subcategory: PROHIBITED_PARKING
+    jurisdiction: SG
+    description: >
+      Double yellow lines alongside a road mean no parking at any time.
+      Only immediate passenger drop-off or pick-up is permitted — the
+      driver must remain at the wheel. Leaving the vehicle unattended
+      is not allowed.
+    vision_cues:
+      - "Two parallel yellow lines along curb or road edge"
+      - "No time restriction sign needed — applies 24/7"
+    sign_names:
+      - MARKING_DOUBLE_YELLOW_LINE
+    when_to_apply:
+      - "Any road with double yellow curb lines — at any time"
+    required_action: >
+      No parking. Brief passenger pickup/dropoff with driver at wheel is the
+      only permitted stopping. Move on immediately after.
+    related_rules:
+      - SG_UNBROKEN_YELLOW_LINE_PARKING_HOURS
+
+  - rule_id: SG_NO_PARK_AT_BUS_STOP_9M
+    name: "No Parking Within 9 Metres of Bus Stop Bay"
+    priority: 4
+    category: PARKING_AND_STOPPING
+    subcategory: PROHIBITED_PARKING
+    jurisdiction: SG
+    description: >
+      Parking is prohibited within 9 metres before and behind a bus stop bay
+      to ensure buses can safely pull in and out and passengers can board safely.
+    vision_cues:
+      - "Bus stop shelter or bay sign ahead or behind"
+      - "Yellow markings or no-stopping zone near bus stop"
+    sign_names:
+      - SIGN_BUS_STOP
+    when_to_apply:
+      - "Within 9 m of any bus stop bay"
+    required_action: >
+      Do not park within 9 m of bus stop bay in either direction.
+    related_rules:
+      - SG_DOUBLE_YELLOW_LINE_NO_PARK_ANYTIME
+
+# ─────────────────────────────────────────────
+# SECTION 4 — TRAFFIC SIGNALS (SG)
+# ─────────────────────────────────────────────
+
+  - rule_id: SG_RAG_DEDICATED_TURN_SIGNAL
+    name: "Wait for RAG Green Arrow Before Making Protected Turn"
+    priority: 2
+    category: TRAFFIC_CONTROL
+    subcategory: TRAFFIC_SIGNALS
+    jurisdiction: SG
+    description: >
+      Singapore uses the Red-Amber-Green (RAG) signal system for dedicated
+      right-turn (or left-turn) phases at certain junctions. A horizontal
+      overhead or vertical ground-level turn signal shows red or green arrows.
+      Drivers must wait for the green arrow before turning — a standard green
+      circular light does NOT authorise the turn if a dedicated RAG signal is present.
+    vision_cues:
+      - "Dedicated overhead turn signal with red/green arrow"
+      - "Ground-level (wig-wag) turn signal alongside main signal"
+      - "Green arrow pointing in direction of intended turn"
+    sign_names:
+      - SIGNAL_RAG_RED_ARROW
+      - SIGNAL_RAG_GREEN_ARROW
+    when_to_apply:
+      - "Junctions equipped with dedicated RAG turn signal heads"
+      - "Turning right (or left) where RAG signals govern that movement"
+    required_action: >
+      Wait at stop line until the dedicated green arrow appears.
+      Do not turn on the main circular green — only on the arrow.
+    causal_question_examples:
+      - "Why did the vehicle wait even though the main light was green?"
+      - "What is the vehicle waiting for before turning right?"
+    related_rules:
+      - STOP_AT_RED_ARROW
+      - PROCEED_ON_GREEN_ARROW
+
+  - rule_id: SG_RED_LIGHT_CAMERA_COMPLIANCE
+    name: "Stop on Amber — Red Light Cameras Enforce Crossing on Red"
+    priority: 1
+    category: TRAFFIC_CONTROL
+    subcategory: TRAFFIC_SIGNALS
+    jurisdiction: SG
+    description: >
+      Red light cameras (RLCs) are deployed at junctions in Singapore.
+      Vehicles that enter the intersection after the signal has turned red
+      are automatically detected and prosecuted. Drivers should stop
+      when the signal changes to amber unless it is unsafe to do so.
+    vision_cues:
+      - "Red light camera housing above or alongside signal"
+      - "Sign: 'RED LIGHT CAMERA' near junction"
+      - "Amber signal showing"
+    sign_names:
+      - SIGN_RED_LIGHT_CAMERA
+    when_to_apply:
+      - "Approaching any signalised junction in Singapore"
+      - "Signal turning amber — stop if it is safe"
+    required_action: >
+      Stop on amber when it is safe to do so. Do not try to beat
+      the changing signal. Treat any junction as potentially camera-enforced.
+    related_rules:
+      - STOP_OR_CLEAR_AMBER_LIGHT
+      - STOP_AT_RED_LIGHT
+
+# ─────────────────────────────────────────────
+# SECTION 5 — EXPRESSWAY RULES (SG)
+# ─────────────────────────────────────────────
+
+  - rule_id: SG_EXPRESSWAY_NO_REVERSE
+    name: "No Reversing or U-Turning on Expressways"
+    priority: 1
+    category: SPECIAL_SITUATIONS
+    subcategory: EXPRESSWAYS
+    jurisdiction: SG
+    description: >
+      Reversing or making a U-turn on any Singapore expressway is absolutely
+      prohibited. If a driver misses an exit, they must continue to the next
+      exit and use normal roads to return.
+    vision_cues:
+      - "Expressway (PIE, CTE, AYE, BKE, KPE, MCE, SLE, TPE, ECP, etc.) signs"
+      - "High-speed multi-lane divided road"
+      - "Blue directional signs, expressway route markers"
+    sign_names:
+      - SIGN_EXPRESSWAY
+    when_to_apply:
+      - "On any designated expressway in Singapore"
+    required_action: >
+      Never reverse or U-turn. Continue to next exit and reroute.
+    related_rules:
+      - NO_REVERSE_ON_EXPRESSWAY
+
+  - rule_id: SG_EXPRESSWAY_VEHICLE_RESTRICTIONS
+    name: "Certain Vehicle Types Prohibited on Expressways"
+    priority: 2
+    category: SPECIAL_SITUATIONS
+    subcategory: EXPRESSWAYS
+    jurisdiction: SG
+    description: >
+      Certain slow-moving or heavy vehicles (e.g., vehicles exceeding
+      dimension or weight limits, unlicensed mobility devices) are
+      prohibited from expressways. Prescribed categories are posted
+      at expressway entry signs.
+    vision_cues:
+      - "Expressway entry sign with vehicle-type restriction symbols"
+      - "No entry circle with vehicle type icon"
+    sign_names:
+      - SIGN_NO_ENTRY_GOODS_VEHICLE
+      - SIGN_NO_ENTRY_3_AXLE
+      - SIGN_VEHICLE_RESTRICTION_EXPRESSWAY
+    when_to_apply:
+      - "Approaching any expressway entry with restriction signs"
+    required_action: >
+      Check restriction sign before entering. If your vehicle type is
+      prohibited, use alternate route.
+    related_rules:
+      - SG_EXPRESSWAY_NO_REVERSE
+
+  - rule_id: SG_TUNNEL_NO_DANGEROUS_GOODS
+    name: "Vehicles Carrying Dangerous Goods Prohibited in Tunnels"
+    priority: 2
+    category: SPECIAL_SITUATIONS
+    subcategory: TUNNELS
+    jurisdiction: SG
+    description: >
+      Vehicles transporting dangerous goods (flammable, explosive, toxic
+      substances) are not permitted to use road tunnels in Singapore.
+      Alternate surface routes must be used.
+    vision_cues:
+      - "Tunnel entrance ahead"
+      - "Dangerous goods prohibition sign at tunnel approach"
+    sign_names:
+      - SIGN_NO_DANGEROUS_GOODS_TUNNEL
+    when_to_apply:
+      - "Vehicle is carrying hazardous/dangerous goods"
+      - "Approaching any tunnel entrance"
+    required_action: >
+      Do not enter tunnel with dangerous goods cargo. Use surface route.
+    related_rules:
+      - SG_EXPRESSWAY_VEHICLE_RESTRICTIONS
+
+# ─────────────────────────────────────────────
+# SECTION 6 — HORN AND NOISE (SG)
+# ─────────────────────────────────────────────
+
+  - rule_id: SG_HORN_ONLY_TO_PREVENT_ACCIDENT
+    name: "Sound Horn Only to Prevent an Accident"
+    priority: 4
+    category: VEHICLE_SAFETY
+    subcategory: VEHICLE_CONDITION
+    jurisdiction: SG
+    description: >
+      In Singapore, using the vehicle horn is only legal to prevent an
+      accident or to warn another road user of immediate danger. Unnecessary
+      use of the horn (impatience, greeting, frustration) is an offence.
+      Horn use is also prohibited in 'No Horn Sounding' zones.
+    vision_cues:
+      - "No Horn Sounding zone sign"
+      - "Immediate hazard — pedestrian about to step out, vehicle cutting in"
+    sign_names:
+      - SIGN_NO_HORN
+    when_to_apply:
+      - "Only when there is an immediate risk of accident and horn will help"
+      - "Not in No Horn Sounding zones even for accident prevention"
+    required_action: >
+      Use horn only to alert another road user of imminent danger.
+      Do not use horn for any other reason.
+    causal_question_examples:
+      - "Why did the driver sound the horn here?"
+      - "Should the driver honk the horn in this situation?"
+    related_rules:
+      - NO_HONK_AT_BLIND_PEDESTRIANS
+
+# ─────────────────────────────────────────────
+# SECTION 7 — VEHICLE DIMENSIONS (SG)
+# ─────────────────────name─────────────────────
+
+  - rule_id: SG_VEHICLE_DIMENSION_COMPLIANCE
+    name: "Vehicles Exceeding Dimension/Weight Limits Require Escort"
+    priority: 4
+    category: VEHICLE_SAFETY
+    subcategory: VEHICLE_CONDITION
+    jurisdiction: SG
+    description: >
+      Vehicles exceeding posted width, height, or weight limits are subject
+      to restrictions. Over-dimensional loads require a police or LTA escort
+      and may only travel on approved routes at approved times.
+    vision_cues:
+      - "Width/height/weight restriction signs at road entry or structure"
+      - "Wide load signage on vehicle (if escort is present)"
+    sign_names:
+      - SIGN_MAX_WIDTH
+      - SIGN_MAX_HEIGHT
+      - SIGN_MAX_WEIGHT
+    when_to_apply:
+      - "Vehicle or load exceeds posted dimension/weight limit"
+      - "Approaching bridge, tunnel, or low-clearance structure"
+    required_action: >
+      Do not proceed if dimension/weight limits are exceeded.
+      Arrange approved escort and route for over-dimensional loads.
+    related_rules:
+      - NO_OVERLOADED_VEHICLE
+
+# ─────────────────────────────────────────────
+# SECTION 8 — ELECTRONIC/DYNAMIC SIGNS (SG)
+# ─────────────────────────────────────────────
+
+  - rule_id: SG_EMAS_DYNAMIC_SIGN_COMPLIANCE
+    name: "Comply with EMAS Electronic Message Signs on Expressways"
+    priority: 2
+    category: TRAFFIC_CONTROL
+    subcategory: DYNAMIC_SIGNS
+    jurisdiction: SG
+    description: >
+      Singapore's Expressway Monitoring and Advisory System (EMAS) displays
+      dynamic electronic signs showing real-time conditions: lane closures,
+      accidents, speed limits, travel times, and emergency vehicle warnings.
+      These override standard conditions and must be obeyed.
+    vision_cues:
+      - "Gantry-mounted LED matrix sign on expressway"
+      - "Variable speed limit or lane-closed (X) indicators"
+      - "Amber warning messages: 'ACCIDENT AHEAD', 'SLOW DOWN', 'LANE CLOSED'"
+      - "Emergency vehicle warning message"
+    sign_names:
+      - SIGN_EMAS_VARIABLE_SPEED
+      - SIGN_EMAS_LANE_CLOSED
+      - SIGN_EMAS_ACCIDENT_AHEAD
+      - SIGN_EMAS_SLOW_DOWN
+    when_to_apply:
+      - "Any EMAS sign visible on expressway gantry"
+    required_action: >
+      Obey the displayed message immediately. Reduce speed, change lanes,
+      or stop as instructed. Variable speed limits override posted limits.
+    causal_question_examples:
+      - "Why did the vehicle slow down when the overhead sign changed?"
+      - "What does the gantry sign indicate the driver should do?"
+    related_rules:
+      - CONSTRUCTION_ZONE_SPEED_LIMIT
+      - EMERGENCY_VEHICLE_PRIORITY
+
+# ─────────────────────────────────────────────
+# SECTION 9 — TOW-AWAY / ENFORCEMENT (SG)
+# ─────────────────────────────────────────────
+
+  - rule_id: SG_TOW_AWAY_ZONE_COMPLIANCE
+    name: "Do Not Park in Tow-Away or Wheel-Clamp Zones"
+    priority: 3
+    category: PARKING_AND_STOPPING
+    subcategory: PROHIBITED_PARKING
+    jurisdiction: SG
+    description: >
+      Tow-Away and Wheel-Clamp zones in Singapore are actively enforced.
+      Vehicles parked illegally may be towed away or immobilised.
+      LTA or Traffic Police signage identifies these zones.
+    vision_cues:
+      - "'TOW AWAY ZONE' sign"
+      - "'WHEEL CLAMP ZONE' sign"
+      - "Yellow or double yellow lines alongside"
+    sign_names:
+      - SIGN_TOW_AWAY_ZONE
+      - SIGN_WHEEL_CLAMP_ZONE
+    when_to_apply:
+      - "Any location with tow-away or wheel-clamp zone signage"
+    required_action: >
+      Do not park here at any time. Move vehicle to legal parking area.
+    related_rules:
+      - SG_DOUBLE_YELLOW_LINE_NO_PARK_ANYTIME
+      - NO_PARKING_IN_PROHIBITED_ZONES

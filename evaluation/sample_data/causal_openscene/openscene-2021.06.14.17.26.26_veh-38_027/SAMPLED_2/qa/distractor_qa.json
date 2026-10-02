@@ -1,0 +1,212 @@
+{
+  "questions": [
+    {
+      "id": "CI1",
+      "rung": 1,
+      "category": "CI",
+      "preamble": "You are driving straight on a wide multi-lane boulevard (Las Vegas Strip) at a steady speed. There are several lanes in your direction of travel. A red car is visible ahead of you in the lane to your left, and a silver car is further ahead in your own lane.",
+      "question": "Is the red car in the lane to your left responsible for you maintaining your current steady speed?",
+      "answer_format": "binary",
+      "correct_answer": "No",
+      "reasoning": "No. You are maintaining a steady speed because the road ahead in your lane is clear and unobstructed. The red car is in the adjacent lane to your left and is pulling away from you quickly, so it has no bearing on your speed. Your speed is set by the open road in front of you, not by anything that car is doing. Despite being prominent in your front view, it occupies a different lane and is not constraining your movement in any way.",
+      "meta": {
+        "target_element": "vehicle_2",
+        "target_temporal_status": "present_at_t0",
+        "target_last_relevant_time": null,
+        "visual_salience": "High",
+        "counterfactual_coherence": "N/A",
+        "counterfactual_premise": null,
+        "scene_specificity": "N/A",
+        "contrast_pair": false,
+        "contrast_active_element": null,
+        "referenced_active_elements": [],
+        "referenced_dormant_elements": [
+          "vehicle_1"
+        ],
+        "dr_subtype": null,
+        "counterfactual_intervention": null,
+        "distractor_types": null
+      }
+    },
+    {
+      "id": "CI2",
+      "rung": 1,
+      "category": "CI",
+      "preamble": "You are traveling straight on the Las Vegas Strip at a steady speed. Several pedestrians are visible on the sidewalk to your right, behind a row of metal bollards. A silver car is ahead of you in your lane.",
+      "question": "Are the pedestrians walking on the right-side sidewalk causing you to hold your current lane position?",
+      "answer_format": "binary",
+      "correct_answer": "No",
+      "reasoning": "No. You are holding your lane because you are driving straight on an open road with clear lane markings. The pedestrians on the right sidewalk are separated from the roadway by a continuous line of heavy metal bollards. They cannot enter your travel lanes, and their presence has no effect on where you position your vehicle. Your lane position is guided by the road markings and your navigation intent to continue straight.",
+      "meta": {
+        "target_element": "pedestrian_5",
+        "target_temporal_status": "present_at_t0",
+        "target_last_relevant_time": null,
+        "visual_salience": "Medium",
+        "counterfactual_coherence": "N/A",
+        "counterfactual_premise": null,
+        "scene_specificity": "N/A",
+        "contrast_pair": false,
+        "contrast_active_element": null,
+        "referenced_active_elements": [],
+        "referenced_dormant_elements": [],
+        "dr_subtype": null,
+        "counterfactual_intervention": null,
+        "distractor_types": null
+      }
+    },
+    {
+      "id": "NI1",
+      "rung": 2,
+      "category": "NI",
+      "preamble": "You are driving straight on a wide multi-lane boulevard at a steady speed. A red car is ahead of you in the adjacent lane to your left, moving faster than you and pulling further away.",
+      "question": "If the red car in the lane to your left were no longer there, would you change your driving in any way?",
+      "answer_format": "binary",
+      "correct_answer": "No",
+      "reasoning": "No. That red car is in a different lane and is already moving away from you at a higher speed. It is not restricting your speed, your lane choice, or your trajectory. If it disappeared, you would continue at the same speed in the same lane doing exactly what you are doing now. Nothing about your current driving depends on that car being there.",
+      "meta": {
+        "target_element": "vehicle_2",
+        "target_temporal_status": "present_at_t0",
+        "target_last_relevant_time": null,
+        "visual_salience": "High",
+        "counterfactual_coherence": "N/A",
+        "counterfactual_premise": null,
+        "scene_specificity": "N/A",
+        "contrast_pair": false,
+        "contrast_active_element": null,
+        "referenced_active_elements": [],
+        "referenced_dormant_elements": [],
+        "dr_subtype": null,
+        "counterfactual_intervention": null,
+        "distractor_types": null
+      }
+    },
+    {
+      "id": "NI2",
+      "rung": 2,
+      "category": "NI",
+      "preamble": "You are traveling straight on the Las Vegas Strip at a constant speed. On the sidewalk to your right, several pedestrians are walking along behind a row of metal bollards that separate the sidewalk from the road.",
+      "question": "If the pedestrians on the right-side sidewalk were no longer present, would your driving change?",
+      "answer_format": "binary",
+      "correct_answer": "No",
+      "reasoning": "No. Those pedestrians are on the sidewalk behind a continuous bollard barrier and are walking parallel to the road. They are not in or near your travel lanes. Removing them would not affect your speed, your steering, or any other aspect of your driving. You would continue straight at the same speed regardless of whether anyone is walking on that sidewalk.",
+      "meta": {
+        "target_element": "pedestrian_1",
+        "target_temporal_status": "present_at_t0",
+        "target_last_relevant_time": null,
+        "visual_salience": "Medium",
+        "counterfactual_coherence": "N/A",
+        "counterfactual_premise": null,
+        "scene_specificity": "N/A",
+        "contrast_pair": false,
+        "contrast_active_element": null,
+        "referenced_active_elements": [],
+        "referenced_dormant_elements": [],
+        "dr_subtype": null,
+        "counterfactual_intervention": null,
+        "distractor_types": null
+      }
+    },
+    {
+      "id": "WC1",
+      "rung": 3,
+      "category": "WC",
+      "preamble": "You are driving straight on a wide multi-lane boulevard at a steady speed. A red car is ahead of you in the adjacent lane to your left, traveling faster and pulling away. The silver car ahead of you in your own lane is also pulling further ahead.",
+      "question": "If the red car in the lane to your left had suddenly swerved into your lane directly ahead of you, would you have needed to change your driving?",
+      "answer_format": "binary",
+      "correct_answer": "Yes",
+      "reasoning": "Yes. Although the red car is currently in the adjacent lane and moving away, if it had suddenly cut into your lane right in front of you, it would become an immediate obstacle. At your current speed, you would need to brake or steer to avoid a collision. The silver car is already further ahead in your lane and would not provide a buffer. A vehicle cutting in from that close range in the adjacent lane would demand an immediate reaction from you.",
+      "meta": {
+        "target_element": "vehicle_2",
+        "target_temporal_status": "present_at_t0",
+        "target_last_relevant_time": null,
+        "visual_salience": "High",
+        "counterfactual_coherence": "High",
+        "counterfactual_premise": "The red car in the adjacent left lane suddenly swerves into ego's lane directly ahead",
+        "scene_specificity": "trajectory_dependent",
+        "contrast_pair": false,
+        "contrast_active_element": null,
+        "referenced_active_elements": [],
+        "referenced_dormant_elements": [
+          "vehicle_1"
+        ],
+        "dr_subtype": null,
+        "counterfactual_intervention": {
+          "target_entity_id": "vehicle_2",
+          "target_entity_type": "agent",
+          "operation": "state_change",
+          "operation_detail": "Red car in adjacent left lane suddenly swerves into ego's lane directly ahead of ego",
+          "evaluation_mode": "planner",
+          "temporal_anchor": "t0",
+          "frozen_entities": [
+            "vehicle_1",
+            "pedestrian_1",
+            "pedestrian_2",
+            "pedestrian_3",
+            "pedestrian_4",
+            "pedestrian_5",
+            "pedestrian_6",
+            "pedestrian_7",
+            "pedestrian_8",
+            "pedestrian_9",
+            "pedestrian_10"
+          ],
+          "propagated_descendants": [],
+          "trajectory_changes": true
+        },
+        "distractor_types": null
+      }
+    },
+    {
+      "id": "WC2",
+      "rung": 3,
+      "category": "WC",
+      "preamble": "You are driving straight on the Las Vegas Strip at a steady speed. On the sidewalk ahead and to your right, a pedestrian is walking along behind a continuous row of heavy metal bollards that line the curb. There are multiple open lanes between you and the right edge of the road.",
+      "question": "If that pedestrian on the right sidewalk had somehow gotten past the bollards and stepped into the rightmost travel lane, would you have needed to adjust your driving?",
+      "answer_format": "binary",
+      "correct_answer": "No",
+      "reasoning": "No. You are currently traveling in a lane that is several lanes away from the right curb. Even if that pedestrian managed to get past the bollards and entered the rightmost travel lane, they would still be multiple lanes to your right. At your current lane position, you would not need to brake or steer because the pedestrian would not be in your path. You have ample lateral separation to continue without adjustment.",
+      "meta": {
+        "target_element": "pedestrian_2",
+        "target_temporal_status": "present_at_t0",
+        "target_last_relevant_time": null,
+        "visual_salience": "Medium",
+        "counterfactual_coherence": "Medium",
+        "counterfactual_premise": "Pedestrian on right sidewalk gets past bollards and steps into the rightmost travel lane",
+        "scene_specificity": "trajectory_dependent",
+        "contrast_pair": false,
+        "contrast_active_element": null,
+        "referenced_active_elements": [],
+        "referenced_dormant_elements": [],
+        "dr_subtype": null,
+        "counterfactual_intervention": {
+          "target_entity_id": "pedestrian_2",
+          "target_entity_type": "agent",
+          "operation": "state_change",
+          "operation_detail": "Pedestrian on right sidewalk gets past bollard barrier and steps into the rightmost travel lane",
+          "evaluation_mode": "planner",
+          "temporal_anchor": "t0",
+          "frozen_entities": [
+            "vehicle_1",
+            "vehicle_2",
+            "pedestrian_1",
+            "pedestrian_3",
+            "pedestrian_4",
+            "pedestrian_5",
+            "pedestrian_6",
+            "pedestrian_7",
+            "pedestrian_8",
+            "pedestrian_9",
+            "pedestrian_10"
+          ],
+          "propagated_descendants": [],
+          "trajectory_changes": false
+        },
+        "distractor_types": null
+      }
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 44205,
+    "completion_tokens": 5208
+  }
+}

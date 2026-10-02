@@ -1,0 +1,189 @@
+{
+  "total": 4,
+  "dataset_counts": {
+    "causal_nuscenes": 2,
+    "causal_openscene": 1,
+    "causal_argoverse2": 1
+  },
+  "all_node_counts": [
+    5,
+    5,
+    1,
+    3
+  ],
+  "all_ego_edge_counts": [
+    5,
+    5,
+    1,
+    3
+  ],
+  "all_inter_edge_counts": [
+    3,
+    5,
+    0,
+    1
+  ],
+  "all_distractor_counts": [
+    1,
+    2,
+    11,
+    4
+  ],
+  "all_active_edge_counts": [
+    3,
+    4,
+    0,
+    1
+  ],
+  "all_dormant_edge_counts": [
+    2,
+    1,
+    1,
+    2
+  ],
+  "total_node_type_counts": {
+    "EGO": 4,
+    "OTHER_AGENT": 8,
+    "TRAFFIC_CONTROL": 6
+  },
+  "total_node_cat_counts": {
+    "human.pedestrian": 4,
+    "marking.crosswalk": 3,
+    "sign.give_way": 1,
+    "vehicle.car": 4,
+    "signal.green": 1,
+    "signal.yellow": 1
+  },
+  "total_effect_type_counts": {
+    "INHIBITS_PROCEED": 9,
+    "CONSTRAINS_LONGITUDINAL": 4,
+    "GRANTS_PROCEED": 1
+  },
+  "total_causal_status_counts": {
+    "active_sustaining": 7,
+    "dormant": 6,
+    "active_triggering": 1
+  },
+  "total_affected_states": {
+    "speed": 14,
+    "heading": 10,
+    "acceleration": 14
+  },
+  "total_inter_relation_counts": {
+    "AFFECTS": 7,
+    "CONFOUNDED_BY": 2
+  },
+  "total_inter_layer_counts": {
+    "2": 6,
+    "N/A": 2,
+    "3": 1
+  },
+  "total_position_counts": {
+    "ahead": 11,
+    "left": 2,
+    "center": 2,
+    "right": 4,
+    "behind": 3
+  },
+  "total_motion_direction_counts": {
+    "crossing": 3,
+    "n/a": 6,
+    "same_direction": 4,
+    "moving_away": 1
+  },
+  "total_motion_static_counts": {
+    "moving": 6,
+    "static": 8
+  },
+  "total_relative_speed_counts": {
+    "slow": 5,
+    "n/a": 6,
+    "stationary": 2,
+    "moderate": 1
+  },
+  "total_visibility_counts": {
+    "cam_front": 11,
+    "bev": 11,
+    "state": 8,
+    "cam_back": 3,
+    "cam_front_right": 2,
+    "cam_back_left": 1,
+    "cam_back_right": 1
+  },
+  "ego_speeds": [
+    0.002,
+    0.517,
+    10.824,
+    7.591
+  ],
+  "ego_accel_counts": {
+    "constant": 2,
+    "accelerating": 1,
+    "decelerating": 1
+  },
+  "ego_heading_counts": {
+    "straight": 4
+  },
+  "nav_intent_counts": {
+    "stopped": 1,
+    "straight": 3
+  },
+  "nav_match_count": 4,
+  "total_distractor_cat_counts": {
+    "human.pedestrian": 12,
+    "vehicle.car": 4,
+    "vehicle.truck": 1,
+    "vehicle.trailer": 1
+  },
+  "total_distractor_reasons": {
+    "behind_ego": 7,
+    "opposing_direction": 2,
+    "adjacent_lane": 6,
+    "far_distance": 2,
+    "sidewalk_separated": 11,
+    "not_on_path": 6
+  },
+  "flag_sums": {
+    "has_pedestrian": 2,
+    "has_vehicle": 4,
+    "has_traffic_signal": 2,
+    "has_crosswalk": 3,
+    "has_sign": 1,
+    "has_construction": 2,
+    "has_confounded": 2,
+    "ego_is_stopped": 1,
+    "has_active_inhibit": 3,
+    "has_dormant_only": 1,
+    "multiple_active_inhibit": 2
+  },
+  "complexity_scores": [
+    16.0,
+    17.5,
+    6.5,
+    8.5
+  ],
+  "total_prompt_tokens": 205179,
+  "total_completion_tokens": 20527,
+  "sig_groups_summary": {
+    "2886492d": {
+      "count": 1,
+      "sig_str": "{\"edges\": [[\"human.pedestrian\", \"INHIBITS_PROCEED\"], [\"human.pedestrian\", \"INHIBITS_PROCEED\"], [\"marking.crosswalk\", \"INHIBITS_PROCEED\"], [\"sign.give_way\", \"INHIBITS_PROCEED\"], [\"vehicle.car\", \"CONSTRAINS_LONGITUDINAL\"]], \"nodes\": [\"human.pedestrian\", \"human.pedestrian\", \"marking.crosswalk\", \"sign.give_way\", \"vehicle.car\"]}",
+      "example_scene": "fusionopolis_crosswalk_stop"
+    },
+    "c4d16982": {
+      "count": 1,
+      "sig_str": "{\"edges\": [[\"human.pedestrian\", \"INHIBITS_PROCEED\"], [\"human.pedestrian\", \"INHIBITS_PROCEED\"], [\"marking.crosswalk\", \"INHIBITS_PROCEED\"], [\"signal.green\", \"GRANTS_PROCEED\"], [\"vehicle.car\", \"CONSTRAINS_LONGITUDINAL\"]], \"nodes\": [\"human.pedestrian\", \"human.pedestrian\", \"marking.crosswalk\", \"signal.green\", \"vehicle.car\"]}",
+      "example_scene": "fusionopolis_construction_zone"
+    },
+    "e2110c4c": {
+      "count": 1,
+      "sig_str": "{\"edges\": [[\"vehicle.car\", \"CONSTRAINS_LONGITUDINAL\"]], \"nodes\": [\"vehicle.car\"]}",
+      "example_scene": "las_vegas_strip_straight"
+    },
+    "9c569169": {
+      "count": 1,
+      "sig_str": "{\"edges\": [[\"marking.crosswalk\", \"INHIBITS_PROCEED\"], [\"signal.yellow\", \"INHIBITS_PROCEED\"], [\"vehicle.car\", \"CONSTRAINS_LONGITUDINAL\"]], \"nodes\": [\"marking.crosswalk\", \"signal.yellow\", \"vehicle.car\"]}",
+      "example_scene": "scene_001"
+    }
+  }
+}

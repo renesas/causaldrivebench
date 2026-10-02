@@ -1,0 +1,313 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-04-29T06:33:53.444047+00:00",
+  "level": "sample",
+  "run_name": "alpamayo_1_0_sample_20260421_064223",
+  "dataset": "causal_nuscenes",
+  "scene_id": "nuscenes-scene-0072",
+  "sample_id": "SAMPLED_1",
+  "n_questions": 8,
+  "metrics": {
+    "overall": {
+      "accuracy": 0.75,
+      "n": 8,
+      "correct": 6
+    },
+    "per_qa_type": {
+      "distractor": {
+        "accuracy": 0.5,
+        "n": 2,
+        "correct": 1
+      },
+      "dormant": {
+        "accuracy": 0.6666666666666666,
+        "n": 3,
+        "correct": 2
+      },
+      "ladder": {
+        "accuracy": 1.0,
+        "n": 3,
+        "correct": 3
+      }
+    },
+    "per_question_type": {
+      "AB": {
+        "accuracy": 0.0,
+        "n": 1,
+        "correct": 0
+      },
+      "CI": {
+        "accuracy": 0.0,
+        "n": 1,
+        "correct": 0
+      },
+      "CR": {
+        "accuracy": 1.0,
+        "n": 1,
+        "correct": 1
+      },
+      "CaI": {
+        "accuracy": 1.0,
+        "n": 1,
+        "correct": 1
+      },
+      "DQ": {
+        "accuracy": 1.0,
+        "n": 1,
+        "correct": 1
+      },
+      "EL": {
+        "accuracy": 1.0,
+        "n": 1,
+        "correct": 1
+      },
+      "NI": {
+        "accuracy": 1.0,
+        "n": 1,
+        "correct": 1
+      },
+      "SC": {
+        "accuracy": 1.0,
+        "n": 1,
+        "correct": 1
+      }
+    },
+    "per_graph_structure": {
+      "": {
+        "accuracy": 0.6,
+        "n": 5,
+        "correct": 3
+      },
+      "Direct": {
+        "accuracy": 1.0,
+        "n": 3,
+        "correct": 3
+      }
+    },
+    "per_rung": {
+      "0": {
+        "accuracy": 1.0,
+        "n": 2,
+        "correct": 2
+      },
+      "1": {
+        "accuracy": 0.5,
+        "n": 2,
+        "correct": 1
+      },
+      "2": {
+        "accuracy": 0.5,
+        "n": 2,
+        "correct": 1
+      },
+      "3": {
+        "accuracy": 1.0,
+        "n": 2,
+        "correct": 2
+      }
+    },
+    "answer_stats": {
+      "gt_distribution": {
+        "A": {
+          "count": 1,
+          "pct": 12.5
+        },
+        "NO": {
+          "count": 5,
+          "pct": 62.5
+        },
+        "YES": {
+          "count": 2,
+          "pct": 25.0
+        }
+      },
+      "predicted_distribution": {
+        "A": {
+          "count": 1,
+          "pct": 12.5
+        },
+        "NO": {
+          "count": 5,
+          "pct": 62.5
+        },
+        "YES": {
+          "count": 2,
+          "pct": 25.0
+        }
+      },
+      "per_answer_accuracy": {
+        "A": {
+          "n": 1,
+          "correct": 1,
+          "accuracy": 1.0
+        },
+        "NO": {
+          "n": 5,
+          "correct": 4,
+          "accuracy": 0.8
+        },
+        "YES": {
+          "n": 2,
+          "correct": 1,
+          "accuracy": 0.5
+        }
+      },
+      "answer_bias": 29.17,
+      "n_answer_classes": 3
+    },
+    "binary_metrics": {
+      "n": 7,
+      "accuracy": 0.7143,
+      "precision": 0.5,
+      "recall": 0.5,
+      "f1": 0.5,
+      "tp": 1,
+      "fp": 1,
+      "fn": 1,
+      "tn": 4
+    }
+  },
+  "qa_results": [
+    {
+      "question_id": "CaI1",
+      "qa_type": "ladder",
+      "answer_format": "mcq",
+      "question_text": "What is the primary reason you are easing off the speed right now as you approach this intersection?",
+      "options": [
+        "A) The crosswalk markings spanning my forward path through the intersection",
+        "B) The pedestrian on the far sidewalk who is walking parallel to the road",
+        "C) The pedestrian crossing warning sign posted on the right side of the road",
+        "D) The parked truck and car visible behind me in the adjacent lot"
+      ],
+      "reasoning": "I am decelerating because of the crosswalk markings that lie directly across my forward path at this intersection. The crosswalk creates a zone where pedestrians may enter at any moment, requiring me to slow to a cautious speed before proceeding. The pedestrian visible ahead is currently on the far sidewalk and not stepping into the crosswalk, so while I am monitoring them, they are not the direct constraint right now. The pedestrian warning sign is informational but does not itself restrict my movement. The truck and car behind me in the parking area are not on my road and have no bearing on my forward speed.",
+      "predicted": "A",
+      "ground_truth": "A",
+      "correct": true,
+      "raw_output_text": "<think>\nLet me analyse the causal structure in the scene.\n\nLooking at the spatial configuration, I can identify the relevant actors and\ntheir relationships. The ego vehicle trajectory and surrounding context provide\nstrong cues for causal attribution.\n\nBased on my analysis:\n- The primary mechanism involves direct interaction between the agents\n- The counterfactual reasoning supports option A\n- Spatial grounding confirms this interpretation\n\nAnswer: A\n</think>",
+      "question_type": "CaI",
+      "graph_structure": "Direct",
+      "rung": "0",
+      "causal_status": "active_sustaining",
+      "inference_time_s": 1.25
+    },
+    {
+      "question_id": "CR1",
+      "qa_type": "ladder",
+      "answer_format": "binary",
+      "question_text": "You are nearly at a stop approaching this intersection. Given the pedestrian's current position on the far sidewalk, if the crosswalk markings ahead were not there, would you still be decelerating this significantly at this point?",
+      "options": [],
+      "reasoning": "I am decelerating to near-stop speed specifically because the crosswalk markings ahead span my forward path, creating a protected pedestrian zone I must yield to before entering. The pedestrian is currently on the far sidewalk and not in the roadway, so without the crosswalk designation there would be no marked crossing zone compelling me to slow this aggressively. I would be proceeding through the intersection at a more normal approach speed since no obstacle or signal is blocking my straight-through path. The crosswalk is the sole active constraint producing my current heavy deceleration.",
+      "predicted": "No",
+      "ground_truth": "No",
+      "correct": true,
+      "raw_output_text": "<think>\nExamining the scene carefully.\n\nThe causal chain involves: ego vehicle \u2192 environmental trigger \u2192 response.\nThe graph structure and isolation conditions are satisfied.\nMy reasoning about the counterfactual scenario leads to a clear conclusion.\n\nAnswer: No\n</think>",
+      "question_type": "CR",
+      "graph_structure": "Direct",
+      "rung": "3",
+      "causal_status": "active_sustaining",
+      "inference_time_s": 1.646
+    },
+    {
+      "question_id": "SC1",
+      "qa_type": "ladder",
+      "answer_format": "binary",
+      "question_text": "Forget every other element in this scene. With only the crosswalk ahead on your path and nothing else visible, would you still be slowing down the way you are right now?",
+      "options": [],
+      "reasoning": "I am decelerating because the crosswalk spans my forward path at this intersection. Even in complete isolation with no other vehicles, pedestrians, or signs present, the crosswalk markings alone would compel me to slow down before entering the crossing zone. A marked crosswalk requires cautious speed management regardless of whether anyone is visibly about to cross, because a pedestrian could appear from either side at any moment. My current deceleration profile is entirely consistent with what the crosswalk alone demands, so yes, this single element is sufficient to produce my observed behavior.",
+      "predicted": "Yes",
+      "ground_truth": "Yes",
+      "correct": true,
+      "raw_output_text": "<think>\nExamining the scene carefully.\n\nThe causal chain involves: ego vehicle \u2192 environmental trigger \u2192 response.\nThe graph structure and isolation conditions are satisfied.\nMy reasoning about the counterfactual scenario leads to a clear conclusion.\n\nAnswer: Yes\n</think>",
+      "question_type": "SC",
+      "graph_structure": "Direct",
+      "rung": "3",
+      "causal_status": "active_sustaining",
+      "inference_time_s": 2.553
+    },
+    {
+      "question_id": "DQ1",
+      "qa_type": "dormant",
+      "answer_format": "binary",
+      "question_text": "That person up ahead near the crosswalk looks like they could walk into your path. Are they part of why you're easing off the gas right now?",
+      "options": [],
+      "reasoning": "No, the pedestrian ahead is not part of why I am slowing down. Looking at the scene, that person is on the far sidewalk across the intersection, not on the crosswalk or roadway. They are walking along the sidewalk and are physically separated from my travel lane. I am decelerating because of the crosswalk marking itself on my path, not because of that pedestrian.",
+      "predicted": "No",
+      "ground_truth": "No",
+      "correct": true,
+      "raw_output_text": "<think>\nExamining the scene carefully.\n\nThe causal chain involves: ego vehicle \u2192 environmental trigger \u2192 response.\nThe graph structure and isolation conditions are satisfied.\nMy reasoning about the counterfactual scenario leads to a clear conclusion.\n\nAnswer: No\n</think>",
+      "question_type": "DQ",
+      "graph_structure": "",
+      "rung": "0",
+      "causal_status": "dormant",
+      "inference_time_s": 1.374
+    },
+    {
+      "question_id": "EL1",
+      "qa_type": "dormant",
+      "answer_format": "binary",
+      "question_text": "You're already slowing for the crosswalk ahead. Is the pedestrian near the intersection the reason you're reducing speed?",
+      "options": [],
+      "reasoning": "No, that pedestrian is not the reason I am reducing speed. The pedestrian is currently on the far sidewalk across the intersection, moving along it but not stepping onto the crosswalk or into the roadway. I am slowing because the crosswalk marking is on my forward path and I need to approach it cautiously regardless. Even if that pedestrian were not there at all, I would still be decelerating for the crosswalk. The pedestrian's position off the road means there is no causal connection between them and my speed right now.",
+      "predicted": "No",
+      "ground_truth": "No",
+      "correct": true,
+      "raw_output_text": "<think>\nExamining the scene carefully.\n\nThe causal chain involves: ego vehicle \u2192 environmental trigger \u2192 response.\nThe graph structure and isolation conditions are satisfied.\nMy reasoning about the counterfactual scenario leads to a clear conclusion.\n\nAnswer: No\n</think>",
+      "question_type": "EL",
+      "graph_structure": "",
+      "rung": "1",
+      "causal_status": "dormant",
+      "inference_time_s": 1.26
+    },
+    {
+      "question_id": "AB1",
+      "qa_type": "dormant",
+      "answer_format": "binary",
+      "question_text": "The pedestrian on the far sidewalk appears to be jogging. If they veered off the sidewalk and onto the near half of the crosswalk \u2014 the section directly in your travel lane \u2014 could you keep rolling through slowly, or would that change things for you?",
+      "options": [],
+      "reasoning": "Yes, that would change things for me. Right now I am only slowing cautiously for the crosswalk marking as a precaution, and I intend to proceed through at low speed. If the pedestrian moved off the far sidewalk and onto the near portion of the crosswalk directly in my lane, I would have to come to a complete stop and yield until they cleared my path. Even though I am already going slowly, there is a meaningful difference between a cautious roll-through of an empty crosswalk and a full stop for a pedestrian occupying the crossing directly ahead. At my current distance and low speed I could stop comfortably, but my plan would shift from proceeding to waiting.",
+      "predicted": "No",
+      "ground_truth": "Yes",
+      "correct": false,
+      "raw_output_text": "<think>\nExamining the scene carefully.\n\nThe causal chain involves: ego vehicle \u2192 environmental trigger \u2192 response.\nThe graph structure and isolation conditions are satisfied.\nMy reasoning about the counterfactual scenario leads to a clear conclusion.\n\nAnswer: No\n</think>",
+      "question_type": "AB",
+      "graph_structure": "",
+      "rung": "2",
+      "causal_status": "dormant",
+      "inference_time_s": 2.211
+    },
+    {
+      "question_id": "CI1",
+      "qa_type": "distractor",
+      "answer_format": "binary",
+      "question_text": "You're slowing down significantly right now. Is that large truck visible behind you the reason you're easing off the throttle?",
+      "options": [],
+      "reasoning": "No. I am decelerating because of the crosswalk ahead at the intersection, which is on my forward path and requires caution for any pedestrians who may be crossing. The large truck behind me is parked in a lot off the roadway to my right-rear, separated from my lane by a curb and walkway. It is stationary, not following me, and has no influence on my speed. My deceleration is entirely about the crosswalk ahead, not anything behind me.",
+      "predicted": "Yes",
+      "ground_truth": "No",
+      "correct": false,
+      "raw_output_text": "<think>\nExamining the scene carefully.\n\nThe causal chain involves: ego vehicle \u2192 environmental trigger \u2192 response.\nThe graph structure and isolation conditions are satisfied.\nMy reasoning about the counterfactual scenario leads to a clear conclusion.\n\nAnswer: Yes\n</think>",
+      "question_type": "CI",
+      "graph_structure": "",
+      "rung": "1",
+      "causal_status": "",
+      "inference_time_s": 1.598
+    },
+    {
+      "question_id": "NI1",
+      "qa_type": "distractor",
+      "answer_format": "binary",
+      "question_text": "Picture the crosswalk markings at the intersection ahead gone entirely. Now also picture that large truck behind you gone. Which removal would actually change what you're doing right now \u2014 the crosswalk, the truck, or both?",
+      "options": [],
+      "reasoning": "Removing the truck behind me would change nothing about my driving. It is parked off the roadway in a lot to my right-rear, completely separated from my travel lane. My deceleration is caused by the crosswalk markings ahead at the intersection, which require me to slow down and watch for pedestrians. If the crosswalk were removed, I would have less reason to slow this much. The truck's presence or absence is irrelevant to any decision I am making.",
+      "predicted": "No",
+      "ground_truth": "No",
+      "correct": true,
+      "raw_output_text": "<think>\nExamining the scene carefully.\n\nThe causal chain involves: ego vehicle \u2192 environmental trigger \u2192 response.\nThe graph structure and isolation conditions are satisfied.\nMy reasoning about the counterfactual scenario leads to a clear conclusion.\n\nAnswer: No\n</think>",
+      "question_type": "NI",
+      "graph_structure": "",
+      "rung": "2",
+      "causal_status": "",
+      "inference_time_s": 2.29
+    }
+  ]
+}

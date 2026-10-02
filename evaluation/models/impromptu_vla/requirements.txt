@@ -1,0 +1,4 @@
+# Evaluation framework dependencies (benchmark infra: LLM judge, Jupyter)
+anthropic>=0.40.0
+openai>=1.0.0
+jupyter

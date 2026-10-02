@@ -1,0 +1,325 @@
+## Driving Rules Hierarchical Taxonomy
+## Used for: VLA reasoning, CausalDriveBench, vision-based driving rule classification
+## Priority legend: 0=absolute override, 1=safety-critical stop, 2=yield/ROW,
+##                  3=speed regulation, 4=lane discipline, 5=maneuver/turn,
+##                  6=parking/stopping, 7=vehicle equipment, 8=advisory
+
+metadata:
+  version: "1.0"
+  last_updated: "2026-04-14"
+  description: >
+    Hierarchical taxonomy of driving rules for structured VLA evaluation.
+    Rules are discretized to support unambiguous vision-based reasoning.
+    Where multiple rules apply simultaneously, lowest priority number wins.
+
+priority_levels:
+  - level: 0
+    label: "ABSOLUTE_OVERRIDE"
+    description: >
+      Emergency and life-safety overrides. Must be observed above ALL other rules.
+      Examples: yielding to emergency vehicles, imminent collision avoidance,
+      absolute DUI prohibition.
+
+  - level: 1
+    label: "SAFETY_CRITICAL_STOP"
+    description: >
+      Mandatory stops or actions required to prevent immediate harm.
+      Examples: red lights, stop signs, railroad crossings, school bus red lights,
+      stopping for pedestrians at crossings, seatbelt laws.
+
+  - level: 2
+    label: "RIGHT_OF_WAY_AND_YIELD"
+    description: >
+      Right-of-way and yield obligations at intersections, crossings, and
+      shared spaces. Must yield even if it means temporary delay.
+      Examples: yield signs, left-turn yield to oncoming, roundabout yield,
+      pedestrian yield at unmarked crosswalk.
+
+  - level: 3
+    label: "SPEED_REGULATION"
+    description: >
+      All posted and context-based speed limits, including school zones,
+      adverse weather adjustments, and following distance.
+      Examples: posted speed limits, school zone 25 mph, wet road reduction.
+
+  - level: 4
+    label: "LANE_DISCIPLINE"
+    description: >
+      Rules governing lane selection, lane changes, and lane boundaries.
+      Examples: signal before lane change, no crossing solid lines,
+      HOV eligibility, bus lane restrictions.
+
+  - level: 5
+    label: "TURNING_AND_MANEUVERING"
+    description: >
+      Rules for turns, U-turns, merging, and vehicle positioning maneuvers.
+      Examples: signal before turning, right-turn-from-right-lane,
+      U-turn location restrictions.
+
+  - level: 6
+    label: "PARKING_AND_STOPPING"
+    description: >
+      Rules governing where and how vehicles may be parked or stopped.
+      Examples: no parking in crosswalk, fire hydrant clearance,
+      colored-curb restrictions, hill parking.
+
+  - level: 7
+    label: "VEHICLE_EQUIPMENT_AND_LOAD"
+    description: >
+      Rules about vehicle condition, lighting, load security, and
+      occupant equipment (beyond seatbelts which are P1).
+      Examples: headlights in low visibility, cargo flagging, vehicle dimensions.
+
+  - level: 8
+    label: "ADVISORY_AND_GUIDANCE"
+    description: >
+      Recommended practices and informational rules that improve safety
+      but are not strictly mandatory by law.
+      Examples: wheel position when turning, communication via horn in SG.
+
+priority_conflict_resolution:
+  description: >
+    When two or more rules apply simultaneously, apply the rule with
+    the LOWER priority number first. If two rules have the same priority
+    number, apply them in the following order of evaluation:
+  evaluation_order:
+    1: "Check P0 (emergency override) — always trumps everything"
+    2: "Check P1 (safety-critical) — mandatory stop/action"
+    3: "Check P2 (right of way) — who has priority"
+    4: "Check P3 (speed) — at what speed to proceed"
+    5: "Check P4 (lane) — in which lane to proceed"
+    6: "Check P5 (maneuver) — how to execute the maneuver"
+    7: "Check P6 (parking) — where to stop/park"
+    8: "Check P7-P8 — equipment and guidance"
+  tie_breaking: >
+    If two same-priority rules conflict (e.g., two P2 yield rules),
+    use the most conservative action (yield to both, stop rather than proceed).
+
+categories:
+  TRAFFIC_CONTROL:
+    description: >
+      Rules governing compliance with traffic control devices including
+      signals, signs, road markings, and electronic message signs.
+    subcategories:
+      TRAFFIC_SIGNALS:
+        description: "Fixed and flashing light signals controlling traffic flow"
+        priority_range: [1, 3]
+        visual_indicators:
+          - "Traffic light head color and state"
+          - "Arrow signal direction and color"
+          - "Flashing pattern (solid vs flashing)"
+          - "Pedestrian signal state"
+
+      TRAFFIC_SIGNS:
+        description: "Mandatory, priority, prohibitory, warning, and informational signs"
+        priority_range: [1, 4]
+        sign_families:
+          MANDATORY: "Require specific action (SIGN_STOP, SIGN_YIELD)"
+          PROHIBITORY: "Restrict actions (SIGN_NO_ENTRY, SIGN_NO_U_TURN)"
+          WARNING: "Alert to hazard ahead (SIGN_ROAD_WORK, SIGN_PEDESTRIAN_CROSSING)"
+          INFORMATIONAL: "Guide navigation (SIGN_BIKE_LANE, SIGN_HOV_LANE)"
+
+      ROAD_MARKINGS:
+        description: "Pavement markings including lane lines, stop lines, arrows"
+        priority_range: [1, 4]
+        marking_families:
+          STOP_AND_YIELD: "White stop lines, broken give-way lines"
+          LANE_BOUNDARIES: "Solid/broken yellow and white lines"
+          PARKING: "Yellow/zigzag lines, curb colors"
+          DIRECTIONAL: "Arrow markings, lane designation text"
+
+      DYNAMIC_SIGNS:
+        description: "Electronic message signs, variable speed displays, camera warnings"
+        priority_range: [2, 4]
+
+  RIGHT_OF_WAY:
+    description: >
+      Rules establishing who has priority when paths of travel intersect
+      or when yielding is required.
+    subcategories:
+      EMERGENCY_PRIORITY:
+        description: "Emergency vehicle right-of-way"
+        priority_range: [0, 0]
+
+      PEDESTRIAN_ROW:
+        description: "Pedestrian priority at crossings and in shared spaces"
+        priority_range: [1, 2]
+
+      INTERSECTION_ROW:
+        description: "Vehicle priority at intersections, T-junctions, merges"
+        priority_range: [2, 2]
+
+      SPECIAL_ROW:
+        description: "Mountain roads, roundabouts, buses, special contexts"
+        priority_range: [2, 3]
+
+  SPEED_REGULATION:
+    description: >
+      All rules governing how fast a vehicle may travel, including posted
+      limits, zone limits, and condition-based adjustments.
+    subcategories:
+      POSTED_LIMITS:
+        description: "Speed limit signs on roadways"
+        priority_range: [3, 3]
+
+      ZONE_LIMITS:
+        description: "School, construction, residential, alley speed limits"
+        priority_range: [2, 3]
+
+      CONDITION_BASED:
+        description: "Weather, visibility, road surface speed adjustments"
+        priority_range: [2, 3]
+
+  LANE_DISCIPLINE:
+    description: >
+      Rules for correct lane selection, lane change procedures, and
+      respect for lane boundaries.
+    subcategories:
+      LANE_USAGE:
+        description: "Which lane to use for given purpose (overtaking, entering, exiting)"
+        priority_range: [4, 4]
+
+      LANE_CHANGES:
+        description: "Signaling, blind-spot check, crossing line types"
+        priority_range: [3, 4]
+
+      PASSING:
+        description: "Overtaking conditions, prohibited zones, technique"
+        priority_range: [2, 4]
+
+      SPECIAL_LANES:
+        description: "HOV, bus, bike, turning, center turn lanes"
+        priority_range: [3, 4]
+
+  TURNING_AND_MANEUVERING:
+    description: >
+      Rules for executing turns, U-turns, merging, and other directional maneuvers.
+    subcategories:
+      TURNS:
+        description: "Right and left turn procedures and from-lane requirements"
+        priority_range: [4, 5]
+
+      U_TURNS:
+        description: "Where U-turns are permitted and prohibited"
+        priority_range: [2, 5]
+
+      MERGING:
+        description: "Entering and exiting highways and multi-lane roads"
+        priority_range: [2, 5]
+
+      REVERSING:
+        description: "When and where reversing is permitted or prohibited"
+        priority_range: [1, 4]
+
+  PEDESTRIAN_SAFETY:
+    description: >
+      Rules protecting pedestrians and other vulnerable road users at
+      crossings and in shared spaces.
+    subcategories:
+      CROSSWALK_RULES:
+        description: "Behavior at marked and unmarked crosswalks"
+        priority_range: [1, 2]
+
+      VULNERABLE_USERS:
+        description: "Extra protection for disabled, elderly, children"
+        priority_range: [1, 2]
+
+      SCHOOL_ZONES:
+        description: "Protections near schools, reduced speed, school bus stops"
+        priority_range: [1, 3]
+
+  PARKING_AND_STOPPING:
+    description: >
+      Rules governing where vehicles may be parked, stopped, or left standing.
+    subcategories:
+      PROHIBITED_PARKING:
+        description: "Locations where stopping/parking is absolutely forbidden"
+        priority_range: [4, 5]
+
+      RESTRICTED_PARKING:
+        description: "Time-limited or condition-restricted parking zones"
+        priority_range: [5, 6]
+
+      LOADING_ZONES:
+        description: "Pickup, dropoff, loading and unloading areas"
+        priority_range: [6, 6]
+
+      CURB_COLORS:
+        description: "US colored curb meaning (white/green/yellow/red/blue)"
+        priority_range: [5, 6]
+        jurisdictions: ["US_CA"]
+
+  VEHICLE_SAFETY:
+    description: >
+      Rules ensuring vehicle occupants and road users are protected
+      through equipment use, sobriety, and attention.
+    subcategories:
+      OCCUPANT_RESTRAINTS:
+        description: "Seatbelts and child safety seats"
+        priority_range: [1, 1]
+
+      IMPAIRED_DRIVING:
+        description: "DUI, alcohol, drugs — absolute prohibitions and BAC limits"
+        priority_range: [0, 0]
+
+      DISTRACTED_DRIVING:
+        description: "Cell phone, inattention, visual obstruction prohibitions"
+        priority_range: [1, 2]
+
+      HEADLIGHTS:
+        description: "When and how to use headlights and high beams"
+        priority_range: [3, 7]
+
+      VEHICLE_CONDITION:
+        description: "Load security, windshield obstruction, overloading"
+        priority_range: [3, 7]
+
+  SPECIAL_SITUATIONS:
+    description: >
+      Rules for specific road contexts requiring heightened attention
+      or special procedures.
+    subcategories:
+      RAILROAD_CROSSINGS:
+        description: "Level crossing behavior — stop, look, never stop on tracks"
+        priority_range: [1, 1]
+
+      SCHOOL_BUSES:
+        description: "When school bus red lights flash — mandatory stop rules"
+        priority_range: [1, 1]
+
+      EMERGENCY_VEHICLES:
+        description: "Yielding to approaching emergency vehicles"
+        priority_range: [0, 2]
+
+      WORK_ZONES:
+        description: "Construction zone speed, fines, flaggers"
+        priority_range: [2, 3]
+
+      EXPRESSWAYS:
+        description: "Highway/motorway-specific rules"
+        priority_range: [1, 4]
+
+      TUNNELS:
+        description: "Rules specific to tunnel driving"
+        priority_range: [2, 4]
+
+  ROAD_USER_INTERACTION:
+    description: >
+      Rules for sharing the road respectfully and safely with diverse
+      road users including trucks, motorcycles, bicycles, and buses.
+    subcategories:
+      LARGE_VEHICLES:
+        description: "Trucks, buses — blind spots, braking distance, swing"
+        priority_range: [2, 3]
+
+      MOTORCYCLES:
+        description: "Lane splitting, following distance, visibility"
+        priority_range: [3, 4]
+
+      BICYCLES:
+        description: "Passing clearance, bike lane, right-of-way"
+        priority_range: [2, 4]
+
+      SLOW_MOVING:
+        description: "Golf carts, NEVs, animal-drawn vehicles"
+        priority_range: [4, 4]

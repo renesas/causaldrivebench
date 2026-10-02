@@ -1,0 +1,299 @@
+{
+  "questions": [
+    {
+      "id": "CI1",
+      "rung": 1,
+      "category": "CI",
+      "preamble": "You are driving straight on a multi-lane road approaching a signalized intersection in winter conditions. There is snow on the shoulders and sidewalks. A large semi-truck with a trailer is traveling in the lane immediately to your left, dominating your front-left view.",
+      "question": "Is the large semi-truck in the lane to your left the reason you are slowing down?",
+      "answer_format": "binary",
+      "options": null,
+      "correct_answer": "No",
+      "reasoning": "No. You are slowing down because the traffic signal ahead is yellow, requiring you to prepare to stop. The semi-truck to your left is in its own lane and has not encroached into yours at any point during your approach. Despite how large and visually imposing the truck appears in your mirrors and side view, it is traveling in a separate lane and has no bearing on your deceleration. Your speed reduction is entirely a response to the yellow light at the intersection.",
+      "meta": {
+        "target_element": "vehicle_1",
+        "target_temporal_status": "present_at_t0",
+        "target_last_relevant_time": null,
+        "visual_salience": "High",
+        "counterfactual_coherence": "N/A",
+        "counterfactual_premise": null,
+        "scene_specificity": "N/A",
+        "contrast_pair": false,
+        "contrast_active_element": null,
+        "referenced_active_elements": [
+          "n1"
+        ],
+        "referenced_dormant_elements": [],
+        "dr_subtype": null,
+        "counterfactual_intervention": null,
+        "distractor_types": null
+      }
+    },
+    {
+      "id": "CI2",
+      "rung": 1,
+      "category": "CI",
+      "preamble": "You are approaching a yellow traffic signal on a wide multi-lane road in winter. A long box trailer labeled 'Innovative Logistics Group' is right beside you to your left, filling your entire left-side view. You have been steadily reducing speed.",
+      "question": "Is the trailer alongside you to the left responsible for your current deceleration?",
+      "answer_format": "binary",
+      "options": null,
+      "correct_answer": "No",
+      "reasoning": "No. Your deceleration is caused by the yellow traffic signal visible ahead at the intersection. The trailer beside you on the left is massive and fills your side mirrors, which makes it feel very close, but it is staying entirely within its own lane. You have not shifted laterally in response to it at any point. Your speed has been dropping steadily because you are preparing for the signal, not because of the trailer.",
+      "meta": {
+        "target_element": "vehicular_trailer_1",
+        "target_temporal_status": "present_at_t0",
+        "target_last_relevant_time": null,
+        "visual_salience": "High",
+        "counterfactual_coherence": "N/A",
+        "counterfactual_premise": null,
+        "scene_specificity": "N/A",
+        "contrast_pair": false,
+        "contrast_active_element": null,
+        "referenced_active_elements": [
+          "n1"
+        ],
+        "referenced_dormant_elements": [],
+        "dr_subtype": null,
+        "counterfactual_intervention": null,
+        "distractor_types": null
+      }
+    },
+    {
+      "id": "NI1",
+      "rung": 2,
+      "category": "NI",
+      "preamble": "You are decelerating on a multi-lane road as you approach a yellow traffic signal at an intersection. A large box trailer is traveling beside you in the adjacent left lane. You intend to go straight through.",
+      "question": "If the trailer in the lane to your left were removed from the scene entirely, would you change your driving behavior?",
+      "answer_format": "binary",
+      "options": null,
+      "correct_answer": "No",
+      "reasoning": "No. If the trailer were gone, you would still be decelerating because the yellow traffic signal ahead is the reason you are slowing down. The trailer has been in its own lane the entire time without affecting your speed, lane position, or steering. Removing it changes nothing about the signal or the intersection you are approaching. You would continue to slow in exactly the same way.",
+      "meta": {
+        "target_element": "vehicular_trailer_1",
+        "target_temporal_status": "present_at_t0",
+        "target_last_relevant_time": null,
+        "visual_salience": "High",
+        "counterfactual_coherence": "N/A",
+        "counterfactual_premise": null,
+        "scene_specificity": "N/A",
+        "contrast_pair": true,
+        "contrast_active_element": "n1",
+        "referenced_active_elements": [
+          "n1"
+        ],
+        "referenced_dormant_elements": [],
+        "dr_subtype": null,
+        "counterfactual_intervention": null,
+        "distractor_types": null
+      }
+    },
+    {
+      "id": "NI2",
+      "rung": 2,
+      "category": "NI",
+      "preamble": "You are approaching a signalized intersection on a multi-lane road. A small car is nearly stopped far ahead in the lane to your left, behind the truck. You are in the right lane, decelerating for the yellow signal.",
+      "question": "If the nearly stopped car ahead in the left lane were no longer there, would your driving change in any way?",
+      "answer_format": "binary",
+      "options": null,
+      "correct_answer": "No",
+      "reasoning": "No. That car is in a completely different lane from yours and is far ahead. Your deceleration is driven by the yellow traffic signal at the intersection, not by anything happening in the adjacent lane. Whether that car is there or not, you would still be slowing for the light. Your lane position and speed are unaffected by its presence.",
+      "meta": {
+        "target_element": "vehicle_2",
+        "target_temporal_status": "present_at_t0",
+        "target_last_relevant_time": null,
+        "visual_salience": "Medium",
+        "counterfactual_coherence": "N/A",
+        "counterfactual_premise": null,
+        "scene_specificity": "N/A",
+        "contrast_pair": false,
+        "contrast_active_element": null,
+        "referenced_active_elements": [
+          "n1"
+        ],
+        "referenced_dormant_elements": [],
+        "dr_subtype": null,
+        "counterfactual_intervention": null,
+        "distractor_types": null
+      }
+    },
+    {
+      "id": "WC1",
+      "rung": 3,
+      "category": "WC",
+      "preamble": "You are traveling straight in the right lane of a multi-lane road, decelerating for a yellow light. A large semi-truck is in the lane immediately to your left, slightly ahead of you and moving in the same direction. Your lane ahead is clear.",
+      "question": "If the semi-truck to your left had suddenly swerved into your lane right in front of you, would you have needed to change your driving?",
+      "answer_format": "binary",
+      "options": null,
+      "correct_answer": "Yes",
+      "reasoning": "Yes. The truck is only slightly ahead and immediately adjacent to you. If it swerved into your lane, it would cut directly into your path with very little gap between you. At your current speed, you would need to brake hard or steer right toward the shoulder to avoid a collision. Even though you are already decelerating for the yellow signal, the truck entering your lane at that close range would demand a much more aggressive response than your current gradual slowdown.",
+      "meta": {
+        "target_element": "vehicle_1",
+        "target_temporal_status": "present_at_t0",
+        "target_last_relevant_time": null,
+        "visual_salience": "High",
+        "counterfactual_coherence": "High",
+        "counterfactual_premise": "Semi-truck in adjacent left lane suddenly swerves into ego's lane directly ahead",
+        "scene_specificity": "trajectory_dependent",
+        "contrast_pair": false,
+        "contrast_active_element": null,
+        "referenced_active_elements": [
+          "n1"
+        ],
+        "referenced_dormant_elements": [],
+        "dr_subtype": null,
+        "counterfactual_intervention": {
+          "target_entity_id": "vehicle_1",
+          "target_entity_type": "agent",
+          "operation": "state_change",
+          "operation_detail": "Semi-truck in adjacent left lane suddenly swerves right into ego's lane directly ahead of ego",
+          "evaluation_mode": "planner",
+          "temporal_anchor": "t0",
+          "frozen_entities": [
+            "n1",
+            "n2",
+            "vehicle_3",
+            "vehicular_trailer_1",
+            "vehicle_2",
+            "vehicle_4"
+          ],
+          "propagated_descendants": [],
+          "trajectory_changes": true
+        },
+        "distractor_types": null
+      }
+    },
+    {
+      "id": "WC2",
+      "rung": 3,
+      "category": "WC",
+      "preamble": "You are in the right lane of a multi-lane road approaching a yellow traffic signal. In the lane to your left, far ahead near the intersection, a car is nearly stopped. You are decelerating gradually and your lane is clear ahead.",
+      "question": "If the nearly stopped car far ahead in the left lane had suddenly cut across into your lane, would you have needed to react?",
+      "answer_format": "binary",
+      "options": null,
+      "correct_answer": "Yes",
+      "reasoning": "Yes. That car is near the intersection, roughly the same distance ahead as where you will need to stop. If it cut across into your lane while nearly stopped, it would become a stationary obstacle in your path. Even though you are already slowing for the yellow light, you would need to brake more aggressively to avoid hitting a stopped car in your lane. The gap between you and the intersection is closing, so a stopped vehicle in your path at that range would demand a stronger braking response than the yellow signal alone.",
+      "meta": {
+        "target_element": "vehicle_2",
+        "target_temporal_status": "present_at_t0",
+        "target_last_relevant_time": null,
+        "visual_salience": "Medium",
+        "counterfactual_coherence": "Medium",
+        "counterfactual_premise": "Nearly stopped car in adjacent left lane suddenly cuts across into ego's lane ahead",
+        "scene_specificity": "trajectory_dependent",
+        "contrast_pair": false,
+        "contrast_active_element": null,
+        "referenced_active_elements": [
+          "n1"
+        ],
+        "referenced_dormant_elements": [],
+        "dr_subtype": null,
+        "counterfactual_intervention": {
+          "target_entity_id": "vehicle_2",
+          "target_entity_type": "agent",
+          "operation": "state_change",
+          "operation_detail": "Nearly stopped car in adjacent left lane suddenly cuts right into ego's lane while nearly stationary",
+          "evaluation_mode": "planner",
+          "temporal_anchor": "t0",
+          "frozen_entities": [
+            "n1",
+            "n2",
+            "vehicle_1",
+            "vehicular_trailer_1",
+            "vehicle_3",
+            "vehicle_4"
+          ],
+          "propagated_descendants": [],
+          "trajectory_changes": true
+        },
+        "distractor_types": null
+      }
+    },
+    {
+      "id": "DR1",
+      "rung": 0,
+      "category": "DR",
+      "preamble": "You are driving straight on a multi-lane road approaching a signalized intersection in winter. There are several vehicles around you, lane markings, and a crosswalk at the intersection ahead.",
+      "question": "Which of the following is currently influencing your driving behavior?",
+      "answer_format": "mcq",
+      "options": [
+        "A) The yellow traffic signal at the intersection ahead",
+        "B) The large semi-truck traveling in the lane to your left",
+        "C) The box trailer alongside you in the adjacent left lane",
+        "D) The crosswalk markings at the intersection"
+      ],
+      "correct_answer": "A",
+      "reasoning": "The yellow traffic signal ahead is the reason you are decelerating. It is commanding you to prepare to stop, and your speed has been dropping steadily as you approach. The semi-truck to your left is in its own lane and has not affected your speed or steering. The trailer beside you is also staying in the adjacent lane with no encroachment. The crosswalk at the intersection is currently empty with no pedestrians present, so it is not independently requiring any response from you right now.",
+      "meta": {
+        "target_element": "vehicle_1",
+        "target_temporal_status": "present_at_t0",
+        "target_last_relevant_time": null,
+        "visual_salience": "High",
+        "counterfactual_coherence": "N/A",
+        "counterfactual_premise": null,
+        "scene_specificity": "N/A",
+        "contrast_pair": false,
+        "contrast_active_element": null,
+        "referenced_active_elements": [
+          "n1"
+        ],
+        "referenced_dormant_elements": [
+          "n2"
+        ],
+        "dr_subtype": "DR-Select",
+        "counterfactual_intervention": null,
+        "distractor_types": {
+          "A": "correct_active",
+          "B": "salience_trap",
+          "C": "type_confusion",
+          "D": "dormant_confusion"
+        }
+      }
+    },
+    {
+      "id": "DR2",
+      "rung": 0,
+      "category": "DR",
+      "preamble": "You are approaching a yellow traffic signal on a wide multi-lane road with snow on the shoulders. Several vehicles are visible around you, and there is a crosswalk at the intersection ahead.",
+      "question": "Which of the following has the LEAST influence on your current driving?",
+      "answer_format": "mcq",
+      "options": [
+        "A) The yellow traffic signal at the intersection",
+        "B) The sedan following behind you in your lane",
+        "C) The car far behind you in the adjacent left lane",
+        "D) The crosswalk markings at the intersection ahead"
+      ],
+      "correct_answer": "C",
+      "reasoning": "The car far behind you in the adjacent left lane has no influence on your driving whatsoever. It is in a different lane, well behind you, and heading the same direction with no interaction with your path. The yellow traffic signal is actively commanding you to slow down. The sedan following behind you in your own lane matters because it constrains how hard you can brake. The crosswalk at the intersection is on your path and would become relevant if a pedestrian appeared. All three of those have more bearing on your decisions than that distant car in the other lane behind you.",
+      "meta": {
+        "target_element": "vehicle_4",
+        "target_temporal_status": "present_at_t0",
+        "target_last_relevant_time": null,
+        "visual_salience": "Low",
+        "counterfactual_coherence": "N/A",
+        "counterfactual_premise": null,
+        "scene_specificity": "N/A",
+        "contrast_pair": false,
+        "contrast_active_element": null,
+        "referenced_active_elements": [
+          "n1"
+        ],
+        "referenced_dormant_elements": [
+          "n2",
+          "vehicle_3"
+        ],
+        "dr_subtype": "DR-Rank",
+        "counterfactual_intervention": null,
+        "distractor_types": {
+          "A": "active_trap",
+          "B": "dormant_trap",
+          "C": "correct_distractor",
+          "D": "wrong_criterion"
+        }
+      }
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 50149,
+    "completion_tokens": 5147
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "data_root": "/workspace/data",
+  "frames": {
+    "Tm1p5": {
+      "cam_front": "raw_data/openscene/2021.06.14.17.26.26_veh-38_02740_03036/CAM_F0/b078563838c65a7f.jpg",
+      "cam_front_left": "raw_data/openscene/2021.06.14.17.26.26_veh-38_02740_03036/CAM_L0/d45fd61b455958d3.jpg",
+      "cam_front_right": "raw_data/openscene/2021.06.14.17.26.26_veh-38_02740_03036/CAM_R0/62a1f4d22a935c46.jpg",
+      "cam_back": "raw_data/openscene/2021.06.14.17.26.26_veh-38_02740_03036/CAM_B0/ecfe0927cd3156df.jpg"
+    },
+    "Tm1p0": {
+      "cam_front": "raw_data/openscene/2021.06.14.17.26.26_veh-38_02740_03036/CAM_F0/583d5700f45a58f8.jpg",
+      "cam_front_left": "raw_data/openscene/2021.06.14.17.26.26_veh-38_02740_03036/CAM_L0/92208cf942ec501b.jpg",
+      "cam_front_right": "raw_data/openscene/2021.06.14.17.26.26_veh-38_02740_03036/CAM_R0/a04d050b77765886.jpg",
+      "cam_back": "raw_data/openscene/2021.06.14.17.26.26_veh-38_02740_03036/CAM_B0/5dd4afe20ce258bd.jpg"
+    },
+    "Tm0p5": {
+      "cam_front": "raw_data/openscene/2021.06.14.17.26.26_veh-38_02740_03036/CAM_F0/c6d706e21100585f.jpg",
+      "cam_front_left": "raw_data/openscene/2021.06.14.17.26.26_veh-38_02740_03036/CAM_L0/878787f8bc3c5099.jpg",
+      "cam_front_right": "raw_data/openscene/2021.06.14.17.26.26_veh-38_02740_03036/CAM_R0/4b1e54535fb1546a.jpg",
+      "cam_back": "raw_data/openscene/2021.06.14.17.26.26_veh-38_02740_03036/CAM_B0/8cb93b79619a537c.jpg"
+    },
+    "Tp0p0": {
+      "cam_front": "raw_data/openscene/2021.06.14.17.26.26_veh-38_02740_03036/CAM_F0/7a96fabc622c5b41.jpg",
+      "cam_front_left": "raw_data/openscene/2021.06.14.17.26.26_veh-38_02740_03036/CAM_L0/351b8b29998a5457.jpg",
+      "cam_front_right": "raw_data/openscene/2021.06.14.17.26.26_veh-38_02740_03036/CAM_R0/addd0a98d88b53ae.jpg",
+      "cam_back": "raw_data/openscene/2021.06.14.17.26.26_veh-38_02740_03036/CAM_B0/14907b72ae005598.jpg"
+    }
+  }
+}

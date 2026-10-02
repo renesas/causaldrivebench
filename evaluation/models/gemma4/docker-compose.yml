@@ -1,0 +1,311 @@
+# =====================================================================
+# Docker Compose for Gemma 4 evaluation
+#
+# Architecture:
+#   gemma4-server  — runs the ai/gemma4 model image (GPU, OpenAI-compatible API)
+#   inference      — our Python wrapper that calls the model API (no GPU needed)
+#   weight-downloader — pulls the ai/gemma4 image for the selected model tag
+#   original       — direct API connectivity test (sanity check)
+#   postprocess    — metrics and report generation after inference
+#
+# Quick start:
+#   # 1. Copy and fill in credentials / paths
+#   cp evaluation/models/gemma4/dev.env.example /path/to/dev.env
+#
+#   # 2. Pull the model image (first time or when switching tags)
+#   docker compose --env-file /path/to/dev.env \
+#     -f evaluation/models/gemma4/docker-compose.yml \
+#     --profile setup run --rm weight-downloader
+#
+#   # 3. Build the evaluation wrapper image
+#   docker compose --env-file /path/to/dev.env \
+#     -f evaluation/models/gemma4/docker-compose.yml \
+#     build
+#
+#   # 4. Run inference (starts gemma4-server automatically)
+#   docker compose --env-file /path/to/dev.env \
+#     -f evaluation/models/gemma4/docker-compose.yml \
+#     run --rm inference
+#
+#   # 5. Post-process outputs
+#   RUN_DIR=/workspace/data/cdb_outputs/gemma4_e2b_<timestamp> \
+#   docker compose --env-file /path/to/dev.env \
+#     -f evaluation/models/gemma4/docker-compose.yml \
+#     --profile postprocess run --rm postprocess
+# =====================================================================
+
+x-gpu: &gpu-config
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+
+x-eval-volumes: &eval-volumes
+  - type: bind
+    source: ${RAW_DATA_DIR}
+    target: /workspace/data/raw_data
+    read_only: true
+  - type: bind
+    source: ${CAUSAL_BENCH_DIR}
+    target: /workspace/data/causal_drive_bench
+    read_only: true
+  - type: bind
+    source: ${CDB_OUTPUTS_DIR}
+    target: /workspace/data/cdb_outputs
+  - type: bind
+    source: ${CDB_REPORTS_DIR}
+    target: /workspace/data/cdb_reports
+
+x-common-env: &common-env
+  EVAL_RUNTIME: docker
+  GEMMA4_MODEL_TAG: ${GEMMA4_MODEL_TAG:-e2b}
+  GEMMA4_API_BASE_URL: ${GEMMA4_API_BASE_URL:-http://gemma4-server:8080/v1}
+  GEMMA4_API_MODEL_NAME: ${GEMMA4_API_MODEL_NAME:-ai/gemma4:e2b}
+  MAX_TOKENS: ${MAX_TOKENS:-512}
+  IMAGE_SIZE: ${IMAGE_SIZE:-448}
+  MODE: ${MODE:-full}
+  SCENE: ${SCENE:-}
+  SCENES: ${SCENES:-}
+  TRAJECTORY_EVAL: ${TRAJECTORY_EVAL:-false}
+  TRAJ_ONLY: ${TRAJ_ONLY:-false}
+  # High-throughput options (match CONCURRENT_REQUESTS to server --parallel N)
+  CONCURRENT_REQUESTS: ${CONCURRENT_REQUESTS:-4}
+  PRELOAD_IMAGES: ${PRELOAD_IMAGES:-false}
+  PRELOAD_WORKERS: ${PRELOAD_WORKERS:-64}
+  PROMPT_GEN_WORKERS: ${PROMPT_GEN_WORKERS:-64}
+  USE_LLM_JUDGE: ${USE_LLM_JUDGE:-false}
+  JUDGE_PROVIDER: ${JUDGE_PROVIDER:-azure_foundry}
+  JUDGE_MODEL: ${JUDGE_MODEL:-claude-opus-4-6}
+  ANTHROPIC_FOUNDRY_API_KEY: ${ANTHROPIC_FOUNDRY_API_KEY:-}
+  ANTHROPIC_FOUNDRY_RESOURCE: ${ANTHROPIC_FOUNDRY_RESOURCE:-}
+  FOUNDRY_BASE_URL: ${FOUNDRY_BASE_URL:-}
+  FORCE: ${FORCE:-false}
+  AZURE_OPENAI_API_KEY: ${AZURE_OPENAI_API_KEY:-}
+  AZURE_OPENAI_ENDPOINT: ${AZURE_OPENAI_ENDPOINT:-}
+  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+  OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+
+services:
+
+  # ------------------------------------------------------------------
+  # Gemma 4 model server
+  # Runs the ai/gemma4 image which exposes an OpenAI-compatible API.
+  # GPU is required here; the inference service (below) has no GPU need.
+  #
+  # Docker model runner (Docker Desktop / Engine 28+):
+  #   docker model pull ai/gemma4:${GEMMA4_MODEL_TAG}
+  #   then uncomment `model:` and remove `image:` below.
+  #
+  # Direct container run (Linux without Desktop):
+  #   The ai/gemma4 image starts a llama.cpp HTTP server on port 8080.
+  #   Override GEMMA4_PORT in dev.env if the image uses a different port.
+  # ------------------------------------------------------------------
+  gemma4-server:
+    image: ai/gemma4:${GEMMA4_MODEL_TAG:-e2b}
+    ports:
+      - "${GEMMA4_PORT:-8080}:8080"
+    <<: *gpu-config
+    restart: "no"
+    # Put in 'server' profile so it is only started when explicitly requested.
+    # When GEMMA4_API_BASE_URL points to the host model runner (port 12434),
+    # skip this service entirely: docker compose run --rm --no-deps inference
+    profiles: [server]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/v1/models"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 60s
+
+  # ------------------------------------------------------------------
+  # Main inference service
+  # Calls the Gemma 4 API and writes prompts.jsonl + outputs.jsonl.
+  # No GPU required — all heavy lifting done by gemma4-server.
+  # When using the host model runner (host.docker.internal:12434), run with
+  # --no-deps to bypass the gemma4-server dependency.
+  # ------------------------------------------------------------------
+  inference:
+    build:
+      context: ../../..
+      dockerfile: evaluation/models/gemma4/Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    image: benchmark-gemma4:latest
+
+    environment:
+      <<: *common-env
+
+    volumes: *eval-volumes
+    restart: "no"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    working_dir: /workspace/repo/evaluation/models/gemma4
+    command:
+      - python
+      - /workspace/repo/evaluation/models/gemma4/inference.py
+      - --bench-dir
+      - /workspace/data/causal_drive_bench/${DATASET:-causal_nuscenes}
+      - --output-base
+      - /workspace/data/cdb_outputs
+      - --api-base-url
+      - ${GEMMA4_API_BASE_URL:-http://gemma4-server:8080/v1}
+      - --model-name
+      - ${GEMMA4_API_MODEL_NAME:-ai/gemma4:e2b}
+      - --mode
+      - ${MODE:-full}
+      - --max-tokens
+      - "${MAX_TOKENS:-512}"
+      - --image-size
+      - "${IMAGE_SIZE:-448}"
+
+  # ------------------------------------------------------------------
+  # Original / sanity-check service (--profile original)
+  # Sends a minimal text+image request to the model server to verify
+  # connectivity and that the selected model is responding correctly.
+  # Useful for checking a new model tag before running the full benchmark.
+  # ------------------------------------------------------------------
+  original:
+    build:
+      context: ../../..
+      dockerfile: evaluation/models/gemma4/Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    image: benchmark-gemma4:latest
+
+    environment:
+      <<: *common-env
+
+    volumes:
+      - type: bind
+        source: ${CAUSAL_BENCH_DIR}
+        target: /workspace/data/causal_drive_bench
+        read_only: true
+    restart: "no"
+    profiles: [original]
+    depends_on:
+      gemma4-server:
+        condition: service_healthy
+    working_dir: /workspace/repo/evaluation/models/gemma4
+    command:
+      - python
+      - /workspace/repo/evaluation/models/gemma4/original_test.py
+      - --api-base-url
+      - ${GEMMA4_API_BASE_URL:-http://gemma4-server:8080/v1}
+      - --model-name
+      - ${GEMMA4_API_MODEL_NAME:-ai/gemma4:e2b}
+      - --bench-dir
+      - /workspace/data/causal_drive_bench/causal_nuscenes
+
+  # ------------------------------------------------------------------
+  # Post-processing service (--profile postprocess)
+  # Parses outputs.jsonl, computes metrics, writes Tier 1–4 reports.
+  # Does not need a GPU or the model server.
+  # Set RUN_DIR to the timestamped directory created by inference.
+  # ------------------------------------------------------------------
+  postprocess:
+    build:
+      context: ../../..
+      dockerfile: evaluation/models/gemma4/Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    image: benchmark-gemma4:latest
+
+    environment:
+      <<: *common-env
+
+    volumes: *eval-volumes
+    restart: "no"
+    profiles: [postprocess]
+    working_dir: /workspace/repo/evaluation/models/gemma4
+    command:
+      - python
+      - /workspace/repo/evaluation/models/gemma4/postprocess.py
+      - --bench-dir
+      - /workspace/data/causal_drive_bench/${DATASET:-causal_nuscenes}
+      - --run-dir
+      - ${RUN_DIR:-/workspace/data/cdb_outputs/latest}
+      - --mode
+      - ${MODE:-full}
+
+  # ------------------------------------------------------------------
+  # High-throughput llama.cpp server (--profile llamacpp)
+  #
+  # Alternative to gemma4-server: runs llama.cpp directly with full
+  # --parallel control instead of the Docker model runner daemon.
+  # Requires GGUF weights on the host (see setup.sh or commands.md).
+  #
+  # Quick start (host-mode, recommended):
+  #   bash evaluation/models/gemma4/setup.sh
+  #
+  # Via compose (set WEIGHTS_DIR, GGUF_FILE, MMPROJ_FILE in dev.env):
+  #   docker compose --profile llamacpp up -d llamacpp-server
+  #   GEMMA4_API_BASE_URL=http://localhost:8080/v1 \
+  #   GEMMA4_API_MODEL_NAME=model.gguf \
+  #   CONCURRENT_REQUESTS=64 \
+  #   docker compose run --rm --no-deps inference
+  # ------------------------------------------------------------------
+  llamacpp-server:
+    build:
+      context: server
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    image: llamacpp-server:gemma4
+    ports:
+      - "${GEMMA4_PORT:-8080}:8080"
+    <<: *gpu-config
+    ipc: host
+    restart: "no"
+    profiles: [llamacpp]
+    volumes:
+      - type: bind
+        source: ${WEIGHTS_DIR:-/datadrive/models/gemma4}
+        target: /models
+        read_only: true
+    command:
+      - -m
+      - /models/${GGUF_FILE:-gemma-4-e4b-it-Q4_K_M.gguf}
+      - --mmproj
+      - /models/${MMPROJ_FILE:-gemma-4-e4b-it.mmproj}
+      - --port
+      - "8080"
+      - --host
+      - "0.0.0.0"
+      - --parallel
+      - "${PARALLEL_SLOTS:-64}"
+      - --cont-batching
+      - --ctx-size
+      - "${CTX_SIZE:-655360}"
+      - --n-gpu-layers
+      - "99"
+      - -fa
+      - "on"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+      start_period: 60s
+
+  # ------------------------------------------------------------------
+  # Weight downloader (--profile setup)
+  # Pulls the ai/gemma4 model image for the selected tag.
+  # Requires the Docker socket to be mounted.
+  # Run once per model variant before the first inference.
+  # ------------------------------------------------------------------
+  weight-downloader:
+    image: docker:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: "no"
+    profiles: [setup]
+    command:
+      - docker
+      - pull
+      - ai/gemma4:${GEMMA4_MODEL_TAG:-e2b}

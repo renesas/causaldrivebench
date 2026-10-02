@@ -1,0 +1,26 @@
+{
+  "data_root": "/workspace/data",
+  "records": "records/argoverse2",
+  "outputs": "outputs/causal_argoverse2",
+  "n_samples": 1,
+  "missing_graph": [],
+  "missing_qa": [],
+  "samples": [
+    {
+      "scene": "argoverse2-72cf3ca1-1a9e-32",
+      "sample": "SAMPLED_2",
+      "files": {
+        "meta": true,
+        "state": true,
+        "calib": true,
+        "frames": true,
+        "graph": true,
+        "qa": {
+          "active_qa.json": true,
+          "dormant_qa.json": true,
+          "distractor_qa.json": true
+        }
+      }
+    }
+  ]
+}

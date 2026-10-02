@@ -1,0 +1,2276 @@
+## Generic Driving Rules
+## Applicable in both Singapore and US/California (and most jurisdictions)
+## See taxonomy.yaml for priority levels and conflict-resolution logic.
+## sign_names / marking_names are pythonic constants used in code and VLA outputs.
+
+metadata:
+  version: "1.0"
+  jurisdiction: "GENERIC"
+  last_updated: "2026-04-14"
+  total_rules: 87
+  description: >
+    Rules that are consistent across Singapore and California driving law.
+    Country-specific variations (e.g. speed values, lane-side) are in
+    sg_specific_rules.yaml and us_ca_specific_rules.yaml.
+
+# ─────────────────────────────────────────────
+# SECTION 1 — TRAFFIC CONTROL : TRAFFIC SIGNALS
+# ─────────────────────────────────────────────
+rules:
+
+  # ── Red / Stop signals ──────────────────────
+
+  - rule_id: STOP_AT_RED_LIGHT
+    name: "Stop at Red Light"
+    priority: 1
+    category: TRAFFIC_CONTROL
+    subcategory: TRAFFIC_SIGNALS
+    jurisdiction: GENERIC
+    description: >
+      A solid red traffic light requires a complete stop before the stop line
+      or crosswalk. The vehicle must remain stopped until the signal changes
+      to green (or a permitted turn condition exists).
+    rationale: "Prevents cross-traffic collisions at controlled intersections."
+    vision_cues:
+      - "Red circular signal head illuminated"
+      - "Stop line (wide white bar) across lane"
+      - "Crosswalk markings ahead"
+    sign_names:
+      - SIGNAL_RED
+      - MARKING_STOP_LINE
+    when_to_apply:
+      - "Approaching any signalized intersection with a red light"
+      - "Red light visible at any distance while approaching"
+    required_action: >
+      Decelerate, stop completely before the stop line or crosswalk.
+      Do not enter the intersection. Wait for green signal.
+    causal_question_examples:
+      - "Why did the vehicle stop at the intersection?"
+      - "What would happen if the vehicle ran the red light?"
+      - "What should the ego vehicle do when it sees a red signal?"
+    related_rules:
+      - STOP_AT_RED_ARROW
+      - STOP_AT_STOP_LINE
+      - DO_NOT_BLOCK_INTERSECTION
+
+  - rule_id: STOP_AT_RED_ARROW
+    name: "Stop at Red Arrow Signal"
+    priority: 1
+    category: TRAFFIC_CONTROL
+    subcategory: TRAFFIC_SIGNALS
+    jurisdiction: GENERIC
+    description: >
+      A red arrow signal prohibits any movement in the arrow's direction.
+      No turn is permitted — even if the intersection is clear — until the
+      arrow turns green or the signal changes to a permissive green.
+    rationale: >
+      Red arrows protect conflicting movements (e.g., oncoming left-turn
+      that has a dedicated phase).
+    vision_cues:
+      - "Red arrow signal head pointing in direction of intended turn"
+      - "Overhead or post-mounted dedicated turn signal"
+    sign_names:
+      - SIGNAL_RED_ARROW
+    when_to_apply:
+      - "Preparing to turn in the direction of a red arrow"
+      - "Overhead dedicated turn-signal shows red arrow"
+    required_action: >
+      Full stop. Do not turn. Wait for green arrow or permissive green signal.
+    causal_question_examples:
+      - "Why did the vehicle wait and not turn right?"
+      - "What would happen if the driver turned on a red arrow?"
+    related_rules:
+      - STOP_AT_RED_LIGHT
+      - PROCEED_ON_GREEN_ARROW
+
+  - rule_id: STOP_AT_FLASHING_RED
+    name: "Treat Flashing Red as Stop Sign"
+    priority: 1
+    category: TRAFFIC_CONTROL
+    subcategory: TRAFFIC_SIGNALS
+    jurisdiction: GENERIC
+    description: >
+      A flashing red light must be treated identically to a STOP sign:
+      come to a full stop, check for cross traffic and pedestrians,
+      then proceed when safe.
+    rationale: "Maintains safety when full signal cycle is not operating."
+    vision_cues:
+      - "Red signal head flashing at regular intervals"
+      - "Often at night or during signal malfunction"
+    sign_names:
+      - SIGNAL_FLASHING_RED
+    when_to_apply:
+      - "Signal head flashing red (not solid red)"
+      - "All approaches with flashing red = 4-way stop protocol"
+    required_action: >
+      Full stop before stop line. Yield to cross traffic. Proceed when safe.
+      Apply first-arrival / yield-to-right rules as at a 4-way stop.
+    related_rules:
+      - FULL_STOP_AT_STOP_SIGN
+      - DARK_SIGNAL_FOUR_WAY_STOP
+      - INTERSECTION_FIRST_ARRIVAL_ROW
+
+  - rule_id: DARK_SIGNAL_FOUR_WAY_STOP
+    name: "Treat Non-Working Signal as 4-Way Stop"
+    priority: 1
+    category: TRAFFIC_CONTROL
+    subcategory: TRAFFIC_SIGNALS
+    jurisdiction: GENERIC
+    description: >
+      When a traffic signal is completely dark (power failure), treat the
+      intersection as a four-way stop: all vehicles must stop before entering
+      and take turns according to arrival order and yield-to-right rules.
+    rationale: "Power outages must not create an uncontrolled free-for-all."
+    vision_cues:
+      - "Traffic signal head is completely dark / unlit"
+      - "No lights at all on signal mast"
+    sign_names:
+      - SIGNAL_DARK
+    when_to_apply:
+      - "Signal heads have no illumination at all"
+      - "Power outage or signal malfunction apparent"
+    required_action: >
+      Full stop. Treat as 4-way stop. Yield to vehicles already stopped,
+      then to vehicle on your right if simultaneous arrival.
+    related_rules:
+      - STOP_AT_FLASHING_RED
+      - FULL_STOP_AT_STOP_SIGN
+      - INTERSECTION_FIRST_ARRIVAL_ROW
+
+  # ── Amber / Caution signals ─────────────────
+
+  - rule_id: STOP_OR_CLEAR_AMBER_LIGHT
+    name: "Stop or Clear Intersection on Amber Light"
+    priority: 1
+    category: TRAFFIC_CONTROL
+    subcategory: TRAFFIC_SIGNALS
+    jurisdiction: GENERIC
+    description: >
+      An amber (yellow) light means the signal is about to turn red.
+      Stop safely if possible. Only continue through if stopping would
+      require unsafe hard braking or if already committed to the intersection.
+      Never accelerate to beat the light.
+    rationale: "Prevents rear-end collisions and red-light running."
+    vision_cues:
+      - "Yellow/amber circular signal head illuminated"
+      - "Distance to stop line — is safe stopping still possible?"
+      - "Vehicle closely following behind (risk of rear-end)"
+    sign_names:
+      - SIGNAL_AMBER
+    when_to_apply:
+      - "Amber light appears while approaching intersection"
+      - "Already inside intersection when amber appears — clear it"
+    required_action: >
+      If safe to stop: decelerate and stop before stop line.
+      If already in or committed to intersection: clear it quickly and safely.
+      Never accelerate to beat the light.
+    causal_question_examples:
+      - "Why did the vehicle slow down at the yellow light?"
+      - "Should the vehicle stop or proceed on amber?"
+    related_rules:
+      - STOP_AT_RED_LIGHT
+
+  - rule_id: CAUTION_AT_AMBER_ARROW
+    name: "Complete Turn or Prepare to Stop on Amber Arrow"
+    priority: 2
+    category: TRAFFIC_CONTROL
+    subcategory: TRAFFIC_SIGNALS
+    jurisdiction: GENERIC
+    description: >
+      An amber arrow means the protected turn phase is ending. If already
+      turning (in the intersection), complete the turn. If not yet committed,
+      prepare to stop and wait for next green arrow.
+    vision_cues:
+      - "Yellow/amber arrow on dedicated turn signal head"
+    sign_names:
+      - SIGNAL_AMBER_ARROW
+    when_to_apply:
+      - "Amber arrow appears while waiting in turn lane"
+      - "Already mid-turn when arrow turns amber"
+    required_action: >
+      If mid-turn: complete the turn safely. If waiting: stop and wait.
+    related_rules:
+      - STOP_AT_RED_ARROW
+      - PROCEED_ON_GREEN_ARROW
+
+  - rule_id: CAUTION_AT_FLASHING_AMBER
+    name: "Proceed with Caution at Flashing Amber"
+    priority: 3
+    category: TRAFFIC_CONTROL
+    subcategory: TRAFFIC_SIGNALS
+    jurisdiction: GENERIC
+    description: >
+      A flashing amber (yellow) light is a caution warning. No stop is required
+      but speed must be reduced and the driver must be prepared to yield to
+      crossing traffic, pedestrians, or hazards.
+    vision_cues:
+      - "Yellow signal head flashing at regular intervals"
+    sign_names:
+      - SIGNAL_FLASHING_AMBER
+    when_to_apply:
+      - "Approaching intersection with flashing amber"
+      - "Mid-block flasher near pedestrian crossing or school zone"
+    required_action: >
+      Reduce speed. Scan for cross traffic and pedestrians.
+      Proceed only when safe — do not assume full right of way.
+    related_rules:
+      - STOP_OR_CLEAR_AMBER_LIGHT
+
+  # ── Green / Proceed signals ──────────────────
+
+  - rule_id: PROCEED_GREEN_YIELD_TO_CONFLICTS
+    name: "Proceed on Green — Yield to Pedestrians and Conflicting Vehicles"
+    priority: 3
+    category: TRAFFIC_CONTROL
+    subcategory: TRAFFIC_SIGNALS
+    jurisdiction: GENERIC
+    description: >
+      A green circular signal permits movement, but the driver must still
+      yield to pedestrians crossing and to vehicles already lawfully in the
+      intersection before proceeding.
+    vision_cues:
+      - "Green circular signal head illuminated"
+      - "Pedestrians in or entering crosswalk"
+      - "Vehicles clearing intersection from previous phase"
+    sign_names:
+      - SIGNAL_GREEN
+    when_to_apply:
+      - "Signal turns green from red"
+      - "Green light is showing while approaching"
+    required_action: >
+      Check for pedestrians in crosswalk and vehicles clearing intersection.
+      Yield to both before entering. Proceed when clear.
+    causal_question_examples:
+      - "Why did the vehicle wait even though the light was green?"
+      - "What should the driver check before moving on green?"
+    related_rules:
+      - PEDESTRIAN_CROSSWALK_ROW
+      - DO_NOT_BLOCK_INTERSECTION
+
+  - rule_id: PROCEED_ON_GREEN_ARROW
+    name: "Protected Turn on Green Arrow"
+    priority: 3
+    category: TRAFFIC_CONTROL
+    subcategory: TRAFFIC_SIGNALS
+    jurisdiction: GENERIC
+    description: >
+      A green arrow signal provides a protected (conflict-free) turn phase.
+      Oncoming traffic is stopped. Driver may turn in arrow direction
+      but must still yield to any pedestrians in the crosswalk.
+    vision_cues:
+      - "Green arrow signal pointing in direction of turn"
+      - "Dedicated overhead or lateral turn signal head"
+    sign_names:
+      - SIGNAL_GREEN_ARROW
+    when_to_apply:
+      - "Green arrow illuminated for intended turn direction"
+    required_action: >
+      Proceed in arrow direction. Check for pedestrians in crossing path.
+      Complete turn in correct destination lane.
+    related_rules:
+      - STOP_AT_RED_ARROW
+      - COMPLETE_TURN_IN_CORRECT_LANE
+      - PEDESTRIAN_CROSSWALK_ROW
+
+# ─────────────────────────────────────────────
+# SECTION 2 — TRAFFIC CONTROL : TRAFFIC SIGNS
+# ─────────────────────────────────────────────
+
+  - rule_id: FULL_STOP_AT_STOP_SIGN
+    name: "Full Stop at STOP Sign"
+    priority: 1
+    category: TRAFFIC_CONTROL
+    subcategory: TRAFFIC_SIGNS
+    jurisdiction: GENERIC
+    description: >
+      An octagonal red STOP sign requires a complete stop before the stop line,
+      crosswalk, or — if neither exists — before the intersection. The vehicle
+      must be completely stationary before looking for cross traffic. A rolling
+      stop (California stop) is not a legal stop.
+    vision_cues:
+      - "Red octagonal sign with white border and 'STOP' text"
+      - "White stop line across lane"
+      - "Intersection or cross-traffic view ahead"
+    sign_names:
+      - SIGN_STOP
+      - MARKING_STOP_LINE
+    when_to_apply:
+      - "Any approach with a STOP sign posted"
+      - "At all-way stop intersections"
+    required_action: >
+      Full stop — zero velocity — before stop line. Check all directions.
+      Yield to conflicting traffic, then proceed when safe.
+    causal_question_examples:
+      - "Why did the vehicle come to a complete stop here?"
+      - "What would happen if the driver only slowed but didn't stop?"
+    related_rules:
+      - STOP_AT_STOP_LINE
+      - INTERSECTION_FIRST_ARRIVAL_ROW
+
+  - rule_id: YIELD_AT_YIELD_SIGN
+    name: "Yield at YIELD Sign"
+    priority: 2
+    category: TRAFFIC_CONTROL
+    subcategory: TRAFFIC_SIGNS
+    jurisdiction: GENERIC
+    description: >
+      A triangular YIELD sign requires slowing down and yielding right-of-way
+      to cross traffic and pedestrians. Stop only if necessary to avoid a conflict.
+    vision_cues:
+      - "Downward-pointing triangle sign (red/white or yellow/black)"
+      - "Broken white line across lane"
+      - "Cross traffic or pedestrians present"
+    sign_names:
+      - SIGN_YIELD
+      - MARKING_GIVE_WAY_LINE
+    when_to_apply:
+      - "Approach to intersection, on-ramp, or roundabout with YIELD sign"
+    required_action: >
+      Slow down significantly. Yield to any approaching vehicle or pedestrian.
+      Stop if needed. Proceed only when path is clear.
+    related_rules:
+      - YIELD_AT_BROKEN_GIVE_WAY_LINE
+      - ROUNDABOUT_YIELD_TO_INSIDE
+
+  - rule_id: OBEY_NO_ENTRY_SIGN
+    name: "Do Not Enter — No Entry Sign"
+    priority: 1
+    category: TRAFFIC_CONTROL
+    subcategory: TRAFFIC_SIGNS
+    jurisdiction: GENERIC
+    description: >
+      A No Entry sign prohibits vehicles from entering a roadway or lane.
+      Used on one-way streets (wrong-way entry), restricted roads, and
+      entry to vehicle-type-specific roads.
+    vision_cues:
+      - "Red circle with horizontal white bar ('No Entry')"
+      - "Mounted at road entrance or lane entry point"
+    sign_names:
+      - SIGN_NO_ENTRY
+    when_to_apply:
+      - "Sign is visible at the entry of any road or lane"
+      - "Vehicle approaching a one-way road from wrong direction"
+    required_action: >
+      Do not enter. Stop or turn around. Find correct route.
+    related_rules:
+      - OBEY_WRONG_WAY_SIGN
+
+  - rule_id: OBEY_WRONG_WAY_SIGN
+    name: "Wrong Way — Do Not Proceed"
+    priority: 1
+    category: TRAFFIC_CONTROL
+    subcategory: TRAFFIC_SIGNS
+    jurisdiction: GENERIC
+    description: >
+      WRONG WAY indicates the driver is traveling against the legal flow
+      of traffic. Immediate action required to avoid head-on collision.
+    vision_cues:
+      - "Red rectangular sign reading 'WRONG WAY'"
+      - "Oncoming headlights in your lane"
+      - "White lane markings facing the wrong direction"
+    sign_names:
+      - SIGN_WRONG_WAY
+    when_to_apply:
+      - "Wrong Way sign visible from driver's perspective"
+      - "Oncoming traffic in what driver perceives as own lane"
+    required_action: >
+      Stop immediately. Do not continue. Reverse or turn around safely.
+      Activate hazard lights.
+    related_rules:
+      - OBEY_NO_ENTRY_SIGN
+
+  - rule_id: OBEY_SPEED_LIMIT_SIGN
+    name: "Observe Posted Speed Limit"
+    priority: 3
+    category: TRAFFIC_CONTROL
+    subcategory: TRAFFIC_SIGNS
+    jurisdiction: GENERIC
+    description: >
+      Speed limit signs state the maximum legal speed in normal conditions.
+      Drivers must not exceed this limit. Speed may need to be further
+      reduced for weather, traffic, or road conditions.
+    vision_cues:
+      - "White rectangular sign with black speed value and 'SPEED LIMIT' text (US)"
+      - "Circular white sign with red border and speed value (SG/international)"
+      - "Speed value in km/h (SG) or mph (US)"
+    sign_names:
+      - SIGN_SPEED_LIMIT
+    when_to_apply:
+      - "Any posted speed limit sign visible"
+      - "Entering a new road zone with different limit"
+    required_action: >
+      Adjust speed to at or below posted limit. Maintain until next sign
+      or zone change. Reduce further if conditions demand it.
+    related_rules:
+      - SCHOOL_ZONE_REDUCED_SPEED
+      - ADVERSE_WEATHER_SPEED_REDUCTION
+
+  - rule_id: OBEY_NO_OVERTAKING_SIGN
+    name: "No Overtaking / No Passing Zone"
+    priority: 3
+    category: TRAFFIC_CONTROL
+    subcategory: TRAFFIC_SIGNS
+    jurisdiction: GENERIC
+    description: >
+      A no-overtaking sign prohibits passing the vehicle ahead by crossing
+      into an oncoming lane. This restriction applies until a sign cancels it
+      or a broken-line section resumes.
+    vision_cues:
+      - "Two overlapping car circles with a red slash (international)"
+      - "Yellow solid centerline with no-passing markings (US)"
+      - "No Overtaking text sign (SG)"
+    sign_names:
+      - SIGN_NO_OVERTAKING
+    when_to_apply:
+      - "No overtaking sign posted"
+      - "Solid yellow/white center line present (see road marking rule)"
+    required_action: >
+      Remain behind the vehicle ahead. Do not cross center line to pass.
+      Wait until restriction ends.
+    related_rules:
+      - NO_CROSS_SOLID_CENTER_LINE
+      - NO_PASSING_ON_HILLS_CURVES
+
+  - rule_id: OBEY_MANDATORY_DIRECTION_SIGN
+    name: "Obey Mandatory Direction Sign"
+    priority: 2
+    category: TRAFFIC_CONTROL
+    subcategory: TRAFFIC_SIGNS
+    jurisdiction: GENERIC
+    description: >
+      Blue/white circular mandatory signs (turn right only, ahead only, keep left,
+      keep right, etc.) require the driver to follow the indicated direction.
+      These are compulsory, not advisory.
+    vision_cues:
+      - "Blue circle with white directional arrow"
+      - "'Turn Right Only', 'Ahead Only', 'Keep Left', etc."
+      - "Posted at lane entry or before intersection"
+    sign_names:
+      - SIGN_TURN_RIGHT_ONLY
+      - SIGN_TURN_LEFT_ONLY
+      - SIGN_AHEAD_ONLY
+      - SIGN_KEEP_LEFT
+      - SIGN_KEEP_RIGHT
+    when_to_apply:
+      - "Entering a lane or road with mandatory direction sign"
+      - "At junction approaches, channelized intersections"
+    required_action: >
+      Follow the indicated direction exactly. Do not deviate.
+    related_rules:
+      - RIGHT_TURN_FROM_RIGHT_LANE
+      - LEFT_TURN_FROM_CENTER_LANE
+
+  - rule_id: SLOW_AT_WARNING_SIGNS
+    name: "Reduce Speed at Warning Signs"
+    priority: 3
+    category: TRAFFIC_CONTROL
+    subcategory: TRAFFIC_SIGNS
+    jurisdiction: GENERIC
+    description: >
+      Diamond-shaped or triangular warning signs alert drivers to hazards
+      ahead (bends, pedestrian crossings, school zones, road humps, etc.).
+      Drivers must reduce speed and increase alertness.
+    vision_cues:
+      - "Yellow diamond (US) or red-bordered triangle (international) warning sign"
+      - "Depicts specific hazard: bend, pedestrian, school, hump, animal"
+      - "Often posted 50–200m before the hazard"
+    sign_names:
+      - SIGN_WARNING_BEND
+      - SIGN_WARNING_PEDESTRIAN_CROSSING
+      - SIGN_WARNING_SCHOOL
+      - SIGN_WARNING_ROAD_HUMP
+      - SIGN_WARNING_SLIPPERY
+      - SIGN_WARNING_NARROW_ROAD
+      - SIGN_WARNING_JUNCTION
+      - SIGN_WARNING_ANIMAL_CROSSING
+      - SIGN_WARNING_LEVEL_CROSSING
+    when_to_apply:
+      - "Any warning sign visible ahead"
+    required_action: >
+      Reduce speed proactively. Scan ahead for the warned hazard.
+      Be prepared to stop or yield.
+    related_rules:
+      - RAILROAD_CROSSING_MANDATORY_STOP
+      - STOP_FOR_PEDESTRIAN_AT_CROSSING
+
+  - rule_id: OBEY_NO_U_TURN_SIGN
+    name: "No U-Turn Where Posted"
+    priority: 2
+    category: TRAFFIC_CONTROL
+    subcategory: TRAFFIC_SIGNS
+    jurisdiction: GENERIC
+    description: >
+      A No U-Turn sign absolutely prohibits reversing direction at that location.
+    vision_cues:
+      - "Red circle with 'U-turn' arrow slashed through"
+      - "Posted at intersections, medians, and road entry points"
+    sign_names:
+      - SIGN_NO_U_TURN
+    when_to_apply:
+      - "Driver intends to make a U-turn at a signed location"
+    required_action: >
+      Do not make U-turn. Find next legal U-turn location.
+    related_rules:
+      - NO_U_TURN_LOW_VISIBILITY
+      - NO_U_TURN_AT_RAILROAD_CROSSING
+
+  - rule_id: RAILROAD_CROSSING_ADVANCE_SIGN
+    name: "Prepare to Stop at Railroad Crossing Sign"
+    priority: 1
+    category: TRAFFIC_CONTROL
+    subcategory: TRAFFIC_SIGNS
+    jurisdiction: GENERIC
+    description: >
+      Railroad advance warning signs (X with R-R, or crossbuck sign) indicate
+      an upcoming level crossing. Drivers must reduce speed, look and listen for
+      trains, and be prepared to stop.
+    vision_cues:
+      - "Yellow X-shaped 'Railroad Crossing' advance sign"
+      - "Crossbuck sign (X with 'Railroad Crossing' text) at crossing"
+      - "Flashing red lights and/or lowered crossing gates"
+      - "Rumble strips on road approach"
+    sign_names:
+      - SIGN_RAILROAD_CROSSING_ADVANCE
+      - SIGN_RAILROAD_CROSSBUCK
+    when_to_apply:
+      - "Railroad crossing advance sign visible"
+      - "Approaching any level crossing"
+    required_action: >
+      Reduce speed. Look and listen for trains from both directions.
+      Prepare to stop. See RAILROAD_CROSSING_MANDATORY_STOP for full rule.
+    related_rules:
+      - RAILROAD_CROSSING_MANDATORY_STOP
+      - NEVER_STOP_ON_TRACKS
+
+# ─────────────────────────────────────────────
+# SECTION 3 — TRAFFIC CONTROL : ROAD MARKINGS
+# ─────────────────────────────────────────────
+
+  - rule_id: STOP_AT_STOP_LINE
+    name: "Stop Before the Stop Line"
+    priority: 1
+    category: TRAFFIC_CONTROL
+    subcategory: ROAD_MARKINGS
+    jurisdiction: GENERIC
+    description: >
+      A solid white stop line across a lane marks the exact point where a
+      vehicle must stop for red signals, stop signs, or railroad crossings.
+      Stopping with the front wheels behind this line is mandatory.
+    vision_cues:
+      - "Wide white solid line perpendicular to direction of travel"
+      - "Located just before intersection, crosswalk, or crossing gate"
+    sign_names:
+      - MARKING_STOP_LINE
+    when_to_apply:
+      - "Stop sign, red signal, or railroad crossing requires stop"
+      - "Stop line marking visible across lane"
+    required_action: >
+      Stop with front of vehicle behind the stop line.
+      Do not creep forward over the line.
+    related_rules:
+      - STOP_AT_RED_LIGHT
+      - FULL_STOP_AT_STOP_SIGN
+      - RAILROAD_CROSSING_MANDATORY_STOP
+
+  - rule_id: YIELD_AT_BROKEN_GIVE_WAY_LINE
+    name: "Yield at Broken Give-Way Line"
+    priority: 2
+    category: TRAFFIC_CONTROL
+    subcategory: ROAD_MARKINGS
+    jurisdiction: GENERIC
+    description: >
+      A broken (dashed) white line across a lane at an intersection or merge
+      indicates a give-way or yield point. The driver must slow and yield
+      to traffic on the priority road before crossing the line.
+    vision_cues:
+      - "Broken/dashed white transverse line across lane"
+      - "Often paired with YIELD sign or triangle marking"
+    sign_names:
+      - MARKING_GIVE_WAY_LINE
+    when_to_apply:
+      - "Approaching give-way line at junction or merge"
+    required_action: >
+      Slow down. Yield to traffic on the major road.
+      Stop if necessary, then proceed when clear.
+    related_rules:
+      - YIELD_AT_YIELD_SIGN
+
+  - rule_id: NO_CROSS_SOLID_CENTER_LINE
+    name: "Do Not Cross Solid Center Line"
+    priority: 2
+    category: TRAFFIC_CONTROL
+    subcategory: ROAD_MARKINGS
+    jurisdiction: GENERIC
+    description: >
+      A continuous (solid) yellow center line indicates that crossing to
+      the opposite side for passing is prohibited. A solid white line between
+      same-direction lanes indicates lane changes are prohibited.
+    vision_cues:
+      - "Unbroken yellow line on center of two-way road"
+      - "Unbroken white line between lanes"
+      - "Double solid yellow or white lines"
+    sign_names:
+      - MARKING_SOLID_YELLOW_CENTER
+      - MARKING_DOUBLE_SOLID_YELLOW
+      - MARKING_SOLID_WHITE
+    when_to_apply:
+      - "Solid line is adjacent to driver's lane"
+      - "Driver intends to pass or change lanes"
+    required_action: >
+      Do not cross solid line. Wait for broken/dashed section to pass legally.
+    related_rules:
+      - NO_PASSING_ON_HILLS_CURVES
+      - OBEY_NO_OVERTAKING_SIGN
+
+  - rule_id: PASSING_ON_BROKEN_CENTER_LINE
+    name: "May Pass on Broken Center Line (When Safe)"
+    priority: 4
+    category: TRAFFIC_CONTROL
+    subcategory: ROAD_MARKINGS
+    jurisdiction: GENERIC
+    description: >
+      A broken (dashed) yellow center line adjacent to the driver's lane
+      permits passing the vehicle ahead if it is safe to do so and visibility
+      is sufficient. The driver must ensure the pass can be completed safely.
+    vision_cues:
+      - "Broken/dashed yellow center line on two-way road"
+      - "Clear sight distance ahead"
+      - "No hazards: hills, curves, intersections, crossings"
+    sign_names:
+      - MARKING_BROKEN_YELLOW_CENTER
+    when_to_apply:
+      - "Broken yellow adjacent to driver's lane"
+      - "Adequate sight distance for safe overtake"
+      - "No prohibiting conditions (hills, curves, intersections)"
+    required_action: >
+      Signal, check mirrors and blind spot, enter opposing lane briefly,
+      pass, return to lane. Do not pass if any hazard exists.
+    related_rules:
+      - NO_CROSS_SOLID_CENTER_LINE
+      - NO_PASSING_ON_HILLS_CURVES
+
+  - rule_id: LANE_ARROW_COMPLIANCE
+    name: "Follow Lane Arrow Markings"
+    priority: 4
+    category: TRAFFIC_CONTROL
+    subcategory: ROAD_MARKINGS
+    jurisdiction: GENERIC
+    description: >
+      Arrow markings painted on the road surface within a lane indicate
+      which direction(s) that lane is designated for. Drivers must use only
+      the movement(s) indicated.
+    vision_cues:
+      - "White arrow(s) painted on road surface within lane"
+      - "Curved arrow (turn), straight arrow (ahead), combined arrows"
+      - "Typically found before intersections"
+    sign_names:
+      - MARKING_LANE_ARROW_STRAIGHT
+      - MARKING_LANE_ARROW_LEFT
+      - MARKING_LANE_ARROW_RIGHT
+      - MARKING_LANE_ARROW_COMBINED
+    when_to_apply:
+      - "Arrow markings visible in current lane approaching intersection"
+    required_action: >
+      Select lane matching intended direction. Do not turn from a
+      straight-only lane or go straight from a turn-only lane.
+    related_rules:
+      - OBEY_MANDATORY_DIRECTION_SIGN
+      - RIGHT_TURN_FROM_RIGHT_LANE
+
+# ─────────────────────────────────────────────
+# SECTION 4 — RIGHT OF WAY
+# ─────────────────────────────────────────────
+
+  - rule_id: EMERGENCY_VEHICLE_PRIORITY
+    name: "Yield to Emergency Vehicle — Absolute Override"
+    priority: 0
+    category: RIGHT_OF_WAY
+    subcategory: EMERGENCY_PRIORITY
+    jurisdiction: GENERIC
+    description: >
+      Any vehicle using emergency sirens and/or flashing red/blue lights
+      has absolute right-of-way. ALL other vehicles must immediately move
+      out of the path, pull to the right (or nearest safe position), and stop.
+    vision_cues:
+      - "Flashing red, blue, or white emergency lights"
+      - "Audible siren (may precede visual cue)"
+      - "Police car, ambulance, fire truck, or other authorized emergency vehicle"
+    sign_names:
+      - VEHICLE_EMERGENCY_LIGHTS
+    when_to_apply:
+      - "Emergency vehicle with active lights/siren is approaching from any direction"
+      - "Emergency vehicle is behind, alongside, or approaching head-on"
+    required_action: >
+      Signal, pull to the far right edge of the road or nearest safe position.
+      Stop completely. Do not re-enter traffic until emergency vehicle has passed.
+      Do not follow within 300 ft / 100 m of emergency vehicle.
+    causal_question_examples:
+      - "Why did all vehicles pull over and stop?"
+      - "What should the ego vehicle do when an ambulance approaches from behind?"
+      - "What if the driver didn't yield to the fire truck?"
+    related_rules:
+      - NO_FOLLOW_EMERGENCY_VEHICLE_CLOSE
+
+  - rule_id: PEDESTRIAN_CROSSWALK_ROW
+    name: "Yield to Pedestrians at Crosswalk"
+    priority: 1
+    category: RIGHT_OF_WAY
+    subcategory: PEDESTRIAN_ROW
+    jurisdiction: GENERIC
+    description: >
+      Pedestrians in or entering a marked or unmarked crosswalk have the
+      right-of-way. Drivers must stop and allow pedestrians to fully cross
+      before proceeding. This applies even on a green signal.
+    vision_cues:
+      - "Pedestrian stepping off curb or in crosswalk"
+      - "Zebra stripes or ladder-pattern crosswalk markings"
+      - "Pedestrian WALK signal illuminated"
+      - "Pedestrian making eye contact with driver"
+    sign_names:
+      - MARKING_CROSSWALK
+      - SIGN_PEDESTRIAN_CROSSING
+      - SIGNAL_PEDESTRIAN_WALK
+    when_to_apply:
+      - "Pedestrian is in or entering any crosswalk — marked or unmarked"
+      - "Pedestrian is crossing at any intersection, even without markings"
+      - "At green light, amber light, after stop sign, after yield sign"
+    required_action: >
+      Stop completely before the crosswalk. Allow all pedestrians to finish
+      crossing the entire lane width before moving.
+    causal_question_examples:
+      - "Why did the vehicle stop even though the light was green?"
+      - "What would happen if the car didn't yield to the pedestrian?"
+    related_rules:
+      - STOP_FOR_PEDESTRIAN_AT_CROSSING
+      - DO_NOT_STOP_IN_CROSSWALK
+      - DO_NOT_PASS_STOPPED_AT_CROSSWALK
+
+  - rule_id: GUIDE_DOG_ABSOLUTE_ROW
+    name: "Yield Absolutely to Guide Dog Users and White Cane Pedestrians"
+    priority: 1
+    category: RIGHT_OF_WAY
+    subcategory: PEDESTRIAN_ROW
+    jurisdiction: GENERIC
+    description: >
+      Pedestrians using a white cane or guide dog are visually impaired and
+      have absolute right-of-way at ALL times — at intersections, crossings,
+      or mid-block. Drivers must stop and must not sound the horn.
+    vision_cues:
+      - "Pedestrian carrying white cane (sweeping or fixed)"
+      - "Pedestrian with guide dog in harness"
+      - "May be at any location on or near road"
+    sign_names:
+      - SIGN_BLIND_PEDESTRIAN
+    when_to_apply:
+      - "Any visually impaired pedestrian visible anywhere on or near roadway"
+    required_action: >
+      Stop immediately. Give way completely. Do NOT honk horn.
+      Wait until pedestrian has safely cleared the road.
+    related_rules:
+      - PEDESTRIAN_CROSSWALK_ROW
+      - NO_HONK_AT_BLIND_PEDESTRIANS
+
+  - rule_id: INTERSECTION_FIRST_ARRIVAL_ROW
+    name: "First-Arrival Priority at Uncontrolled Intersections"
+    priority: 2
+    category: RIGHT_OF_WAY
+    subcategory: INTERSECTION_ROW
+    jurisdiction: GENERIC
+    description: >
+      At intersections without signals or signs (or at all-way stops),
+      the vehicle that arrived first has the right-of-way and may proceed first.
+    vision_cues:
+      - "No signal, no stop sign, no yield sign at intersection"
+      - "All-way stop (multiple vehicles stopped)"
+      - "Other vehicles waiting at intersection"
+    when_to_apply:
+      - "Approaching uncontrolled intersection"
+      - "At 4-way or all-way stop: determining order of departure"
+    required_action: >
+      If you arrived first, proceed (after ensuring safety).
+      If another vehicle arrived first, yield and wait for it to clear.
+    related_rules:
+      - YIELD_TO_VEHICLE_ON_RIGHT
+      - FULL_STOP_AT_STOP_SIGN
+
+  - rule_id: YIELD_TO_VEHICLE_ON_RIGHT
+    name: "Yield to Vehicle on Right at Simultaneous Arrival"
+    priority: 2
+    category: RIGHT_OF_WAY
+    subcategory: INTERSECTION_ROW
+    jurisdiction: GENERIC
+    description: >
+      When two vehicles arrive at an uncontrolled intersection simultaneously,
+      the vehicle on the LEFT must yield to the vehicle on the RIGHT.
+    vision_cues:
+      - "Vehicle approaching from the right at same time as ego vehicle"
+      - "Simultaneous arrival — neither vehicle has clear prior arrival"
+    when_to_apply:
+      - "Two or more vehicles arrive at uncontrolled intersection simultaneously"
+    required_action: >
+      If a vehicle is on your right: yield, let it proceed first.
+      If you are on a vehicle's right: you have priority — proceed cautiously.
+    causal_question_examples:
+      - "Which vehicle should go first at this uncontrolled intersection?"
+      - "Why did the left vehicle wait for the right vehicle?"
+    related_rules:
+      - INTERSECTION_FIRST_ARRIVAL_ROW
+      - FULL_STOP_AT_STOP_SIGN
+
+  - rule_id: THROUGH_TRAFFIC_T_INTERSECTION
+    name: "Through-Road Traffic Has Priority at T-Junction"
+    priority: 2
+    category: RIGHT_OF_WAY
+    subcategory: INTERSECTION_ROW
+    jurisdiction: GENERIC
+    description: >
+      At a T-intersection, the vehicle on the through (continuous) road has
+      the right-of-way. The vehicle on the dead-end road must yield before
+      entering or crossing the through road.
+    vision_cues:
+      - "T-shaped intersection: one road ends and meets another"
+      - "Give-way/yield sign or broken line for entering road"
+      - "Continuous road has no sign or solid markings"
+    when_to_apply:
+      - "Emerging from a dead-end or side street onto a through road"
+    required_action: >
+      Stop or yield before entering. Check both directions on the through road.
+      Proceed only when clear.
+    related_rules:
+      - YIELD_AT_YIELD_SIGN
+      - YIELD_AT_BROKEN_GIVE_WAY_LINE
+
+  - rule_id: LEFT_TURN_YIELD_TO_ONCOMING
+    name: "Left-Turning Vehicle Yields to Oncoming Traffic"
+    priority: 2
+    category: RIGHT_OF_WAY
+    subcategory: INTERSECTION_ROW
+    jurisdiction: GENERIC
+    description: >
+      A vehicle turning left must yield to all oncoming vehicles approaching
+      from the opposite direction. The turning vehicle must wait until the
+      path is clear before completing the turn.
+    vision_cues:
+      - "Oncoming vehicles in opposite lane (no dedicated protected turn signal)"
+      - "Gap in oncoming traffic being evaluated for left turn"
+      - "Pedestrians in the crosswalk on the target road"
+    when_to_apply:
+      - "Turning left at any intersection without a protected (green arrow) phase"
+      - "Turning left from a driveway onto a road"
+    required_action: >
+      Wait for all oncoming vehicles to pass. Then check for pedestrians.
+      Only then complete the left turn.
+    causal_question_examples:
+      - "Why is the vehicle waiting in the intersection with its front toward the left?"
+      - "What is the vehicle waiting for before turning left?"
+    related_rules:
+      - KEEP_WHEELS_STRAIGHT_BEFORE_TURN
+      - PEDESTRIAN_CROSSWALK_ROW
+
+  - rule_id: ROUNDABOUT_YIELD_TO_INSIDE
+    name: "Yield to Vehicles Already in Roundabout"
+    priority: 2
+    category: RIGHT_OF_WAY
+    subcategory: SPECIAL_ROW
+    jurisdiction: GENERIC
+    description: >
+      Before entering a roundabout, vehicles must yield to all traffic
+      already circulating inside. Once inside, travel counter-clockwise (in
+      right-hand-traffic countries) and signal before exiting.
+    vision_cues:
+      - "Circular intersection with central island"
+      - "YIELD sign at roundabout entry"
+      - "Vehicles circulating inside roundabout"
+      - "Entry lane markings"
+    sign_names:
+      - SIGN_YIELD
+      - SIGN_ROUNDABOUT
+      - MARKING_GIVE_WAY_LINE
+    when_to_apply:
+      - "Approaching roundabout entry"
+      - "Changing lanes within roundabout (yield to inside lane)"
+    required_action: >
+      Slow and yield at entry. Enter only when gap is sufficient.
+      Travel in the direction of roundabout flow.
+      Signal and yield before exiting.
+    causal_question_examples:
+      - "Why did the vehicle slow and wait before entering the roundabout?"
+      - "Which direction should the vehicle travel in the roundabout?"
+    related_rules:
+      - YIELD_AT_YIELD_SIGN
+      - SIGNAL_BEFORE_LANE_CHANGE
+
+  - rule_id: UPHILL_PRIORITY_NARROW_ROAD
+    name: "Uphill Vehicle Has Priority on Narrow Roads"
+    priority: 3
+    category: RIGHT_OF_WAY
+    subcategory: SPECIAL_ROW
+    jurisdiction: GENERIC
+    description: >
+      On a narrow road where two vehicles cannot pass simultaneously,
+      the uphill-facing vehicle has the right-of-way. The downhill vehicle
+      must back up or pull aside to allow the uphill vehicle to proceed.
+    vision_cues:
+      - "Single-lane narrow road on incline"
+      - "Vehicle approaching from opposite direction on hill"
+      - "No passing space between the two vehicles"
+    when_to_apply:
+      - "Head-on approach on single-lane hill"
+      - "Mountain roads, steep residential streets"
+    required_action: >
+      If going downhill: pull over or reverse to make way for uphill vehicle.
+      If going uphill: proceed when downhill vehicle yields.
+    related_rules:
+      - THROUGH_TRAFFIC_T_INTERSECTION
+
+  - rule_id: MERGE_YIELD_TO_HIGHWAY_TRAFFIC
+    name: "Merging Vehicle Yields to Highway Traffic"
+    priority: 2
+    category: RIGHT_OF_WAY
+    subcategory: SPECIAL_ROW
+    jurisdiction: GENERIC
+    description: >
+      A vehicle entering a highway or multi-lane road from an on-ramp
+      or side road must yield to existing traffic in the lane being entered.
+      Highway traffic has priority.
+    vision_cues:
+      - "On-ramp or acceleration lane merging with highway"
+      - "Vehicles in target lane at highway speed"
+      - "Dashed merge line / broken white boundary"
+    sign_names:
+      - SIGN_YIELD
+      - MARKING_BROKEN_WHITE
+    when_to_apply:
+      - "Entering any high-speed road from on-ramp, slip road, or side road"
+    required_action: >
+      Accelerate to match traffic speed. Merge into a safe gap.
+      Do not force highway vehicles to brake.
+    related_rules:
+      - YIELD_AT_YIELD_SIGN
+      - SIGNAL_BEFORE_LANE_CHANGE
+
+# ─────────────────────────────────────────────
+# SECTION 5 — SPEED REGULATION
+# ─────────────────────────────────────────────
+
+  - rule_id: SCHOOL_ZONE_REDUCED_SPEED
+    name: "Reduced Speed in School Zone"
+    priority: 2
+    category: SPEED_REGULATION
+    subcategory: ZONE_LIMITS
+    jurisdiction: GENERIC
+    description: >
+      Near schools, drivers must reduce speed substantially when children may
+      be present. Speed limits are posted and apply during school hours.
+      (Specific values differ by jurisdiction — see country-specific rules.)
+    vision_cues:
+      - "School zone sign or children crossing sign"
+      - "Flashing amber school-zone lights (if equipped)"
+      - "Children on or near roadway"
+      - "School building visible; school arrival/dismissal time"
+    sign_names:
+      - SIGN_SCHOOL_ZONE
+      - SIGN_WARNING_SCHOOL
+      - SIGN_CHILDREN_CROSSING
+    when_to_apply:
+      - "Within school zone (marked area near school)"
+      - "During school hours or when children visibly present"
+    required_action: >
+      Reduce speed to posted school-zone limit. Be prepared to stop.
+      Yield to children at all times.
+    causal_question_examples:
+      - "Why is the car traveling slower than normal here?"
+      - "What speed should the vehicle maintain in a school zone?"
+    related_rules:
+      - STOP_FOR_PEDESTRIAN_AT_CROSSING
+      - YIELD_EXTRA_TO_VULNERABLE_PEDESTRIANS
+
+  - rule_id: ADVERSE_WEATHER_SPEED_REDUCTION
+    name: "Reduce Speed in Adverse Weather"
+    priority: 2
+    category: SPEED_REGULATION
+    subcategory: CONDITION_BASED
+    jurisdiction: GENERIC
+    description: >
+      Rain, fog, snow, or ice significantly reduces visibility and braking
+      effectiveness. Drivers must reduce speed below the posted limit to
+      maintain safe stopping distances and vehicle control.
+    vision_cues:
+      - "Wet road surface — rain, puddles, spray from other vehicles"
+      - "Reduced visibility from fog or heavy rain"
+      - "Snow or ice on road surface"
+      - "Windshield wipers active on leading vehicles"
+    when_to_apply:
+      - "Rain reducing road friction or visibility"
+      - "Fog limiting sight distance"
+      - "Snow or ice on road surface"
+    required_action: >
+      Reduce speed significantly. Increase following distance.
+      Use low-beam headlights. Use wipers. Avoid sudden braking or steering.
+    related_rules:
+      - HEADLIGHT_USE_IN_LOW_VISIBILITY
+      - SAFE_FOLLOWING_DISTANCE_3S
+      - OBEY_SPEED_LIMIT_SIGN
+
+  - rule_id: REDUCED_VISIBILITY_SPEED
+    name: "Reduce Speed in Low Visibility"
+    priority: 2
+    category: SPEED_REGULATION
+    subcategory: CONDITION_BASED
+    jurisdiction: GENERIC
+    description: >
+      Drivers must slow down whenever they cannot see far enough ahead to stop
+      safely within their sight distance. This applies at night, in fog,
+      in tunnels, and in any other low-visibility condition.
+    vision_cues:
+      - "Night-time driving — darkness beyond headlight range"
+      - "Fog or smoke ahead"
+      - "Entering tunnel or underpass"
+      - "Heavy rain reducing forward visibility"
+    when_to_apply:
+      - "Sight distance is less than safe stopping distance"
+      - "Entering a tunnel, fog bank, or heavy rain"
+    required_action: >
+      Reduce speed until stopping distance matches sight distance.
+      Use headlights appropriately.
+    related_rules:
+      - HEADLIGHT_USE_IN_LOW_VISIBILITY
+      - ADVERSE_WEATHER_SPEED_REDUCTION
+
+  - rule_id: CONSTRUCTION_ZONE_SPEED_LIMIT
+    name: "Observe Reduced Speed in Work Zones"
+    priority: 2
+    category: SPEED_REGULATION
+    subcategory: ZONE_LIMITS
+    jurisdiction: GENERIC
+    description: >
+      Work zones (road construction and maintenance areas) have reduced
+      posted speed limits. Fines are often doubled. Drivers must follow
+      flaggers, cones, and posted temporary limits.
+    vision_cues:
+      - "Orange/red work zone signs"
+      - "Construction cones, barrels, barriers narrowing lanes"
+      - "Workers present or flaggers directing traffic"
+      - "Temporary speed limit signs"
+    sign_names:
+      - SIGN_ROAD_WORK
+      - SIGN_FLAGGER_AHEAD
+      - SIGN_SPEED_LIMIT
+    when_to_apply:
+      - "Within any marked construction or road-maintenance zone"
+      - "Workers or machinery visible on or near roadway"
+    required_action: >
+      Observe reduced speed limit. Follow flagger instructions.
+      Allow extra spacing. Be prepared for sudden stops.
+    related_rules:
+      - OBEY_SPEED_LIMIT_SIGN
+      - FOLLOW_FLAGGER_INSTRUCTIONS
+
+  - rule_id: SLIPPERY_ROAD_SPEED_ADJUSTMENT
+    name: "Reduce Speed on Slippery Roads"
+    priority: 2
+    category: SPEED_REGULATION
+    subcategory: CONDITION_BASED
+    jurisdiction: GENERIC
+    description: >
+      Oil, wet leaves, gravel, and initial rainfall create slippery surfaces
+      that dramatically increase stopping distances. Speed must be reduced
+      to compensate.
+    vision_cues:
+      - "Wet or oily sheen on road surface"
+      - "Fallen leaves, sand, or gravel on road"
+      - "Slippery Road warning sign"
+      - "Vehicles ahead sliding or skidding"
+    sign_names:
+      - SIGN_WARNING_SLIPPERY
+    when_to_apply:
+      - "After rain begins — roads most slippery in first minutes"
+      - "Wet leaves, sand, or gravel visible on road"
+    required_action: >
+      Reduce speed, increase following distance, brake gently and early,
+      avoid sudden steering inputs.
+    related_rules:
+      - ADVERSE_WEATHER_SPEED_REDUCTION
+      - SAFE_FOLLOWING_DISTANCE_3S
+
+  - rule_id: SAFE_FOLLOWING_DISTANCE_3S
+    name: "Maintain Minimum 3-Second Following Distance"
+    priority: 3
+    category: SPEED_REGULATION
+    subcategory: CONDITION_BASED
+    jurisdiction: GENERIC
+    description: >
+      Drivers must maintain at least a 3-second gap behind the vehicle in
+      front under normal conditions. In adverse weather, large-vehicle
+      convoys, or high speed, this should increase to 4–6 seconds or more.
+    vision_cues:
+      - "Reference point ahead (sign, tree, bridge) — count 3 seconds after"
+        "leading vehicle passes it before ego vehicle reaches it"
+      - "If gap is less than 3 seconds, vehicle is following too closely"
+    when_to_apply:
+      - "Following any vehicle at speed"
+      - "On motorways, highways, and urban roads at any speed"
+    required_action: >
+      Ease off to create a 3-second gap. In rain/fog/at night: increase to 6s.
+      When stopped behind a vehicle: leave enough space to see its rear wheels.
+    causal_question_examples:
+      - "Why did the vehicle slow down even though the road was clear?"
+      - "What is the safe following distance for this scenario?"
+    related_rules:
+      - ADVERSE_WEATHER_SPEED_REDUCTION
+      - NO_SUDDEN_STOP_BEFORE_TRUCKS
+
+# ─────────────────────────────────────────────
+# SECTION 6 — LANE DISCIPLINE
+# ─────────────────────────────────────────────
+
+  - rule_id: SIGNAL_BEFORE_LANE_CHANGE
+    name: "Signal Before Any Lane Change"
+    priority: 3
+    category: LANE_DISCIPLINE
+    subcategory: LANE_CHANGES
+    jurisdiction: GENERIC
+    description: >
+      Before changing lanes, drivers must activate the turn signal to
+      communicate intention to other road users. Signal must be on before
+      and during the lane change, not after.
+    vision_cues:
+      - "Ego vehicle preparing to merge or change lanes"
+      - "Adjacent lane available and visible"
+    when_to_apply:
+      - "Before every lane change, regardless of traffic density"
+      - "On multi-lane roads, highways, entering/exiting lanes"
+    required_action: >
+      Activate turn signal in intended direction. Check mirrors.
+      Check blind spot over shoulder. Change lane only when clear.
+    related_rules:
+      - CHECK_BLINDSPOT_BEFORE_LANE_CHANGE
+      - STAY_IN_LANE_NO_WEAVING
+
+  - rule_id: CHECK_BLINDSPOT_BEFORE_LANE_CHANGE
+    name: "Check Blind Spots Before Lane Change"
+    priority: 3
+    category: LANE_DISCIPLINE
+    subcategory: LANE_CHANGES
+    jurisdiction: GENERIC
+    description: >
+      Mirrors have blind zones that cannot detect nearby vehicles. Before
+      every lane change, the driver must look over their shoulder in the
+      direction of movement to check the blind spot.
+    vision_cues:
+      - "Vehicle in adjacent lane potentially hidden from mirrors"
+      - "Motorcycles and bicycles are most at risk of being in blind spots"
+    when_to_apply:
+      - "Every lane change"
+      - "Merging onto highway"
+      - "Moving from bike lane or turning lane"
+    required_action: >
+      After signaling and mirror check, physically turn head to check
+      blind spot before initiating lane change.
+    related_rules:
+      - SIGNAL_BEFORE_LANE_CHANGE
+      - MOTORCYCLE_FULL_LANE_RESPECT
+      - BICYCLE_PASSING_CLEARANCE
+
+  - rule_id: STAY_IN_LANE_NO_WEAVING
+    name: "Stay in Lane — Do Not Weave Between Lanes"
+    priority: 4
+    category: LANE_DISCIPLINE
+    subcategory: LANE_USAGE
+    jurisdiction: GENERIC
+    description: >
+      Drivers must maintain their lane position and not unnecessarily weave
+      between lanes. Frequent lane changes increase collision risk and
+      disrupt traffic flow.
+    vision_cues:
+      - "Lane markings on both sides of vehicle"
+      - "Lane markings showing vehicle drifting or straddling"
+    when_to_apply:
+      - "Any multi-lane road — urban, highway, motorway"
+    required_action: >
+      Stay centered in chosen lane. Change lanes only when needed with
+      proper signaling and checking.
+    related_rules:
+      - SIGNAL_BEFORE_LANE_CHANGE
+
+  - rule_id: NO_PASSING_ON_HILLS_CURVES
+    name: "No Passing on Hills, Curves, or Limited Visibility Areas"
+    priority: 2
+    category: LANE_DISCIPLINE
+    subcategory: PASSING
+    jurisdiction: GENERIC
+    description: >
+      Passing is prohibited when a driver cannot see far enough ahead to
+      ensure the maneuver can be completed safely. Hills, curves, and any
+      sight-limited location prohibit overtaking.
+    vision_cues:
+      - "Road curves or rises ahead blocking view of oncoming traffic"
+      - "Solid yellow center line"
+      - "Crest of hill visible ahead"
+      - "Tunnel entrance, bridge, intersection within 100 ft / 30 m ahead"
+    when_to_apply:
+      - "Sight distance limited by hill, curve, or obstruction"
+      - "Solid centerline present"
+      - "Within 100 feet of intersection, crossing, tunnel, bridge"
+    required_action: >
+      Do not attempt to pass. Wait until a clear, straight section with
+      broken centerline and adequate sight distance.
+    causal_question_examples:
+      - "Why did the vehicle not overtake on the curve?"
+      - "What prevented safe passing here?"
+    related_rules:
+      - NO_CROSS_SOLID_CENTER_LINE
+      - OBEY_NO_OVERTAKING_SIGN
+
+  - rule_id: NO_PASSING_NEAR_HAZARDOUS_AREAS
+    name: "No Passing Near Intersections, Crossings, Tunnels, Bridges"
+    priority: 2
+    category: LANE_DISCIPLINE
+    subcategory: PASSING
+    jurisdiction: GENERIC
+    description: >
+      Passing is prohibited within a defined distance of intersections,
+      railroad crossings, pedestrian crossings, bridges, and tunnel entrances
+      where unexpected hazards may arise mid-overtake.
+    vision_cues:
+      - "Intersection, cross-road, or driveway ahead"
+      - "Railroad crossing ahead"
+      - "Bridge or tunnel entrance"
+      - "Crosswalk or pedestrian crossing ahead"
+    when_to_apply:
+      - "Within 100 ft / 30 m of any intersection, crossing, or hazard"
+    required_action: >
+      Abort or defer any overtake. Complete the overtake only in a safe section.
+    related_rules:
+      - NO_PASSING_ON_HILLS_CURVES
+
+  - rule_id: ALLOW_PASSING_VEHICLE_TO_COMPLETE
+    name: "Allow Passing Vehicle to Complete Overtake"
+    priority: 4
+    category: LANE_DISCIPLINE
+    subcategory: PASSING
+    jurisdiction: GENERIC
+    description: >
+      When a vehicle signals and begins to overtake, the vehicle being passed
+      must maintain lane position and speed (or reduce speed) to facilitate
+      the safe completion of the overtake. Do not accelerate.
+    vision_cues:
+      - "Vehicle in mirror/blind spot has moved into passing lane"
+      - "Vehicle alongside or partially ahead in adjacent lane"
+    when_to_apply:
+      - "Another vehicle is in the process of overtaking ego vehicle"
+    required_action: >
+      Maintain current speed or slightly reduce. Stay in lane.
+      Do not accelerate to contest the overtake.
+    related_rules:
+      - SIGNAL_BEFORE_LANE_CHANGE
+
+  - rule_id: BIKE_LANE_RESTRICTION
+    name: "Do Not Drive in Bike Lane Except for Specific Purposes"
+    priority: 4
+    category: LANE_DISCIPLINE
+    subcategory: SPECIAL_LANES
+    jurisdiction: GENERIC
+    description: >
+      Bike lanes are reserved for cyclists. Motor vehicles may only enter
+      a bike lane when parking (where permitted), entering/leaving the road,
+      or within a short distance before a right turn.
+    vision_cues:
+      - "White lane line with bicycle symbol and 'BIKE LANE' text painted on road"
+      - "Buffered lane with hatched markings"
+      - "Sign: Bike Lane"
+    sign_names:
+      - SIGN_BIKE_LANE
+      - MARKING_BIKE_LANE
+    when_to_apply:
+      - "Bike lane is present alongside vehicle's lane"
+    required_action: >
+      Do not drive in bike lane. Check for cyclists before entering
+      to turn or park. Yield to cyclists in bike lane.
+    related_rules:
+      - BICYCLE_PASSING_CLEARANCE
+
+  - rule_id: DO_NOT_BLOCK_INTERSECTION
+    name: "Do Not Enter Intersection If You Cannot Clear It"
+    priority: 2
+    category: LANE_DISCIPLINE
+    subcategory: LANE_USAGE
+    jurisdiction: GENERIC
+    description: >
+      A vehicle must not enter an intersection unless it can completely clear
+      it before the signal changes. Blocking an intersection prevents cross
+      traffic from moving on their green light.
+    vision_cues:
+      - "Intersection ahead with traffic backed up"
+      - "Green light showing but congestion preventing clearance"
+      - "Cross-traffic visibly waiting"
+      - "Yellow box / keep-clear markings (where present)"
+    sign_names:
+      - MARKING_KEEP_CLEAR
+      - MARKING_YELLOW_BOX
+    when_to_apply:
+      - "Green light showing but vehicles ahead are stopped in intersection"
+      - "Ego vehicle's progress will be blocked inside intersection"
+    required_action: >
+      Wait behind stop line until intersection is clear enough to pass fully.
+      Do not enter even on green if cross-traffic would be blocked.
+    causal_question_examples:
+      - "Why did the vehicle stop at the green light?"
+      - "What would happen if the car entered the intersection on green here?"
+    related_rules:
+      - PROCEED_GREEN_YIELD_TO_CONFLICTS
+      - STAY_IN_LANE_NO_WEAVING
+
+# ─────────────────────────────────────────────
+# SECTION 7 — TURNING AND MANEUVERING
+# ─────────────────────────────────────────────
+
+  - rule_id: SIGNAL_BEFORE_TURNING
+    name: "Signal Before Turning"
+    priority: 3
+    category: TURNING_AND_MANEUVERING
+    subcategory: TURNS
+    jurisdiction: GENERIC
+    description: >
+      The turn signal must be activated before beginning any turn, giving
+      sufficient warning to other road users. Signal at least 3 seconds
+      (urban) or 100 ft / 30 m before the turn.
+    vision_cues:
+      - "Ego vehicle approaching intersection or driveway"
+      - "Turn signal indicator visible on vehicle"
+    when_to_apply:
+      - "Before every turn — right or left — at any location"
+      - "Before entering a driveway, parking space, or side street"
+    required_action: >
+      Activate appropriate turn signal at least 3 seconds before the turn.
+      Maintain signal through the completion of the turn.
+    related_rules:
+      - SIGNAL_BEFORE_LANE_CHANGE
+      - RIGHT_TURN_FROM_RIGHT_LANE
+
+  - rule_id: RIGHT_TURN_FROM_RIGHT_LANE
+    name: "Right Turn from Rightmost Lane"
+    priority: 4
+    category: TURNING_AND_MANEUVERING
+    subcategory: TURNS
+    jurisdiction: GENERIC
+    description: >
+      Right turns must be made from the rightmost available lane (or dedicated
+      right-turn lane). Complete the turn into the rightmost available lane
+      of the destination road.
+    vision_cues:
+      - "Rightmost lane of ego vehicle's road"
+      - "Right-turn lane or right edge of roadway"
+      - "Destination road visible ahead-right"
+    when_to_apply:
+      - "Preparing to turn right at any intersection or junction"
+    required_action: >
+      Position vehicle in rightmost lane or right-turn lane before turning.
+      Complete turn into rightmost lane of destination road.
+      Yield to pedestrians and cyclists before completing turn.
+    related_rules:
+      - SIGNAL_BEFORE_TURNING
+      - PEDESTRIAN_CROSSWALK_ROW
+
+  - rule_id: LEFT_TURN_FROM_CENTER_LANE
+    name: "Left Turn from Leftmost or Center Turn Lane"
+    priority: 4
+    category: TURNING_AND_MANEUVERING
+    subcategory: TURNS
+    jurisdiction: GENERIC
+    description: >
+      Left turns must be made from the leftmost lane of the roadway or from
+      a dedicated left-turn lane. Complete the turn into the leftmost
+      available lane of the destination road.
+    vision_cues:
+      - "Leftmost lane or dedicated left-turn lane"
+      - "Center turn lane (US: two-way left-turn lane)"
+      - "Left-turn arrow marking on road"
+    when_to_apply:
+      - "Preparing to turn left at any intersection"
+    required_action: >
+      Position vehicle in leftmost lane or left-turn lane. Wait for
+      oncoming traffic to clear. Complete turn into leftmost available lane.
+    related_rules:
+      - LEFT_TURN_YIELD_TO_ONCOMING
+      - KEEP_WHEELS_STRAIGHT_BEFORE_TURN
+
+  - rule_id: KEEP_WHEELS_STRAIGHT_BEFORE_TURN
+    name: "Keep Wheels Pointing Straight While Waiting to Turn Left"
+    priority: 4
+    category: TURNING_AND_MANEUVERING
+    subcategory: TURNS
+    jurisdiction: GENERIC
+    description: >
+      While waiting in an intersection to complete a left turn, the front
+      wheels must remain pointing straight ahead. If a rear-end collision
+      occurs with turned wheels, the vehicle is pushed into oncoming traffic.
+    vision_cues:
+      - "Ego vehicle stationary in intersection waiting to turn left"
+      - "Oncoming traffic still approaching"
+    when_to_apply:
+      - "Vehicle is stopped in intersection waiting for gap to turn left"
+    required_action: >
+      Keep wheels straight until the turn is actually being executed.
+      Only turn the wheel once it is safe to complete the turn.
+    causal_question_examples:
+      - "Why are the vehicle's wheels kept straight while waiting to turn?"
+    related_rules:
+      - LEFT_TURN_YIELD_TO_ONCOMING
+
+  - rule_id: COMPLETE_TURN_IN_CORRECT_LANE
+    name: "Complete Turn into Correct Destination Lane"
+    priority: 4
+    category: TURNING_AND_MANEUVERING
+    subcategory: TURNS
+    jurisdiction: GENERIC
+    description: >
+      After turning, the vehicle must arrive in the lane that corresponds to
+      the lane it departed from (rightmost turn → rightmost lane;
+      leftmost turn → leftmost lane). Turning wide into wrong lane creates
+      conflicts with parallel turning vehicles.
+    vision_cues:
+      - "Destination road visible — identify correct lane before turning"
+      - "Other vehicles in adjacent turn lanes"
+    when_to_apply:
+      - "Completing any turn at an intersection with multiple lanes"
+    required_action: >
+      Complete right turn into rightmost lane.
+      Complete left turn into leftmost lane.
+      Do not drift wide into other lanes.
+    related_rules:
+      - RIGHT_TURN_FROM_RIGHT_LANE
+      - LEFT_TURN_FROM_CENTER_LANE
+
+  - rule_id: NO_U_TURN_LOW_VISIBILITY
+    name: "No U-Turn Where Visibility Is Less Than 500 ft / 150 m"
+    priority: 2
+    category: TURNING_AND_MANEUVERING
+    subcategory: U_TURNS
+    jurisdiction: GENERIC
+    description: >
+      U-turns require significant sight distance so that oncoming traffic
+      can be seen in both directions during the maneuver. U-turns in fog,
+      on curves, near crests, or in other restricted-visibility areas
+      are prohibited.
+    vision_cues:
+      - "Limited sight distance due to bend, crest, fog, or parked vehicles"
+      - "Less than 500 ft / 150 m visible in both directions"
+    when_to_apply:
+      - "Driver intends to make U-turn on road with limited visibility"
+    required_action: >
+      Do not make U-turn. Find a location with sufficient sight distance
+      or use an alternate route.
+    related_rules:
+      - OBEY_NO_U_TURN_SIGN
+
+  - rule_id: NO_U_TURN_AT_RAILROAD_CROSSING
+    name: "No U-Turn at Railroad Crossing"
+    priority: 1
+    category: TURNING_AND_MANEUVERING
+    subcategory: U_TURNS
+    jurisdiction: GENERIC
+    description: >
+      Making a U-turn at or near a railroad crossing is prohibited because
+      the vehicle could become stranded on the tracks during the maneuver.
+    vision_cues:
+      - "Railroad crossing tracks, gates, or signals visible"
+      - "Vehicle near railroad crossing"
+    sign_names:
+      - SIGN_RAILROAD_CROSSING_ADVANCE
+    when_to_apply:
+      - "Driver intends to make U-turn at or near railroad crossing"
+    required_action: >
+      Never make U-turn at railroad crossing. Continue forward and
+      turn around at a safe distance.
+    related_rules:
+      - RAILROAD_CROSSING_MANDATORY_STOP
+      - NEVER_STOP_ON_TRACKS
+
+  - rule_id: NO_REVERSE_ON_EXPRESSWAY
+    name: "No Reversing on Expressway or Motorway"
+    priority: 1
+    category: TURNING_AND_MANEUVERING
+    subcategory: REVERSING
+    jurisdiction: GENERIC
+    description: >
+      Reversing on any high-speed road (motorway, expressway, freeway) is
+      strictly prohibited. If a driver misses an exit, they must continue to
+      the next exit and reroute.
+    vision_cues:
+      - "High-speed road: motorway/expressway signs, multiple lanes, high speed traffic"
+      - "Missed exit or junction visible behind vehicle"
+    when_to_apply:
+      - "On any motorway, expressway, or high-speed divided highway"
+      - "Regardless of reason (missed exit, wrong lane, etc.)"
+    required_action: >
+      Do not reverse. Continue to next exit. Return via alternate route.
+    related_rules:
+      - DO_NOT_BLOCK_INTERSECTION
+
+# ─────────────────────────────────────────────
+# SECTION 8 — PEDESTRIAN SAFETY
+# ─────────────────────────────────────────────
+
+  - rule_id: STOP_FOR_PEDESTRIAN_AT_CROSSING
+    name: "Stop for Pedestrian at Any Crosswalk"
+    priority: 1
+    category: PEDESTRIAN_SAFETY
+    subcategory: CROSSWALK_RULES
+    jurisdiction: GENERIC
+    description: >
+      A driver approaching a crosswalk — marked or unmarked — where a
+      pedestrian is present, crossing, or about to cross must stop completely
+      and remain stopped until the pedestrian has fully cleared the lane(s).
+    vision_cues:
+      - "Pedestrian at curb or on crosswalk"
+      - "Crosswalk marking (zebra, ladder, or continental pattern)"
+      - "Pedestrian WALK signal active"
+      - "Pedestrian moving toward or into road"
+    sign_names:
+      - MARKING_CROSSWALK
+      - SIGN_PEDESTRIAN_CROSSING
+    when_to_apply:
+      - "Pedestrian is at, entering, or crossing at any crosswalk"
+      - "Even if pedestrian has not yet stepped off the curb"
+    required_action: >
+      Stop before the stop line or before the crosswalk.
+      Remain stopped until pedestrian has fully cleared your lane AND
+      the next lane if traffic may resume before they finish crossing.
+    causal_question_examples:
+      - "Why did the vehicle stop in the middle of the road?"
+      - "What would happen if the vehicle didn't yield to the pedestrian?"
+    related_rules:
+      - PEDESTRIAN_CROSSWALK_ROW
+      - DO_NOT_STOP_IN_CROSSWALK
+      - DO_NOT_PASS_STOPPED_AT_CROSSWALK
+
+  - rule_id: DO_NOT_STOP_IN_CROSSWALK
+    name: "Do Not Stop Vehicle in Crosswalk"
+    priority: 2
+    category: PEDESTRIAN_SAFETY
+    subcategory: CROSSWALK_RULES
+    jurisdiction: GENERIC
+    description: >
+      A vehicle that stops in a crosswalk forces pedestrians — especially
+      visually impaired ones using canes or guide dogs — to navigate around
+      the vehicle and into traffic. Drivers must stop before the crosswalk.
+    vision_cues:
+      - "Crosswalk markings ahead of vehicle's front bumper"
+      - "Vehicle stopped with front end overlapping crosswalk"
+    when_to_apply:
+      - "When stopping at intersection (red light, stop sign)"
+      - "When stopping for any reason near a crosswalk"
+    required_action: >
+      Stop before the stop line. If no stop line, stop before the crosswalk.
+      Never allow front bumper to extend into crosswalk.
+    related_rules:
+      - STOP_FOR_PEDESTRIAN_AT_CROSSING
+      - STOP_AT_STOP_LINE
+
+  - rule_id: DO_NOT_PASS_STOPPED_AT_CROSSWALK
+    name: "Do Not Pass Vehicle Stopped at Crosswalk"
+    priority: 2
+    category: PEDESTRIAN_SAFETY
+    subcategory: CROSSWALK_RULES
+    jurisdiction: GENERIC
+    description: >
+      When a vehicle ahead is stopped at a crosswalk (presumably for a
+      pedestrian), the following vehicle must also stop and not try to
+      pass. The pedestrian may be hidden behind the stopped vehicle.
+    vision_cues:
+      - "Vehicle ahead stopped before crosswalk"
+      - "Pedestrians possibly hidden behind stopped vehicle"
+    when_to_apply:
+      - "Vehicle ahead is stopped at or before a crosswalk"
+    required_action: >
+      Stop behind the already-stopped vehicle. Do not pass or swerve
+      around it — a pedestrian may be crossing in front of it.
+    related_rules:
+      - STOP_FOR_PEDESTRIAN_AT_CROSSING
+
+  - rule_id: YIELD_EXTRA_TO_VULNERABLE_PEDESTRIANS
+    name: "Extra Caution for Elderly, Children, and Disabled Pedestrians"
+    priority: 2
+    category: PEDESTRIAN_SAFETY
+    subcategory: VULNERABLE_USERS
+    jurisdiction: GENERIC
+    description: >
+      Elderly people, young children, people in wheelchairs, and others with
+      mobility limitations require more time to cross and may be less visible.
+      Drivers must allow extra time and give extra space.
+    vision_cues:
+      - "Elderly pedestrian crossing slowly"
+      - "Child near or in roadway — unpredictable movement"
+      - "Person in wheelchair, on mobility scooter, or with crutches"
+      - "Person appearing disoriented or with cognitive impairment"
+    sign_names:
+      - SIGN_WARNING_ELDERLY_CROSSING
+      - SIGN_WARNING_DISABLED_PERSON
+    when_to_apply:
+      - "Any visibly vulnerable pedestrian on or near the road"
+    required_action: >
+      Slow down earlier, stop further back, allow full crossing time.
+      Do not rush or honk.
+    related_rules:
+      - STOP_FOR_PEDESTRIAN_AT_CROSSING
+      - GUIDE_DOG_ABSOLUTE_ROW
+
+  - rule_id: NO_HONK_AT_BLIND_PEDESTRIANS
+    name: "Do Not Honk at Visually Impaired Pedestrians"
+    priority: 4
+    category: PEDESTRIAN_SAFETY
+    subcategory: VULNERABLE_USERS
+    jurisdiction: GENERIC
+    description: >
+      Honking at a visually impaired pedestrian (white cane or guide dog user)
+      can disorient them and cause them to move unsafely. Drivers must wait
+      silently.
+    vision_cues:
+      - "Pedestrian with white cane at or near crosswalk"
+      - "Guide dog in harness with handler"
+    when_to_apply:
+      - "Visually impaired pedestrian is crossing or about to cross"
+    required_action: >
+      Wait silently. Do NOT use horn. Allow pedestrian to complete crossing.
+    related_rules:
+      - GUIDE_DOG_ABSOLUTE_ROW
+
+  - rule_id: NO_DRIVE_OVER_RAISED_CROSSING
+    name: "Do Not Overtake or U-Turn Near Raised Crossings"
+    priority: 2
+    category: PEDESTRIAN_SAFETY
+    subcategory: CROSSWALK_RULES
+    jurisdiction: GENERIC
+    description: >
+      Raised crossings (pedestrian tables, speed tables) indicate high-priority
+      pedestrian zones. Overtaking, U-turns, and parking are all prohibited
+      on the approach and at raised crossings.
+    vision_cues:
+      - "Road surface raised at crossing level"
+      - "Textured paving pattern on raised area"
+      - "Raised crossing sign"
+    when_to_apply:
+      - "Approaching or at a raised pedestrian crossing"
+    required_action: >
+      Reduce speed. Do not overtake. Do not U-turn. Stop for pedestrians.
+    related_rules:
+      - STOP_FOR_PEDESTRIAN_AT_CROSSING
+
+# ─────────────────────────────────────────────
+# SECTION 9 — PARKING AND STOPPING
+# ─────────────────────────────────────────────
+
+  - rule_id: NO_PARKING_IN_CROSSWALK
+    name: "No Parking or Stopping in Crosswalk"
+    priority: 4
+    category: PARKING_AND_STOPPING
+    subcategory: PROHIBITED_PARKING
+    jurisdiction: GENERIC
+    description: >
+      Parking or stopping in a crosswalk blocks the pedestrian path and
+      forces pedestrians into traffic. Strictly prohibited at all times.
+    vision_cues:
+      - "Crosswalk markings on road surface"
+      - "No stopping even for brief pickup/dropoff"
+    when_to_apply:
+      - "Any vehicle considering stopping near a crosswalk"
+    required_action: >
+      Do not stop, park, or stand in a crosswalk. Move to a legal stopping area.
+    related_rules:
+      - DO_NOT_STOP_IN_CROSSWALK
+
+  - rule_id: NO_PARKING_NEAR_FIRE_HYDRANT
+    name: "No Parking Within Required Distance of Fire Hydrant"
+    priority: 4
+    category: PARKING_AND_STOPPING
+    subcategory: PROHIBITED_PARKING
+    jurisdiction: GENERIC
+    description: >
+      Parking within the legally required distance of a fire hydrant
+      blocks emergency access during a fire. Specific distance varies
+      by jurisdiction (e.g., 15 ft / 5 m in California; varies in SG).
+    vision_cues:
+      - "Red or yellow fire hydrant on curb or sidewalk"
+      - "Curb near fire hydrant"
+    sign_names:
+      - SIGN_FIRE_HYDRANT
+    when_to_apply:
+      - "Considering parking near a fire hydrant"
+    required_action: >
+      Do not park within required distance. Find another space.
+    related_rules:
+      - NO_PARKING_IN_PROHIBITED_ZONES
+
+  - rule_id: NO_PARKING_IN_PROHIBITED_ZONES
+    name: "No Parking Where No-Parking Signs or Markings Are Present"
+    priority: 4
+    category: PARKING_AND_STOPPING
+    subcategory: PROHIBITED_PARKING
+    jurisdiction: GENERIC
+    description: >
+      No-parking signs, no-stopping signs, and various road markings designate
+      zones where vehicles must not be left unattended. Violations result in
+      fines, towing, or wheel clamping.
+    vision_cues:
+      - "No Parking sign (circle with P and red slash)"
+      - "No Stopping sign (circle with line or S and red slash)"
+      - "Yellow curb markings (SG), red curb (US/CA)"
+      - "Yellow or white zigzag lines on road (SG)"
+    sign_names:
+      - SIGN_NO_PARKING
+      - SIGN_NO_STOPPING
+      - SIGN_NO_WAITING
+      - SIGN_TOW_AWAY_ZONE
+    when_to_apply:
+      - "Any no-parking or no-stopping zone"
+    required_action: >
+      Do not park, stand, or stop (except for emergencies or at signals).
+      Proceed to legal parking area.
+    related_rules:
+      - NO_PARKING_IN_CROSSWALK
+      - NO_PARKING_NEAR_FIRE_HYDRANT
+
+  - rule_id: HILL_PARKING_WHEEL_POSITION
+    name: "Turn Wheels Correctly When Parking on Hill"
+    priority: 6
+    category: PARKING_AND_STOPPING
+    subcategory: RESTRICTED_PARKING
+    jurisdiction: GENERIC
+    description: >
+      When parking on a hill, the front wheels must be turned so that the
+      vehicle will roll into the curb (not into traffic) if it rolls.
+      Headed downhill (with curb): turn wheels toward curb.
+      Headed uphill (with curb): turn wheels away from curb.
+      No curb: turn wheels toward the edge of the road.
+    vision_cues:
+      - "Vehicle parked on visible incline"
+      - "Curb visible alongside parked vehicle"
+      - "Direction of slope (uphill vs downhill)"
+    when_to_apply:
+      - "Parking on any noticeable hill or incline"
+    required_action: >
+      Downhill with curb: turn front wheels toward curb (clockwise).
+      Uphill with curb: turn front wheels away from curb (counter-clockwise).
+      No curb: turn wheels toward road edge.
+      Apply handbrake and leave in appropriate gear.
+    related_rules:
+      - NO_PARKING_IN_PROHIBITED_ZONES
+
+  - rule_id: DOUBLE_PARKING_PROHIBITED
+    name: "Double Parking Is Prohibited"
+    priority: 4
+    category: PARKING_AND_STOPPING
+    subcategory: PROHIBITED_PARKING
+    jurisdiction: GENERIC
+    description: >
+      Double parking (stopping alongside a legally parked vehicle) blocks
+      a traffic lane and creates a hazard. Prohibited at all times even
+      for brief stops.
+    vision_cues:
+      - "Parked vehicles along curb"
+      - "Stopping vehicle alongside a parked vehicle in the road"
+    when_to_apply:
+      - "Considering stopping alongside a parked vehicle in the traffic lane"
+    required_action: >
+      Do not stop alongside parked vehicles in the traffic lane.
+      Find a legal parking space.
+    related_rules:
+      - NO_PARKING_IN_PROHIBITED_ZONES
+
+# ─────────────────────────────────────────────
+# SECTION 10 — VEHICLE SAFETY
+# ─────────────────────────────────────────────
+
+  - rule_id: SEATBELT_MANDATORY_ALL
+    name: "Seatbelt Mandatory for Driver and All Passengers"
+    priority: 1
+    category: VEHICLE_SAFETY
+    subcategory: OCCUPANT_RESTRAINTS
+    jurisdiction: GENERIC
+    description: >
+      The driver and all occupants must wear seatbelts at all times while
+      the vehicle is in motion. Shoulder strap across shoulder/chest;
+      lap belt low across hips. Driver receives citation for unbelted passengers.
+    vision_cues:
+      - "Seatbelt buckled or unbuckled across occupant"
+      - "Seatbelt warning indicator on dashboard"
+    when_to_apply:
+      - "Any time the vehicle is moving"
+      - "Before starting movement — must be buckled first"
+    required_action: >
+      Ensure all occupants are buckled before moving. Do not drive if any
+      passenger refuses to buckle up.
+    related_rules:
+      - CHILD_RESTRAINT_MANDATORY
+
+  - rule_id: CHILD_RESTRAINT_MANDATORY
+    name: "Child Safety Seat / Restraint Mandatory for Children"
+    priority: 1
+    category: VEHICLE_SAFETY
+    subcategory: OCCUPANT_RESTRAINTS
+    jurisdiction: GENERIC
+    description: >
+      Children below specified age/height/weight thresholds must use
+      age-appropriate child safety seats or booster seats. Details are
+      jurisdiction-specific but the principle is universal.
+    vision_cues:
+      - "Child visible in vehicle — age, size, restraint type visible"
+      - "Rear-facing infant seat, forward-facing seat, or booster seat"
+    when_to_apply:
+      - "Any child passenger is present in the vehicle"
+    required_action: >
+      Install appropriate child restraint for child's age/weight.
+      Secure child before moving.
+    related_rules:
+      - SEATBELT_MANDATORY_ALL
+
+  - rule_id: DUI_ABSOLUTE_PROHIBITION
+    name: "Driving Under the Influence Is Absolutely Prohibited"
+    priority: 0
+    category: VEHICLE_SAFETY
+    subcategory: IMPAIRED_DRIVING
+    jurisdiction: GENERIC
+    description: >
+      It is illegal and extremely dangerous to operate a vehicle while
+      impaired by alcohol, illegal drugs, prescription medications, or
+      any other substance affecting driving ability.
+    vision_cues:
+      - "Driver showing signs of impairment: erratic steering, swerving"
+      - "Vehicle drifting between lanes"
+      - "Unusually slow or erratic speed"
+    when_to_apply:
+      - "Always — at all times when driving"
+    required_action: >
+      Never drive while impaired. Arrange alternative transport.
+      Pull over and stop if feeling impaired while already driving.
+    causal_question_examples:
+      - "Why is the vehicle swerving between lanes?"
+      - "What are the signs that a driver is impaired?"
+    related_rules:
+      - SAFE_FOLLOWING_DISTANCE_3S
+
+  - rule_id: NO_DISTRACTED_DRIVING
+    name: "No Distracted Driving — Maintain Full Attention on Road"
+    priority: 1
+    category: VEHICLE_SAFETY
+    subcategory: DISTRACTED_DRIVING
+    jurisdiction: GENERIC
+    description: >
+      Drivers must keep their attention fully on the road and traffic.
+      Using handheld devices, eating, reading, grooming, or any activity
+      that diverts eyes, hands, or mental focus from driving is prohibited.
+    vision_cues:
+      - "Driver's eyes off road — looking at phone, passenger, dashboard"
+      - "One or no hands on steering wheel while maneuvering"
+    when_to_apply:
+      - "At all times while operating a vehicle"
+    required_action: >
+      Keep eyes on road. Keep hands on wheel. Keep mind on driving.
+      Pull over safely before using phone or attending to distractions.
+    related_rules:
+      - SAFE_FOLLOWING_DISTANCE_3S
+
+  - rule_id: HEADLIGHT_USE_IN_LOW_VISIBILITY
+    name: "Use Headlights in Low Visibility Conditions"
+    priority: 3
+    category: VEHICLE_SAFETY
+    subcategory: HEADLIGHTS
+    jurisdiction: GENERIC
+    description: >
+      Headlights must be on during rain, fog, snow, twilight, and nighttime.
+      Headlights both improve the driver's visibility and make the vehicle
+      visible to others. Low-beam is the default; high-beam only on open
+      unlit roads away from other traffic.
+    vision_cues:
+      - "Reduced ambient light — dawn, dusk, night"
+      - "Active precipitation — rain, snow, hail"
+      - "Fog or smoke reducing visibility"
+    when_to_apply:
+      - "Night driving"
+      - "Daytime rain or fog"
+      - "Tunnels (on entry and exit)"
+    required_action: >
+      Turn on headlights. Use low-beam in rain and fog.
+      Do not use parking lights as a substitute.
+    related_rules:
+      - HIGH_BEAM_DIM_FOR_ONCOMING_TRAFFIC
+      - REDUCED_VISIBILITY_SPEED
+
+  - rule_id: HIGH_BEAM_DIM_FOR_ONCOMING_TRAFFIC
+    name: "Dim High Beams for Oncoming and Preceding Traffic"
+    priority: 3
+    category: VEHICLE_SAFETY
+    subcategory: HEADLIGHTS
+    jurisdiction: GENERIC
+    description: >
+      High-beam headlights blind oncoming drivers and drivers ahead. Switch
+      to low-beam when an oncoming vehicle is within approximately 500 ft /
+      150 m, or when following another vehicle.
+    vision_cues:
+      - "Oncoming vehicle headlights visible in distance"
+      - "Vehicle ahead illuminated by ego vehicle's headlights"
+    when_to_apply:
+      - "Oncoming vehicle approaching within ~500 ft / 150 m"
+      - "Following behind another vehicle at any distance"
+    required_action: >
+      Switch to low-beam headlights. Return to high-beam after vehicle passes
+      and no other traffic is in range.
+    related_rules:
+      - HEADLIGHT_USE_IN_LOW_VISIBILITY
+
+  - rule_id: NO_OVERLOADED_VEHICLE
+    name: "Do Not Drive Overloaded or Obstructed Vehicle"
+    priority: 3
+    category: VEHICLE_SAFETY
+    subcategory: VEHICLE_CONDITION
+    jurisdiction: GENERIC
+    description: >
+      A vehicle that is overloaded, has unsecured cargo, or has obstructed
+      windows/mirrors is unsafe and illegal to operate. Load must be secured
+      and must not obstruct driver's view.
+    vision_cues:
+      - "Vehicle visibly overloaded — sagging suspension, cargo stacked high"
+      - "Unsecured items in truck bed or on roof"
+      - "Windshield or mirrors obscured by load, stickers, or objects"
+    when_to_apply:
+      - "Before setting out — check load is secured and view is clear"
+      - "Observing another vehicle for interaction risk"
+    required_action: >
+      Secure all cargo. Clear obstructions from windows and mirrors.
+      Do not exceed vehicle's rated load capacity.
+    related_rules:
+      - LARGE_VEHICLE_BLIND_SPOT_AVOIDANCE
+
+# ─────────────────────────────────────────────
+# SECTION 11 — SPECIAL SITUATIONS
+# ─────────────────────────────────────────────
+
+  - rule_id: RAILROAD_CROSSING_MANDATORY_STOP
+    name: "Stop at Railroad Crossing When Warning Devices Activate"
+    priority: 1
+    category: SPECIAL_SITUATIONS
+    subcategory: RAILROAD_CROSSINGS
+    jurisdiction: GENERIC
+    description: >
+      When railroad crossing lights flash or gates lower, all vehicles must
+      stop at least 15 feet / 5 meters before the nearest rail and remain
+      stopped until the lights stop flashing AND the gate fully raises.
+    vision_cues:
+      - "Flashing red lights at crossing"
+      - "Lowering or lowered crossing gate / boom"
+      - "Audible crossing bell"
+      - "Train visible approaching or passing"
+    sign_names:
+      - SIGN_RAILROAD_CROSSBUCK
+      - SIGN_RAILROAD_CROSSING_ADVANCE
+      - SIGNAL_RAILROAD_FLASHING_RED
+    when_to_apply:
+      - "Railroad crossing lights are flashing"
+      - "Crossing gate is lowering or lowered"
+      - "Train is visible or audible"
+    required_action: >
+      Stop at least 15 ft / 5 m before nearest rail.
+      Wait for gate to fully rise and lights to stop.
+      Look and listen both ways before crossing.
+    causal_question_examples:
+      - "Why did the vehicle stop at the railroad crossing?"
+      - "What would happen if the car crossed while lights were flashing?"
+    related_rules:
+      - NEVER_STOP_ON_TRACKS
+      - NEVER_CROSS_LOWERED_GATE
+
+  - rule_id: NEVER_STOP_ON_TRACKS
+    name: "Never Stop on Railroad Tracks"
+    priority: 1
+    category: SPECIAL_SITUATIONS
+    subcategory: RAILROAD_CROSSINGS
+    jurisdiction: GENERIC
+    description: >
+      A vehicle must never stop with any part of it on railroad tracks.
+      If traffic is congested ahead, wait until there is sufficient space
+      to clear the tracks completely before crossing.
+    vision_cues:
+      - "Railroad tracks across road surface"
+      - "Vehicle ahead — insufficient clearance beyond tracks"
+      - "Traffic congestion on far side of crossing"
+    when_to_apply:
+      - "Approaching railroad crossing — always"
+      - "Even when no train is visible or audible"
+    required_action: >
+      Do not proceed onto tracks unless there is room on the other side
+      to fully clear the crossing. Wait behind tracks if necessary.
+    related_rules:
+      - RAILROAD_CROSSING_MANDATORY_STOP
+
+  - rule_id: NEVER_CROSS_LOWERED_GATE
+    name: "Never Go Under or Around Lowered Crossing Gate"
+    priority: 1
+    category: SPECIAL_SITUATIONS
+    subcategory: RAILROAD_CROSSINGS
+    jurisdiction: GENERIC
+    description: >
+      A lowered or lowering crossing gate is an absolute prohibition on
+      entering the tracks. No exceptions regardless of time or perceived
+      train position.
+    vision_cues:
+      - "Gate arm across road — partially or fully lowered"
+      - "Gate lights flashing"
+    when_to_apply:
+      - "Gate is lowering or lowered in any position"
+    required_action: >
+      Stop and remain stopped. Do not drive under, around, or through
+      the gate under any circumstances.
+    related_rules:
+      - RAILROAD_CROSSING_MANDATORY_STOP
+      - NEVER_STOP_ON_TRACKS
+
+  - rule_id: SCHOOL_BUS_STOP_RED_LIGHTS
+    name: "Stop for School Bus Flashing Red Lights"
+    priority: 1
+    category: SPECIAL_SITUATIONS
+    subcategory: SCHOOL_BUSES
+    jurisdiction: GENERIC
+    description: >
+      When a school bus displays flashing red lights (children loading or
+      unloading), ALL vehicles from BOTH directions must stop and remain
+      stopped until the red lights stop flashing.
+      Exception (jurisdiction-specific): divided highways may exempt oncoming traffic.
+    vision_cues:
+      - "School bus with alternating flashing red lights activated"
+      - "School bus STOP arm extended"
+      - "Children visible near or approaching bus"
+    sign_names:
+      - SIGN_SCHOOL_BUS
+      - SIGNAL_SCHOOL_BUS_RED_FLASH
+    when_to_apply:
+      - "School bus flashing red lights from behind or oncoming"
+      - "School bus stopped and loading/unloading children"
+    required_action: >
+      Stop completely. Do not proceed until red lights stop and arm retracts.
+      Watch for children crossing in front of or behind the bus.
+    causal_question_examples:
+      - "Why did all vehicles stop even though there is no red traffic light?"
+      - "What is the vehicle doing and why?"
+    related_rules:
+      - SCHOOL_ZONE_REDUCED_SPEED
+      - STOP_FOR_PEDESTRIAN_AT_CROSSING
+
+  - rule_id: EMERGENCY_VEHICLE_PULL_RIGHT_STOP
+    name: "Pull Right and Stop for Approaching Emergency Vehicle"
+    priority: 0
+    category: SPECIAL_SITUATIONS
+    subcategory: EMERGENCY_VEHICLES
+    jurisdiction: GENERIC
+    description: >
+      When an emergency vehicle with active siren and lights approaches,
+      all drivers must move to the right side of the road and stop until
+      the emergency vehicle has completely passed.
+    vision_cues:
+      - "Flashing red, blue, or white lights from behind or ahead"
+      - "Siren sound growing louder"
+      - "Emergency vehicle (ambulance, fire truck, police) approaching"
+    when_to_apply:
+      - "Emergency vehicle approaching from any direction with active lights/siren"
+    required_action: >
+      Signal right, safely move to right edge of road, stop.
+      Wait until the emergency vehicle has fully passed and it is safe.
+    related_rules:
+      - EMERGENCY_VEHICLE_PRIORITY
+      - NO_FOLLOW_EMERGENCY_VEHICLE_CLOSE
+
+  - rule_id: NO_FOLLOW_EMERGENCY_VEHICLE_CLOSE
+    name: "Do Not Follow Emergency Vehicle Within 300 ft / 100 m"
+    priority: 2
+    category: SPECIAL_SITUATIONS
+    subcategory: EMERGENCY_VEHICLES
+    jurisdiction: GENERIC
+    description: >
+      Following too closely behind an emergency vehicle obstructs its
+      response and is illegal. Maintain at least 300 ft / 100 m distance
+      from emergency vehicles with active lights/sirens.
+    vision_cues:
+      - "Emergency vehicle ahead with lights/siren active"
+      - "Gap between ego vehicle and emergency vehicle is closing"
+    when_to_apply:
+      - "Emergency vehicle with active lights/siren is ahead in traffic"
+    required_action: >
+      Maintain 300 ft / 100 m following distance.
+      Do not draft behind emergency vehicle to get through traffic.
+    related_rules:
+      - EMERGENCY_VEHICLE_PRIORITY
+
+  - rule_id: WORK_ZONE_FOLLOW_FLAGGER
+    name: "Follow Flagger Instructions in Work Zones"
+    priority: 2
+    category: SPECIAL_SITUATIONS
+    subcategory: WORK_ZONES
+    jurisdiction: GENERIC
+    description: >
+      Road workers (flaggers) holding STOP/SLOW paddles or using hand
+      signals have authority to control traffic flow through work zones.
+      Their instructions override normal traffic signals in the zone.
+    vision_cues:
+      - "Worker in high-visibility vest holding STOP/SLOW paddle"
+      - "Worker using hand signals to direct traffic"
+      - "Work zone signage ahead"
+    sign_names:
+      - SIGN_FLAGGER_AHEAD
+    when_to_apply:
+      - "Flagger visible in or ahead of work zone"
+    required_action: >
+      Obey flagger's paddle and hand signals. Stop when STOP paddle shown.
+      Proceed slowly when SLOW paddle shown. Do not pass flagger unless directed.
+    related_rules:
+      - CONSTRUCTION_ZONE_SPEED_LIMIT
+
+# ─────────────────────────────────────────────
+# SECTION 12 — ROAD USER INTERACTION
+# ─────────────────────────────────────────────
+
+  - rule_id: LARGE_VEHICLE_BLIND_SPOT_AVOIDANCE
+    name: "Avoid Blind Spots of Large Vehicles (Trucks/Buses)"
+    priority: 2
+    category: ROAD_USER_INTERACTION
+    subcategory: LARGE_VEHICLES
+    jurisdiction: GENERIC
+    description: >
+      Large trucks and buses have significant blind zones (no-zones) on
+      both sides, immediately behind, and directly in front. If you cannot
+      see the truck driver's mirrors, they cannot see you. Avoid lingering
+      in these zones.
+    vision_cues:
+      - "Truck or bus occupying adjacent lane or ahead"
+      - "Unable to see truck driver's face in their side mirror"
+      - "Vehicle position: directly alongside trailer, behind or in front"
+    when_to_apply:
+      - "Driving near any large truck, bus, or multi-axle vehicle"
+    required_action: >
+      Pass quickly without lingering alongside. Maintain visibility in mirrors.
+      Do not cut in front too closely after passing.
+      Increase following distance when behind large vehicles.
+    related_rules:
+      - SAFE_FOLLOWING_DISTANCE_3S
+      - NO_SUDDEN_STOP_BEFORE_TRUCKS
+
+  - rule_id: NO_SUDDEN_STOP_BEFORE_TRUCKS
+    name: "Do Not Suddenly Stop or Cut In Front of Large Vehicles"
+    priority: 2
+    category: ROAD_USER_INTERACTION
+    subcategory: LARGE_VEHICLES
+    jurisdiction: GENERIC
+    description: >
+      Large trucks need up to 40% more stopping distance than cars.
+      Cutting in front of a truck and braking suddenly can result in
+      a fatal rear-end collision that the truck driver cannot prevent.
+    vision_cues:
+      - "Large truck or bus immediately behind ego vehicle"
+      - "Ego vehicle merging ahead of truck"
+      - "Limited space between ego vehicle and truck behind"
+    when_to_apply:
+      - "Merging in front of any large vehicle"
+      - "Braking in a lane occupied by a following large vehicle"
+    required_action: >
+      Allow large vehicle enough clearance (at least their full length + 50%)
+      before cutting in. Avoid sudden braking in front of trucks.
+    related_rules:
+      - LARGE_VEHICLE_BLIND_SPOT_AVOIDANCE
+      - SAFE_FOLLOWING_DISTANCE_3S
+
+  - rule_id: MOTORCYCLE_FULL_LANE_RESPECT
+    name: "Give Motorcycles Full Lane — Do Not Share Their Lane"
+    priority: 3
+    category: ROAD_USER_INTERACTION
+    subcategory: MOTORCYCLES
+    jurisdiction: GENERIC
+    description: >
+      Motorcycles are entitled to the full width of a lane. Cars must not
+      crowd or share a lane with a motorcycle. Check mirrors and blind spots
+      carefully — motorcycles are narrow and easy to miss.
+    vision_cues:
+      - "Motorcycle in adjacent or same lane"
+      - "Motorcycle visible in mirror (may be smaller than expected)"
+    when_to_apply:
+      - "Motorcycle present in adjacent lane before lane change"
+      - "Passing or being passed by motorcycle"
+    required_action: >
+      Maintain full lane gap. Check blind spots before lane changes.
+      Allow at least 3-second following distance from motorcycles.
+    related_rules:
+      - CHECK_BLINDSPOT_BEFORE_LANE_CHANGE
+      - SAFE_FOLLOWING_DISTANCE_3S
+
+  - rule_id: BICYCLE_PASSING_CLEARANCE
+    name: "Maintain Safe Clearance When Passing Cyclists"
+    priority: 2
+    category: ROAD_USER_INTERACTION
+    subcategory: BICYCLES
+    jurisdiction: GENERIC
+    description: >
+      When overtaking a cyclist, drivers must leave sufficient lateral
+      clearance to protect the cyclist from vehicle turbulence and swerve.
+      Where a bike lane exists, do not encroach into it while passing.
+    vision_cues:
+      - "Cyclist ahead in lane or on road shoulder"
+      - "Lateral distance between vehicle and cyclist"
+    sign_names:
+      - SIGN_BIKE_LANE
+      - MARKING_BIKE_LANE
+    when_to_apply:
+      - "Overtaking any cyclist on any road"
+    required_action: >
+      Move partially or fully to adjacent lane if safe.
+      Maintain adequate clearance (jurisdiction-specific minimum distance).
+      Do not return to lane until well past the cyclist.
+    causal_question_examples:
+      - "Why did the car move toward the center when passing the cyclist?"
+    related_rules:
+      - BIKE_LANE_RESTRICTION
+      - CHECK_BLINDSPOT_BEFORE_LANE_CHANGE
+
+  - rule_id: PASS_SAFETY_ZONE_SLOWLY
+    name: "Pass Bus/Tram Safety Zone at Reduced Speed"
+    priority: 3
+    category: ROAD_USER_INTERACTION
+    subcategory: LARGE_VEHICLES
+    jurisdiction: GENERIC
+    description: >
+      A safety zone is a raised platform or marked area where passengers
+      board/alight from buses or trams in the road. Drivers must not enter
+      the zone and must pass at a very low speed to protect waiting passengers.
+    vision_cues:
+      - "Bus or tram stopped at a stop in the roadway (no pull-off)"
+      - "Raised island or marked zone where passengers are standing"
+      - "Passengers boarding or alighting"
+    when_to_apply:
+      - "Passing a bus/tram stopped at an in-road stop with safety zone"
+    required_action: >
+      Reduce to low speed (typically 10 mph / 15 km/h or below).
+      Do not enter safety zone. Watch for passengers stepping into road.
+    related_rules:
+      - STOP_FOR_PEDESTRIAN_AT_CROSSING
+
+  - rule_id: SLOW_MOVING_VEHICLE_AWARENESS
+    name: "Be Alert to Slow-Moving and Non-Standard Vehicles"
+    priority: 4
+    category: ROAD_USER_INTERACTION
+    subcategory: SLOW_MOVING
+    jurisdiction: GENERIC
+    description: >
+      Slow-moving vehicles (farm equipment, golf carts, NEVs, animal-drawn
+      carts) can have a large speed differential from normal traffic.
+      An orange-red triangle reflector identifies slow-moving vehicles.
+    vision_cues:
+      - "Orange triangle reflector on rear of vehicle"
+      - "Unusually slow vehicle in traffic lane"
+      - "Golf cart, tractor, NEV, or animal-drawn vehicle ahead"
+    sign_names:
+      - MARKING_SLOW_MOVING_VEHICLE_TRIANGLE
+    when_to_apply:
+      - "Any unusually slow vehicle encountered in traffic"
+    required_action: >
+      Reduce speed and following distance. Pass only when safe.
+      Allow extra distance due to unpredictable speed and handling.
+    related_rules:
+      - NO_PASSING_ON_HILLS_CURVES
+      - SAFE_FOLLOWING_DISTANCE_3S

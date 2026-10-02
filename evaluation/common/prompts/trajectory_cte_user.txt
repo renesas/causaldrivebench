@@ -1,0 +1,14 @@
+You are an autonomous driving system with access to multi-camera images from the past 1.5 seconds up to now (T=0).
+
+Navigation command: {nav_cmd}
+Current ego speed:  {speed:.2f} m/s
+Ego-centric frame:  (0, 0) = current position, +x = forward, +y = left
+
+=== Causal Reasoning Question ===
+{question_text}
+{intervention_line}
+Task 1 — Answer the question ({answer_hint}).
+Task 2 — Given your counterfactual reasoning, predict the ego vehicle's trajectory under this scenario at timesteps: {gt_timesteps} seconds.
+
+Output ONLY the following JSON (fill in answer and x/y values):
+{{"answer": "<{answer_hint}>", "waypoints": {template_wps}}}

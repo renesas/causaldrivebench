@@ -1,0 +1,102 @@
+{
+  "scene_id": "nuscenes-scene-0072_SAMPLED_1",
+  "source_suffix": "_verified",
+  "topology": {
+    "n_nodes": 2,
+    "n_distractors": 4,
+    "n_ego_edges": 2,
+    "n_active_edges": 1,
+    "n_dormant_edges": 1,
+    "n_inter_edges": 1,
+    "graph_depth": 2,
+    "branching_factor": 2.0,
+    "richness": 12,
+    "node_type_counts": {
+      "OTHER_AGENT": 1,
+      "TRAFFIC_CONTROL": 1
+    },
+    "node_category_counts": {
+      "human.pedestrian.adult": 1,
+      "marking.crosswalk": 1
+    },
+    "position_counts": {
+      "close_ahead": 1,
+      "unknown_dist_ahead": 1
+    },
+    "camera_counts": {
+      "cam_front": 2,
+      "bev": 2,
+      "state": 1,
+      "cam_front_right": 1
+    },
+    "effect_counts": {
+      "INHIBITS_PROCEED": 2
+    },
+    "active_effect_counts": {
+      "INHIBITS_PROCEED": 1
+    },
+    "causal_status_counts": {
+      "dormant": 1,
+      "active_sustaining": 1
+    },
+    "affected_state_counts": {
+      "speed": 2,
+      "heading": 2,
+      "acceleration": 2
+    },
+    "distractor_type_counts": {
+      "OTHER_AGENT": 4
+    },
+    "distractor_category_counts": {
+      "vehicle.car": 3,
+      "vehicle.truck": 1
+    },
+    "has_upstream_fork": false,
+    "n_upstream_forks": 0
+  },
+  "subgraphs_active": {
+    "counts": {
+      "direct": 1,
+      "chain": 0,
+      "collider": 0,
+      "confounding_observed": 0,
+      "confounding_unobserved": 0
+    },
+    "records": {
+      "direct": [
+        {
+          "source": "n1",
+          "target": "ego",
+          "effect_type": "INHIBITS_PROCEED",
+          "causal_status": "active_sustaining",
+          "confounding_role": "independent",
+          "allowed_direct_qas": [
+            "CaI",
+            "CR",
+            "SC"
+          ],
+          "edges": [
+            {
+              "source": "n1",
+              "target": "ego",
+              "kind": "ego"
+            }
+          ]
+        }
+      ],
+      "chain": [],
+      "collider": [],
+      "confounding_observed": [],
+      "confounding_unobserved": []
+    }
+  },
+  "subgraphs_all": {
+    "counts": {
+      "direct": 2,
+      "chain": 0,
+      "collider": 1,
+      "confounding_observed": 0,
+      "confounding_unobserved": 0
+    }
+  }
+}

@@ -1,0 +1,263 @@
+# =====================================================================
+# Docker Compose for Doe-1
+# Services: inference | original | postprocess | jupyter | weight-downloader
+#
+# Quick start:
+#   cp dev.env.example dev.env  # fill in WEIGHTS_DIR, RAW_DATA_DIR, etc.
+#   docker compose --env-file /path/to/dev.env build
+
+# Run all commands from the repo root (neurips-dataset/):
+#
+#   # 1. Download model weights (prints manual instructions)
+#   docker compose -f evaluation/models/doe/docker-compose.yml \
+#     --env-file /path/to/env_files/models/doe/dev.env \
+#     --profile setup up -d
+#
+#   # 2. Build the image
+#   docker compose -f evaluation/models/doe/docker-compose.yml \
+#     --env-file /path/to/env_files/models/doe/dev.env build
+#
+#   # 3. Run inference
+#   docker compose -f evaluation/models/doe/docker-compose.yml \
+#     --env-file /path/to/env_files/models/doe/dev.env run --rm inference
+#
+#   # 4. Start Jupyter
+#   docker compose -f evaluation/models/doe/docker-compose.yml \
+#     --env-file /path/to/env_files/models/doe/dev.env \
+#     --profile jupyter up -d jupyter
+#
+# IMPORTANT: Doe-1 weights are NOT on HuggingFace.
+#   The weight-downloader service prints manual download instructions.
+# =====================================================================
+
+x-gpu: &gpu-config
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+
+x-volumes: &shared-volumes
+  - type: bind
+    source: ${RAW_DATA_DIR}
+    target: /workspace/data/raw_data
+    read_only: true
+  - type: bind
+    source: ${CAUSAL_BENCH_DIR}
+    target: /workspace/data/causal_drive_bench
+    read_only: true
+  - type: bind
+    source: ${CDB_OUTPUTS_DIR}
+    target: /workspace/data/cdb_outputs
+  - type: bind
+    source: ${CDB_REPORTS_DIR}
+    target: /workspace/data/cdb_reports
+  - type: bind
+    source: ${WEIGHTS_DIR}
+    target: /workspace/weights
+
+x-common-env: &common-env
+  HF_HOME: /workspace/weights
+  HF_TOKEN: ${HF_TOKEN:-}
+  EVAL_RUNTIME: docker
+  DEVICE: ${DEVICE:-cuda}
+  MODE: ${MODE:-full}
+  SCENE: ${SCENE:-}
+  USE_LLM_JUDGE: ${USE_LLM_JUDGE:-false}
+  JUDGE_PROVIDER: ${JUDGE_PROVIDER:-azure_foundry}
+  JUDGE_MODEL: ${JUDGE_MODEL:-claude-opus-4-6}
+  ANTHROPIC_FOUNDRY_API_KEY: ${ANTHROPIC_FOUNDRY_API_KEY:-}
+  ANTHROPIC_FOUNDRY_RESOURCE: ${ANTHROPIC_FOUNDRY_RESOURCE:-}
+  FOUNDRY_BASE_URL: ${FOUNDRY_BASE_URL:-}
+  FORCE: ${FORCE:-false}
+  AZURE_OPENAI_API_KEY: ${AZURE_OPENAI_API_KEY:-}
+  AZURE_OPENAI_ENDPOINT: ${AZURE_OPENAI_ENDPOINT:-}
+  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+  OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+  WEIGHTS_DIR: /workspace/weights
+  MODEL_CHECKPOINT: ${MODEL_CHECKPOINT:-/workspace/weights/doe1/model.pth}
+  VQVAE_PATH: ${VQVAE_PATH:-/workspace/weights/chameleon/tokenizer}
+
+services:
+
+  # ------------------------------------------------------------------
+  # Main benchmark inference service
+  # ------------------------------------------------------------------
+  inference:
+    build:
+      context: ../../..
+      dockerfile: evaluation/models/doe/Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    image: benchmark-doe:latest
+
+    environment:
+      <<: *common-env
+
+    volumes: *shared-volumes
+    <<: *gpu-config
+    working_dir: /workspace/repo/evaluation/models/doe
+    restart: "no"
+    command:
+      - python
+      - /workspace/repo/evaluation/models/doe/inference.py
+      - --bench-dir
+      - /workspace/data/causal_drive_bench/${DATASET:-causal_nuscenes}
+      - --output-base
+      - /workspace/data/cdb_outputs
+      - --weights-path
+      - /workspace/weights
+      - --model-checkpoint
+      - ${MODEL_CHECKPOINT:-/workspace/weights/doe1/model.pth}
+      - --vqvae-path
+      - ${VQVAE_PATH:-/workspace/weights/chameleon/tokenizer}
+      - --device
+      - ${DEVICE:-cuda}
+      - --mode
+      - ${MODE:-full}
+      - --batch-size
+      - "${BATCH_SIZE:-1}"
+    depends_on:
+      weight-downloader:
+        condition: service_completed_successfully
+        required: false
+
+  # ------------------------------------------------------------------
+  # Original Doe-1 inference (sanity check)
+  # Runs inference/eval.py on nuScenes val with the QA task.
+  # ------------------------------------------------------------------
+  original:
+    build:
+      context: ../../..
+      dockerfile: evaluation/models/doe/Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    image: benchmark-doe:latest
+
+    environment:
+      <<: *common-env
+      ANNO_PATH: ${ANNO_PATH:-/workspace/data/raw_data/nuscenes/val_infos.pkl}
+
+    volumes: *shared-volumes
+    <<: *gpu-config
+    working_dir: /workspace/model
+    restart: "no"
+    profiles: [original]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        CUDA_VISIBLE_DEVICES=0 python inference/eval.py \
+          --anno_path ${ANNO_PATH:-/workspace/data/raw_data/nuscenes/val_infos.pkl} \
+          --nusc_path /workspace/data/raw_data/nuscenes \
+          --save_path /workspace/data/cdb_outputs/doe_original \
+          --model_path ${MODEL_CHECKPOINT:-/workspace/weights/doe1/model.pth} \
+          --task qa
+
+  # ------------------------------------------------------------------
+  # Post-processing service (run with --profile postprocess)
+  # ------------------------------------------------------------------
+  postprocess:
+    image: benchmark-doe:latest
+
+    environment:
+      <<: *common-env
+
+    volumes: *shared-volumes
+    working_dir: /workspace/repo/evaluation/models/doe
+    restart: "no"
+    profiles: [postprocess]
+    command:
+      - python
+      - /workspace/repo/evaluation/models/doe/postprocess.py
+      - --bench-dir
+      - /workspace/data/causal_drive_bench/${DATASET:-causal_nuscenes}
+      - --run-dir
+      - ${RUN_DIR:-/workspace/data/cdb_outputs/latest}
+      - --mode
+      - ${MODE:-full}
+
+  # ------------------------------------------------------------------
+  # Jupyter notebook server (run with --profile jupyter)
+  # Starts at http://localhost:8888 — token printed to console.
+  # ------------------------------------------------------------------
+  jupyter:
+    image: benchmark-doe:latest
+
+    environment:
+      <<: *common-env
+
+    ports:
+      - "${JUPYTER_PORT:-8888}:8888"
+    volumes: *shared-volumes
+    <<: *gpu-config
+    working_dir: /workspace/
+    restart: "no"
+    profiles: [jupyter]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        python -m jupyter notebook \
+          --ip=0.0.0.0 --port=8888 \
+          --no-browser --allow-root \
+          --NotebookApp.token=''
+
+  # ------------------------------------------------------------------
+  # Weight downloader (run with --profile setup)
+  # Doe-1 weights are NOT on HuggingFace — prints manual instructions.
+  # ------------------------------------------------------------------
+  weight-downloader:
+    image: python:3.12-slim
+
+    environment:
+      <<: *common-env
+
+    volumes:
+      - type: bind
+        source: ${WEIGHTS_DIR}
+        target: /workspace/weights
+    restart: "no"
+    profiles: [setup]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        apt-get update -qq && apt-get install -qq -y wget && \
+        pip install -q huggingface_hub && \
+        echo "=========================================================" && \
+        echo "Doe-1 weight download" && \
+        echo "" && \
+        echo "Step 1: Doe-1 checkpoint (Tsinghua Cloud)" && \
+        mkdir -p /workspace/weights/doe1 && \
+        wget -q --show-progress \
+          "https://cloud.tsinghua.edu.cn/d/86e47c05830e4caaa40e/files/?p=%2Fdoe1_stage2.pth&dl=1" \
+          -O /workspace/weights/doe1/model.pth \
+          || echo "WARNING: Doe-1 wget failed — download manually from https://cloud.tsinghua.edu.cn/d/86e47c05830e4caaa40e/" && \
+        echo "" && \
+        echo "Step 2: Chameleon VQVAE tokenizer (via HuggingFace)" && \
+        echo "  NOTE: facebook/chameleon-7b is a gated model. Request access at:" && \
+        echo "  https://huggingface.co/facebook/chameleon-7b" && \
+        hf auth login --token "$HF_TOKEN" && \
+        ( hf download facebook/chameleon-7b \
+            --local-dir /workspace/weights/chameleon \
+            --include "vqvae*" "tokenizer*" "*.json" \
+          || echo "WARNING: Chameleon download failed — request access at https://huggingface.co/facebook/chameleon-7b and re-run" ) && \
+        echo "" && \
+        echo "Step 3: OmniDrive val_infos.pkl (nuScenes QA annotations)" && \
+        mkdir -p /workspace/weights/nuscenes_annos && \
+        wget -q --show-progress \
+          "https://github.com/NVlabs/OmniDrive/releases/download/v1.0/val_infos.pkl" \
+          -O /workspace/weights/nuscenes_annos/val_infos.pkl \
+          || echo "WARNING: val_infos.pkl wget failed — download manually from https://github.com/NVlabs/OmniDrive/releases/tag/v1.0" && \
+        echo "" && \
+        echo "=========================================================" && \
+        echo "Done. Verify all three files are present:" && \
+        echo "  /workspace/weights/doe1/model.pth" && \
+        echo "  /workspace/weights/chameleon/  (vqvae + tokenizer)" && \
+        echo "  /workspace/weights/nuscenes_annos/val_infos.pkl" && \
+        echo "========================================================="

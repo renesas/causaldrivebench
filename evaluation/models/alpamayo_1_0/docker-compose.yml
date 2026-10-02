@@ -1,0 +1,237 @@
+# =====================================================================
+# Docker Compose for Alpamayo 1.0
+#
+# Quick start:
+#   # 1. Copy and fill in credentials
+#   cp dev.env.example dev.env
+#
+#   # 2. (First time) Download model weights (~22 GB) to WEIGHTS_DIR
+#   docker compose --profile setup run --rm weight-downloader
+#
+#   # 3. Build the image (context is repo root, run from this directory)
+#   docker compose build
+#
+#   # 4. Run inference
+#   docker compose run --rm inference
+#
+#   # 5. Post-process outputs and compute metrics
+#   docker compose --profile postprocess run --rm postprocess
+#
+#   # 6. Start a Jupyter notebook server (http://localhost:8888)
+#   docker compose --profile jupyter up jupyter
+# =====================================================================
+
+x-gpu: &gpu-config
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+
+x-volumes: &shared-volumes
+  - type: bind
+    source: ${RAW_DATA_DIR}
+    target: /workspace/data/raw_data
+    read_only: true
+  - type: bind
+    source: ${CAUSAL_BENCH_DIR}
+    target: /workspace/data/causal_drive_bench
+    read_only: true
+  - type: bind
+    source: ${CDB_OUTPUTS_DIR}
+    target: /workspace/data/cdb_outputs
+  - type: bind
+    source: ${CDB_REPORTS_DIR}
+    target: /workspace/data/cdb_reports
+  - type: bind
+    source: ${WEIGHTS_DIR}
+    target: /workspace/weights
+
+# Common environment variables shared across all main services.
+# Services merge this with <<: *common-env and add any service-specific vars.
+x-common-env: &common-env
+  HF_HOME: /workspace/weights
+  HF_TOKEN: ${HF_TOKEN:-}
+  EVAL_RUNTIME: docker
+  DEVICE: ${DEVICE:-cuda}
+  MODE: ${MODE:-full}
+  SCENE: ${SCENE:-}
+  USE_LLM_JUDGE: ${USE_LLM_JUDGE:-false}
+  JUDGE_PROVIDER: ${JUDGE_PROVIDER:-azure_foundry}
+  JUDGE_MODEL: ${JUDGE_MODEL:-claude-opus-4-6}
+  ANTHROPIC_FOUNDRY_API_KEY: ${ANTHROPIC_FOUNDRY_API_KEY:-}
+  ANTHROPIC_FOUNDRY_RESOURCE: ${ANTHROPIC_FOUNDRY_RESOURCE:-}
+  FOUNDRY_BASE_URL: ${FOUNDRY_BASE_URL:-}
+  FORCE: ${FORCE:-false}
+  AZURE_OPENAI_API_KEY: ${AZURE_OPENAI_API_KEY:-}
+  AZURE_OPENAI_ENDPOINT: ${AZURE_OPENAI_ENDPOINT:-}
+  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+  OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+  WEIGHTS_DIR: /workspace/weights
+  MODEL_REPO: ${MODEL_REPO:-nvidia/Alpamayo-R1-10B}
+
+services:
+
+  # ------------------------------------------------------------------
+  # Main inference service — runs our benchmark inference wrapper
+  # ------------------------------------------------------------------
+  inference:
+    build:
+      # Build context is the repo root so the Dockerfile can copy the
+      # full evaluation/ directory into the image.
+      context: ../../..
+      dockerfile: evaluation/models/alpamayo_1_0/Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    image: benchmark-alpamayo-1-0:latest
+
+    environment:
+      <<: *common-env
+    volumes: *shared-volumes
+    <<: *gpu-config
+    restart: "no"
+    working_dir: /workspace/repo/evaluation/models/alpamayo_1_0
+    command:
+      - uv
+      - run
+      - python
+      - /workspace/repo/evaluation/models/alpamayo_1_0/inference.py
+      - --bench-dir
+      - /workspace/data/causal_drive_bench/${DATASET:-causal_nuscenes}
+      - --output-base
+      - /workspace/data/cdb_outputs
+      - --weights-path
+      - /workspace/weights
+      - --device
+      - ${DEVICE:-cuda}
+      - --mode
+      - ${MODE:-full}
+      - --batch-size
+      - "${BATCH_SIZE:-1}"
+    depends_on:
+      weight-downloader:
+        condition: service_completed_successfully
+        required: false
+
+  # ------------------------------------------------------------------
+  # Original inference service — runs the original inference wrapper
+  # ------------------------------------------------------------------
+  original:
+    build:
+      # Build context is the repo root so the Dockerfile can copy the
+      # full evaluation/ directory into the image.
+      context: ../../..
+      dockerfile: evaluation/models/alpamayo_1_0/Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    image: benchmark-alpamayo-1-0:latest
+
+    environment:
+      <<: *common-env
+      RAW_DATA_DIR: /workspace/data/raw_data
+      CAUSAL_BENCH_DIR: ${CAUSAL_BENCH_DIR:-/workspace/data/causal_drive_bench/causal_nuscenes}
+      OUTPUT_DIR: /workspace/data/cdb_outputs
+      WEIGHTS_PATH: ${WEIGHTS_PATH:-/workspace/weights}
+    volumes: *shared-volumes
+    <<: *gpu-config
+    restart: "no"
+    profiles: [original]
+    working_dir: /workspace/model
+    # Runs alpamayo's inference script directly — matches the README quickstart.
+    # To generate multiple trajectories edit num_traj_samples (line 60 of the script).
+    command: ["uv", "run", "python", "src/alpamayo_r1/test_inference.py"]
+    depends_on:
+      weight-downloader:
+        condition: service_completed_successfully
+        required: false
+
+  # ------------------------------------------------------------------
+  # Post-processing service (run with --profile postprocess)
+  # ------------------------------------------------------------------
+  postprocess:
+    build:
+      context: ../../..
+      dockerfile: evaluation/models/alpamayo_1_0/Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    image: benchmark-alpamayo-1-0:latest
+
+    environment:
+      <<: *common-env
+    volumes: *shared-volumes
+    restart: "no"
+    profiles: [postprocess]
+    working_dir: /workspace/repo/evaluation/models/alpamayo_1_0
+    # RUN_DIR must be set to the timestamped run directory written by inference.py:
+    #   RUN_DIR=/workspace/data/cdb_outputs/alpamayo_1_0_20260410_120000 \
+    #   docker compose --profile postprocess run --rm postprocess
+    command:
+      - uv
+      - run
+      - python
+      - /workspace/repo/evaluation/models/alpamayo_1_0/postprocess.py
+      - --bench-dir
+      - /workspace/data/causal_drive_bench/${DATASET:-causal_nuscenes}
+      - --run-dir
+      - ${RUN_DIR:-/workspace/data/cdb_outputs/latest}
+      - --mode
+      - ${MODE:-full}
+
+  # ------------------------------------------------------------------
+  # Jupyter notebook server (run with --profile jupyter)
+  # Starts at http://localhost:8888 — token printed to console on startup.
+  # Mounts the repo so notebooks saved under /workspace/repo persist.
+  # ------------------------------------------------------------------
+  jupyter:
+    image: benchmark-alpamayo-1-0:latest
+
+    environment:
+      <<: *common-env
+    volumes: *shared-volumes
+    <<: *gpu-config
+    restart: "no"
+    profiles: [jupyter]
+    ports:
+      - "${JUPYTER_PORT:-8888}:8888"
+    working_dir: /workspace/
+    command:
+      - uv
+      - run
+      - jupyter
+      - notebook
+      - --ip=0.0.0.0
+      - --port=8888
+      - --no-browser
+      - --allow-root
+      - --notebook-dir=/workspace/
+
+  # ------------------------------------------------------------------
+  # One-shot weight downloader (run with --profile setup)
+  # Downloads nvidia/Alpamayo-R1-10B (~22 GB) to WEIGHTS_DIR.
+  # Requires a HuggingFace token with access to the gated repo:
+  #   https://huggingface.co/nvidia/Alpamayo-R1-10B
+  # ------------------------------------------------------------------
+  weight-downloader:
+    image: python:3.12-slim
+
+    environment:
+      <<: *common-env
+
+    volumes:
+      - type: bind
+        source: ${WEIGHTS_DIR:-./weights}
+        target: /workspace/weights
+    restart: "no"
+    profiles: [setup]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        pip install -q huggingface_hub && \
+        hf auth login --token "$HF_TOKEN" && \
+        hf download "$MODEL_REPO" --local-dir /workspace/weights

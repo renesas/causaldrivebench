@@ -1,0 +1,185 @@
+# =====================================================================
+# Docker Compose for <YOUR MODEL NAME>
+# Replace <model-name> and <model_folder> throughout.
+#
+# Services:
+#   inference       — benchmark evaluation (default)
+#   original        — vendor's own sample script (sanity check)
+#   postprocess     — parse outputs + compute metrics  [--profile postprocess]
+#   jupyter         — interactive Jupyter notebook     [--profile jupyter]
+#   weight-downloader — one-shot HF weight download   [--profile setup]
+#
+# Usage:
+#   docker compose build
+#   docker compose --profile setup run --rm weight-downloader
+#   docker compose --profile original run --rm original
+#   docker compose run --rm inference
+#   docker compose --profile postprocess run --rm postprocess
+#   docker compose --profile jupyter up jupyter
+# =====================================================================
+
+version: "3.9"
+
+# ── Shared YAML anchors ────────────────────────────────────────────
+
+x-gpu: &gpu-config
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+
+x-volumes: &shared-volumes
+  - type: bind
+    source: ${RAW_DATA_DIR:-/raw_data}
+    target: /raw_data
+    read_only: true
+  - type: bind
+    source: ${CAUSAL_BENCH_DIR:-/causal_drive_bench}
+    target: /causal_drive_bench
+    read_only: true
+  - type: bind
+    source: ${OUTPUT_DIR:-./outputs}
+    target: /outputs
+  - type: bind
+    source: ${WEIGHTS_DIR:-./weights}
+    target: /workspace/weights
+
+services:
+
+  # ------------------------------------------------------------------
+  # Main benchmark inference service
+  # ------------------------------------------------------------------
+  inference:
+    build:
+      # Context is repo root so the full evaluation/ tree is available
+      context: ../../..
+      dockerfile: evaluation/models/<model_folder>/Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    image: benchmark-<model-name>:latest
+    # Pass dev.env path via --env-file flag rather than hardcoding:
+    #   docker compose --env-file /path/to/dev.env run --rm inference
+    # The ENV_FILE variable below allows overriding from the shell:
+    #   ENV_FILE=/secrets/dev.env docker compose run --rm inference
+    env_file: ${ENV_FILE:-dev.env}
+    environment:
+      - HF_HOME=/workspace/weights
+      - HF_TOKEN=${HF_TOKEN:-}
+      - RAW_DATA_DIR=/raw_data
+      - CAUSAL_BENCH_DIR=${CAUSAL_BENCH_DIR:-/causal_drive_bench/causal_nuscenes}
+      - OUTPUT_DIR=/outputs
+      - WEIGHTS_PATH=/workspace/weights
+      - DEVICE=${DEVICE:-cuda}
+      - BATCH_SIZE=${BATCH_SIZE:-1}
+      - MODE=${MODE:-full}
+      - SUBSET_SIZE=${SUBSET_SIZE:-}
+      - SCENE=${SCENE:-}
+    volumes: *shared-volumes
+    <<: *gpu-config
+    working_dir: /workspace/repo/evaluation/models/<model_folder>
+    restart: "no"
+    command: ["python", "/workspace/repo/evaluation/models/<model_folder>/inference.py"]
+    depends_on:
+      weight-downloader:
+        condition: service_completed_successfully
+        required: false
+
+  # ------------------------------------------------------------------
+  # Original vendor inference script (sanity check / profile: original)
+  # Runs the model's own sample script to verify the image and weights.
+  # TODO: update working_dir and command to match your model's layout.
+  # ------------------------------------------------------------------
+  original:
+    image: benchmark-<model-name>:latest
+    env_file: ${ENV_FILE:-dev.env}
+    environment:
+      - HF_HOME=/workspace/weights
+      - DEVICE=${DEVICE:-cuda}
+    volumes: *shared-volumes
+    <<: *gpu-config
+    working_dir: /workspace/model
+    restart: "no"
+    profiles: [original]
+    # TODO: replace with your model's own sample/test script
+    command: ["python", "sample_inference.py"]
+
+  # ------------------------------------------------------------------
+  # Post-processing service (profile: postprocess)
+  # ------------------------------------------------------------------
+  postprocess:
+    image: benchmark-<model-name>:latest
+    env_file: ${ENV_FILE:-dev.env}
+    environment:
+      - CAUSAL_BENCH_DIR=${CAUSAL_BENCH_DIR:-/causal_drive_bench/causal_nuscenes}
+      - OUTPUT_DIR=/outputs
+      - MODE=${MODE:-full}
+      - SUBSET_SIZE=${SUBSET_SIZE:-}
+      - SCENE=${SCENE:-}
+      - USE_LLM_JUDGE=${USE_LLM_JUDGE:-false}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - JUDGE_MODEL=${JUDGE_MODEL:-gpt-4o}
+    volumes: *shared-volumes
+    working_dir: /workspace/repo/evaluation/models/<model_folder>
+    restart: "no"
+    profiles: [postprocess]
+    command: ["python", "/workspace/repo/evaluation/models/<model_folder>/postprocess.py"]
+
+  # ------------------------------------------------------------------
+  # Jupyter notebook server (profile: jupyter)
+  # Open http://localhost:${JUPYTER_PORT:-8888} in your browser.
+  # ------------------------------------------------------------------
+  jupyter:
+    image: benchmark-<model-name>:latest
+    env_file: ${ENV_FILE:-dev.env}
+    environment:
+      - HF_HOME=/workspace/weights
+      - CAUSAL_BENCH_DIR=${CAUSAL_BENCH_DIR:-/causal_drive_bench/causal_nuscenes}
+      - OUTPUT_DIR=/outputs
+    ports:
+      - "${JUPYTER_PORT:-8888}:8888"
+    volumes: *shared-volumes
+    <<: *gpu-config
+    working_dir: /workspace/
+    restart: "no"
+    profiles: [jupyter]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        python -m jupyter notebook \
+          --ip=0.0.0.0 --port=8888 \
+          --no-browser --allow-root \
+          --NotebookApp.token=''
+
+  # ------------------------------------------------------------------
+  # One-shot weight downloader (profile: setup)
+  # ------------------------------------------------------------------
+  weight-downloader:
+    # For models hosted on HuggingFace, use python:3.11-slim (lightweight).
+    # For models NOT on HuggingFace (e.g. cloud storage, manual download),
+    # replace with the model image and print download instructions instead:
+    #   image: benchmark-<model-name>:latest
+    #   command: ["/bin/sh", "-c", "echo 'Download from: <URL>' && ..."]
+    image: python:3.11-slim
+    env_file: ${ENV_FILE:-dev.env}
+    environment:
+      - HF_TOKEN=${HF_TOKEN:-}
+      - WEIGHTS_PATH=/workspace/weights
+      - MODEL_REPO=${MODEL_REPO:-}
+    volumes:
+      - type: bind
+        source: ${WEIGHTS_DIR:-./weights}
+        target: /workspace/weights
+    restart: "no"
+    profiles: [setup]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        pip install -q huggingface_hub && \
+        huggingface-cli login --token "$HF_TOKEN" && \
+        huggingface-cli download "$MODEL_REPO" --local-dir /workspace/weights

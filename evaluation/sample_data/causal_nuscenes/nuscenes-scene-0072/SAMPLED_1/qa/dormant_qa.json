@@ -1,0 +1,117 @@
+{
+  "questions": [
+    {
+      "id": "DQ1",
+      "rung": 0,
+      "category": "DQ",
+      "subtype": "DQ-Binary",
+      "difficulty": "easy",
+      "spatial_context": null,
+      "question": "That person up ahead near the crosswalk looks like they could walk into your path. Are they part of why you're easing off the gas right now?",
+      "answer_format": "binary",
+      "correct_answer": "No",
+      "reasoning": "No, the pedestrian ahead is not part of why I am slowing down. Looking at the scene, that person is on the far sidewalk across the intersection, not on the crosswalk or roadway. They are walking along the sidewalk and are physically separated from my travel lane. I am decelerating because of the crosswalk marking itself on my path, not because of that pedestrian.",
+      "activation_plausibility": "High",
+      "meta": {
+        "referenced_elements": [
+          "pedestrian_1"
+        ],
+        "causal_status": "dormant",
+        "effect_types": [
+          "INHIBITS_PROCEED"
+        ],
+        "latency_mechanism": "decoupled",
+        "shielding_element_status": "N/A",
+        "confounding_type": null,
+        "trajectory_sensitivity": "N/A",
+        "influence_classification": "N/A",
+        "behavioral_impact": "N/A",
+        "empty_graph_fallback": false,
+        "distractor_types": {},
+        "counterfactual_intervention": null
+      }
+    },
+    {
+      "id": "EL1",
+      "rung": 1,
+      "category": "EL",
+      "subtype": "EL-Decouple",
+      "difficulty": "medium",
+      "spatial_context": null,
+      "question": "You're already slowing for the crosswalk ahead. Is the pedestrian near the intersection the reason you're reducing speed?",
+      "answer_format": "binary",
+      "correct_answer": "No",
+      "reasoning": "No, that pedestrian is not the reason I am reducing speed. The pedestrian is currently on the far sidewalk across the intersection, moving along it but not stepping onto the crosswalk or into the roadway. I am slowing because the crosswalk marking is on my forward path and I need to approach it cautiously regardless. Even if that pedestrian were not there at all, I would still be decelerating for the crosswalk. The pedestrian's position off the road means there is no causal connection between them and my speed right now.",
+      "activation_plausibility": "High",
+      "meta": {
+        "referenced_elements": [
+          "pedestrian_1"
+        ],
+        "causal_status": "dormant",
+        "effect_types": [
+          "INHIBITS_PROCEED"
+        ],
+        "latency_mechanism": "decoupled",
+        "shielding_element_status": "N/A",
+        "confounding_type": null,
+        "trajectory_sensitivity": "N/A",
+        "influence_classification": "N/A",
+        "behavioral_impact": "N/A",
+        "empty_graph_fallback": false,
+        "distractor_types": {},
+        "counterfactual_intervention": null
+      }
+    },
+    {
+      "id": "AB1",
+      "rung": 2,
+      "category": "AB",
+      "subtype": "AB-Element",
+      "difficulty": "hard",
+      "spatial_context": "You are traveling straight at very low speed, nearly stopping, with the crosswalk roughly two to three car-lengths ahead. The pedestrian is on the far sidewalk to the left side of the intersection. Your lane is the rightmost travel lane, and no other vehicles are immediately ahead of you between your position and the crosswalk.",
+      "question": "The pedestrian on the far sidewalk appears to be jogging. If they veered off the sidewalk and onto the near half of the crosswalk \u2014 the section directly in your travel lane \u2014 could you keep rolling through slowly, or would that change things for you?",
+      "answer_format": "binary",
+      "correct_answer": "Yes",
+      "reasoning": "Yes, that would change things for me. Right now I am only slowing cautiously for the crosswalk marking as a precaution, and I intend to proceed through at low speed. If the pedestrian moved off the far sidewalk and onto the near portion of the crosswalk directly in my lane, I would have to come to a complete stop and yield until they cleared my path. Even though I am already going slowly, there is a meaningful difference between a cautious roll-through of an empty crosswalk and a full stop for a pedestrian occupying the crossing directly ahead. At my current distance and low speed I could stop comfortably, but my plan would shift from proceeding to waiting.",
+      "activation_plausibility": "High",
+      "meta": {
+        "referenced_elements": [
+          "pedestrian_1"
+        ],
+        "causal_status": "dormant",
+        "effect_types": [
+          "INHIBITS_PROCEED"
+        ],
+        "latency_mechanism": "decoupled",
+        "shielding_element_status": "N/A",
+        "confounding_type": null,
+        "trajectory_sensitivity": "trajectory_dependent",
+        "influence_classification": "unique",
+        "behavioral_impact": "stop",
+        "empty_graph_fallback": false,
+        "distractor_types": {},
+        "counterfactual_intervention": {
+          "target_entity_id": "pedestrian_1",
+          "target_entity_type": "agent",
+          "operation": "activate",
+          "operation_detail": "Pedestrian veers off the far sidewalk and jogs onto the near half of the crosswalk directly in ego's travel lane",
+          "evaluation_mode": "planner",
+          "temporal_anchor": "t0",
+          "frozen_entities": [
+            "n1",
+            "car_1",
+            "car_2",
+            "truck_1",
+            "car_4"
+          ],
+          "propagated_descendants": [],
+          "trajectory_changes": true
+        }
+      }
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 46958,
+    "completion_tokens": 4447
+  }
+}

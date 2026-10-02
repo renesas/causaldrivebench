@@ -1,0 +1,28 @@
+name: causal_graph
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pandas
+  - pyarrow
+  - pip
+  - pip:
+    - numpy>=1.24
+    - opencv-python-headless>=4.8
+    - Pillow>=7.0
+    - geopandas>=0.13
+    - shapely>=2.0
+    - graphviz>=0.20
+    - openai>=1.0
+    - anthropic>=0.39
+    - google-generativeai>=0.8
+    - python-dotenv>=1.0
+    - pyyaml>=5.3
+    - matplotlib>=3.1
+    - networkx>=3.0
+    - nuscenes-devkit>=1.1
+    - pyquaternion>=0.9
+    - scipy>=1.10
+    - sqlalchemy>=2.0
+    - tqdm>=4.60

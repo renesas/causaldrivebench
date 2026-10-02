@@ -1,0 +1,45 @@
+# =====================================================================
+# Direct dependencies for <YOUR MODEL NAME> evaluation wrapper
+#
+# WHEN TO UPDATE:
+#   - When you add a new import in dataloader.py, inference.py, or
+#     postprocess.py that isn't already covered below.
+#   - When a dependency version causes a conflict inside the container.
+#
+# HOW TO UPDATE:
+#   1. Add or change the package spec here (e.g. my-pkg>=1.2.0).
+#   2. Re-compile the pinned lockfile:
+#        pip install pip-tools
+#        pip-compile requirements.in -o requirements.txt --no-header
+#      Or if using uv (recommended):
+#        uv pip compile requirements.in -o requirements.txt
+#   3. Rebuild the Docker image so the new requirements.txt is picked up.
+#
+# NOTE: If your model ships its own pyproject.toml / setup.py (e.g. a
+#   cloned repo managed by uv), its dependencies are handled separately
+#   by `uv sync` inside the Dockerfile. Only list packages here that are
+#   needed by the evaluation wrapper scripts (dataloader/inference/
+#   postprocess) and are NOT already pulled in by the model's own deps.
+# =====================================================================
+
+# Vision
+Pillow>=10.0.0
+
+# Numerics
+numpy>=1.24.0
+
+# Progress / serialisation
+tqdm
+jsonlines
+
+# LLM Judge (evaluation/common/llm_judge.py)
+anthropic>=0.40.0
+openai>=1.0.0
+
+# TODO: Add model-specific evaluation dependencies below this line.
+# If your model does NOT use uv/pyproject.toml, also add:
+#   torch>=2.0.0
+#   torchvision>=0.15.0
+#   transformers>=4.40.0
+#   accelerate>=0.27.0
+#   huggingface_hub

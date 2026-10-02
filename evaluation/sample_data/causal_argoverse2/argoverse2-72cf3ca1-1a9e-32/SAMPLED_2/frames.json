@@ -1,0 +1,33 @@
+{
+  "data_root": "/workspace/data",
+  "frames": {
+    "Tm1p5": {
+      "cam_front": "raw_data/argoverse2/sensor/val/72cf3ca1-1a9e-3254-bca0-29c62521e454/sensors/cameras/ring_front_center/315975778849927216.jpg",
+      "cam_front_left": "raw_data/argoverse2/sensor/val/72cf3ca1-1a9e-3254-bca0-29c62521e454/sensors/cameras/ring_front_left/315975778837425439.jpg",
+      "cam_front_right": "raw_data/argoverse2/sensor/val/72cf3ca1-1a9e-3254-bca0-29c62521e454/sensors/cameras/ring_front_right/315975778862451240.jpg",
+      "cam_back_right": "raw_data/argoverse2/sensor/val/72cf3ca1-1a9e-3254-bca0-29c62521e454/sensors/cameras/ring_rear_right/315975778842441191.jpg",
+      "cam_back_left": "raw_data/argoverse2/sensor/val/72cf3ca1-1a9e-3254-bca0-29c62521e454/sensors/cameras/ring_rear_left/315975778857428274.jpg"
+    },
+    "Tm1p0": {
+      "cam_front": "raw_data/argoverse2/sensor/val/72cf3ca1-1a9e-3254-bca0-29c62521e454/sensors/cameras/ring_front_center/315975779349927215.jpg",
+      "cam_front_left": "raw_data/argoverse2/sensor/val/72cf3ca1-1a9e-3254-bca0-29c62521e454/sensors/cameras/ring_front_left/315975779337425442.jpg",
+      "cam_front_right": "raw_data/argoverse2/sensor/val/72cf3ca1-1a9e-3254-bca0-29c62521e454/sensors/cameras/ring_front_right/315975779362451246.jpg",
+      "cam_back_right": "raw_data/argoverse2/sensor/val/72cf3ca1-1a9e-3254-bca0-29c62521e454/sensors/cameras/ring_rear_right/315975779342441190.jpg",
+      "cam_back_left": "raw_data/argoverse2/sensor/val/72cf3ca1-1a9e-3254-bca0-29c62521e454/sensors/cameras/ring_rear_left/315975779357428272.jpg"
+    },
+    "Tm0p5": {
+      "cam_front": "raw_data/argoverse2/sensor/val/72cf3ca1-1a9e-3254-bca0-29c62521e454/sensors/cameras/ring_front_center/315975779849927222.jpg",
+      "cam_front_left": "raw_data/argoverse2/sensor/val/72cf3ca1-1a9e-3254-bca0-29c62521e454/sensors/cameras/ring_front_left/315975779837425437.jpg",
+      "cam_front_right": "raw_data/argoverse2/sensor/val/72cf3ca1-1a9e-3254-bca0-29c62521e454/sensors/cameras/ring_front_right/315975779862451245.jpg",
+      "cam_back_right": "raw_data/argoverse2/sensor/val/72cf3ca1-1a9e-3254-bca0-29c62521e454/sensors/cameras/ring_rear_right/315975779842441189.jpg",
+      "cam_back_left": "raw_data/argoverse2/sensor/val/72cf3ca1-1a9e-3254-bca0-29c62521e454/sensors/cameras/ring_rear_left/315975779857428271.jpg"
+    },
+    "Tp0p0": {
+      "cam_front": "raw_data/argoverse2/sensor/val/72cf3ca1-1a9e-3254-bca0-29c62521e454/sensors/cameras/ring_front_center/315975780349927222.jpg",
+      "cam_front_left": "raw_data/argoverse2/sensor/val/72cf3ca1-1a9e-3254-bca0-29c62521e454/sensors/cameras/ring_front_left/315975780337425437.jpg",
+      "cam_front_right": "raw_data/argoverse2/sensor/val/72cf3ca1-1a9e-3254-bca0-29c62521e454/sensors/cameras/ring_front_right/315975780362451246.jpg",
+      "cam_back_right": "raw_data/argoverse2/sensor/val/72cf3ca1-1a9e-3254-bca0-29c62521e454/sensors/cameras/ring_rear_right/315975780342441190.jpg",
+      "cam_back_left": "raw_data/argoverse2/sensor/val/72cf3ca1-1a9e-3254-bca0-29c62521e454/sensors/cameras/ring_rear_left/315975780357428271.jpg"
+    }
+  }
+}

@@ -1,0 +1,257 @@
+# =====================================================================
+# CausalDriveBench Evaluation Framework Configuration
+# Used by evaluation/orchestrate.py and CDBConfig (common/utils/config_reader.py)
+#
+# Host setup:
+#   1. Copy this file to a local override (e.g. eval_config.local.yaml)
+#   2. Update the paths below to match your environment
+#   3. Set EVAL_RUNTIME=host (default) before running scripts
+#
+# Docker setup:
+#   Set EVAL_RUNTIME=docker — all paths are resolved from fixed volume-mount
+#   constants defined in config_reader.py; the values here are ignored.
+# =====================================================================
+
+# ---------------------------------------------------------------------------
+# Host directory paths
+# These are used when EVAL_RUNTIME=host (the default).
+# Docker paths are fixed constants in evaluation/common/utils/config_reader.py.
+# ---------------------------------------------------------------------------
+
+# Root directory for raw open-source dataset files.
+# Expected subfolders: nuscenes/, argoverse2/, openscene/
+raw_data_dir: /path/to/raw/data/
+
+# Root of CausalDriveBench annotations.
+# Expected subfolders: causal_nuscenes/, causal_argoverse2/, causal_openscene/
+# Defaults to <parent-of-raw_data_dir>/causal_drive_bench if omitted.
+causal_drive_bench_dir: /path/to/causal/drive/bench/
+
+# Root for per-run inference outputs.
+# Each run creates: <cdb_outputs_dir>/<model_id>_<timestamp>/
+# Defaults to <parent-of-raw_data_dir>/cdb_outputs if omitted.
+cdb_outputs_dir: /path/to/cdb/outputs
+
+# Root for evaluation reports.
+# Defaults to <parent-of-raw_data_dir>/cdb_reports if omitted.
+cdb_reports_dir: /path/to/cdb/reports/
+
+# Default model weights directory (used when --weights-path is not specified).
+# model_weights_dir: /weights
+model_weights_dir: /path/to/model/weights/
+
+# ---------------------------------------------------------------------------
+# Dataset configurations
+# bench_dir: overrides the default causal_<name> subfolder under causal_drive_bench_dir
+# Override the following paths if they are different from the standard paths
+# ---------------------------------------------------------------------------
+
+# datasets:
+#   nuscenes:
+#     bench_dir: /causal_drive_bench/causal_nuscenes
+
+#   argoverse2:
+#     bench_dir: /causal_drive_bench/causal_argoverse2
+
+#   openscene:
+#     bench_dir: /causal_drive_bench/causal_openscene
+
+# ---------------------------------------------------------------------------
+# Model registry
+# Add each model here so orchestrate.py can discover and run it.
+# ---------------------------------------------------------------------------
+
+models:
+  alpamayo_1_0:
+    enabled: true
+    description: "Alpamayo 1.0 R1-10B"
+    compose_file: models/alpamayo_1_0/docker-compose.yml
+
+  alpamayo_1_5:
+    enabled: true
+    description: "Alpamayo 1.5 VQA-10B (NVIDIA)"
+    compose_file: models/alpamayo_1_5/docker-compose.yml
+
+  # Gemma 4 — Google multimodal models (served via ai/gemma4 Docker image)
+  # Set GEMMA4_MODEL_TAG in dev.env to select the variant.
+  gemma4_e2b:
+    enabled: true
+    description: "Gemma 4 E2B (2.3B effective, 128K ctx)"
+    compose_file: models/gemma4/docker-compose.yml
+    env:
+      GEMMA4_MODEL_TAG: e2b
+
+  gemma4_e4b:
+    enabled: true
+    description: "Gemma 4 E4B (4.5B effective, 128K ctx)"
+    compose_file: models/gemma4/docker-compose.yml
+    env:
+      GEMMA4_MODEL_TAG: e4b
+
+  gemma4_26b_a4b:
+    enabled: true
+    description: "Gemma 4 26B A4B MoE (3.8B active, 256K ctx)"
+    compose_file: models/gemma4/docker-compose.yml
+    env:
+      GEMMA4_MODEL_TAG: 26b-a4b
+
+  gemma4_31b:
+    enabled: true
+    description: "Gemma 4 31B Dense (256K ctx)"
+    compose_file: models/gemma4/docker-compose.yml
+    env:
+      GEMMA4_MODEL_TAG: 31b
+
+  doe:
+    enabled: true
+    description: "Doe-1 (Tsinghua, multi-modal driving QA)"
+    compose_file: models/doe/docker-compose.yml
+
+  impromptu_vla:
+    enabled: true
+    description: "Impromptu-VLA 3B AD-finetune (sglang)"
+    compose_file: models/impromptu_vla/docker-compose.yml
+
+  omnidrive:
+    enabled: true
+    description: "OmniDrive (NVLabs, TinyLlama backbone)"
+    compose_file: models/omnidrive/docker-compose.yml
+
+  opendrivevla:
+    enabled: true
+    description: "OpenDriveVLA 0.5B"
+    compose_file: models/opendrivevla/docker-compose.yml
+
+  orion:
+    enabled: true
+    description: "Orion FP16 (poleyzdk)"
+    compose_file: models/orion/docker-compose.yml
+
+  recogdrive:
+    enabled: true
+    description: "ReCogDrive 8B-RL (owl10)"
+    compose_file: models/recogdrive/docker-compose.yml
+
+  simlingo:
+    enabled: true
+    description: "SimLingo (RenzKa, language VQA only)"
+    compose_file: models/simlingo/docker-compose.yml
+
+  # Add new models below:
+  # my_model:
+  #   enabled: false
+  #   description: "My model description"
+  #   compose_file: models/my_model/docker-compose.yml
+
+# ---------------------------------------------------------------------------
+# Evaluation parameters
+# ---------------------------------------------------------------------------
+
+evaluation:
+  batch_size: 1
+
+  # Which QA types to evaluate
+  qa_types:
+    - ladder
+    - dormant
+    - distractor
+
+  # ---------------------------------------------------------------------------
+  # Trajectory evaluation (optional, independent of VQA scoring)
+  # ---------------------------------------------------------------------------
+  # Set to true to generate trajectory_prompts.jsonl + trajectory_outputs.jsonl
+  # and compute ADE metrics alongside the standard VQA evaluation.
+  # Adds three question types per sample (BTE, CTE_R2, CTE_R3 where applicable).
+  # Controlled via --trajectory-eval flag in inference.py and postprocess.py.
+  use_trajectory_eval: false
+
+  trajectory_eval:
+    # BTE: timesteps to predict (seconds from T=0)
+    bte_timesteps: [0.5, 1.0, 1.5, 2.0, 2.5, 3.0]
+
+    # Which eval types to run (omit to run all available)
+    eval_types:
+      - BTE
+      - CTE_R2
+      - CTE_R3
+
+    # ADE thresholds for BTE grading (metres)
+    bte_thresholds:
+      excellent: 0.5
+      good:      1.0
+      fair:      2.0
+
+    # CTE analysis thresholds (metres)
+    cte_thresholds:
+      same_as_bte_mean_disp: 0.30   # below this → TRAJECTORY_SAME_AS_BTE flag
+      good_ade:              1.50   # below this → trajectory plausible
+      excellent_ade:         0.75   # below this + other checks → FULL_MATCH
+
+    # Max tokens for trajectory generation (JSON output is longer than VQA)
+    max_generation_length: 1024
+
+  # Set to true to score chain-of-causation reasoning with an LLM judge.
+  # The judge evaluates four dimensions (spatial_grounding,
+  # mechanism_identification, conditionality_awareness, answer_consistency)
+  # each scored 0–2.  See evaluation/docs/llm_judge.md for full details.
+  use_llm_judge: false
+
+  judge:
+    # Provider options:
+    #   "anthropic"     — Direct Anthropic API.  Needs: ANTHROPIC_API_KEY
+    #   "openai"        — Direct OpenAI API.     Needs: OPENAI_API_KEY
+    #   "azure_foundry" — Claude via Azure AI Foundry (AnthropicFoundry SDK).
+    #                     Needs: ANTHROPIC_FOUNDRY_API_KEY
+    #                            FOUNDRY_BASE_URL
+    #                              (e.g. https://<resource>.services.ai.azure.com/anthropic)
+    #   "azure_openai"  — GPT via Azure OpenAI Service (AzureOpenAI SDK).
+    #                     Needs: AZURE_OPENAI_API_KEY
+    #                            AZURE_OPENAI_ENDPOINT
+    #                              (e.g. https://<resource>.openai.azure.com/)
+    provider: azure_foundry
+
+    # Azure AI Foundry deployment name for Claude Opus 4 (preferred judge model).
+    model: claude-opus-4-6
+
+    # Env var holding the API key for the chosen provider.
+    # Defaults are set automatically per provider; override here if needed.
+    api_key_env: ANTHROPIC_FOUNDRY_API_KEY
+
+    # Env var holding the Azure endpoint / base URL.
+    # Required for azure_foundry and azure_openai providers.
+    azure_endpoint_env: FOUNDRY_BASE_URL
+
+    # Azure OpenAI API version — only used with azure_openai provider.
+    azure_api_version: "2024-12-01-preview"
+
+# ---------------------------------------------------------------------------
+# Output format
+# ---------------------------------------------------------------------------
+
+output:
+  format: jsonl
+  save_raw_outputs: true
+  save_prompts: true
+
+# ---------------------------------------------------------------------------
+# Report generation
+# ---------------------------------------------------------------------------
+
+reporting:
+  # Bump this version to force regeneration of all existing sample reports.
+  schema_version: "1.0"
+
+  # Which metrics to compute.
+  metrics:
+    - overall
+    - per_qa_type
+    - per_question_type
+    - per_graph_structure
+    - per_rung
+    - answer_stats
+    - binary_metrics
+    - reasoning_score
+
+  html:
+    # Set to false to skip HTML generation entirely.
+    enabled: true

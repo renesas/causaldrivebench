@@ -1,0 +1,236 @@
+# =====================================================================
+# Docker Compose for Impromptu-VLA
+# Services: inference | original | postprocess | jupyter | weight-downloader
+#
+# Quick start:
+#   cp dev.env.example dev.env
+#   docker compose --env-file /path/to/dev.env --profile setup run --rm weight-downloader
+#   docker compose --env-file /path/to/dev.env build
+#
+# Run all commands from the repo root (neurips-dataset/):
+#
+#   # 1. Download model weights (~3B params)
+#   docker compose -f evaluation/models/impromptu_vla/docker-compose.yml \
+#     --env-file /path/to/env_files/models/impromptu_vla/dev.env \
+#     --profile setup up -d
+#
+#   # 2. Build the image
+#   docker compose -f evaluation/models/impromptu_vla/docker-compose.yml \
+#     --env-file /path/to/env_files/models/impromptu_vla/dev.env build
+#
+#   # 3. Run inference
+#   docker compose -f evaluation/models/impromptu_vla/docker-compose.yml \
+#     --env-file /path/to/env_files/models/impromptu_vla/dev.env run --rm inference
+#
+#   # 4. Start Jupyter
+#   docker compose -f evaluation/models/impromptu_vla/docker-compose.yml \
+#     --env-file /path/to/env_files/models/impromptu_vla/dev.env \
+#     --profile jupyter up -d jupyter
+#
+# Default model variant: 3B_AD_finetune. Change MODEL_VARIANT in dev.env.
+# =====================================================================
+
+x-gpu: &gpu-config
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+
+x-volumes: &shared-volumes
+  - type: bind
+    source: ${RAW_DATA_DIR}
+    target: /workspace/data/raw_data
+    read_only: true
+  - type: bind
+    source: ${CAUSAL_BENCH_DIR}
+    target: /workspace/data/causal_drive_bench
+    read_only: true
+  - type: bind
+    source: ${CDB_OUTPUTS_DIR}
+    target: /workspace/data/cdb_outputs
+  - type: bind
+    source: ${CDB_REPORTS_DIR}
+    target: /workspace/data/cdb_reports
+  - type: bind
+    source: ${WEIGHTS_DIR}
+    target: /workspace/weights
+
+x-common-env: &common-env
+  HF_HOME: /workspace/weights
+  HF_TOKEN: ${HF_TOKEN:-}
+  EVAL_RUNTIME: docker
+  DEVICE: ${DEVICE:-cuda}
+  MODE: ${MODE:-full}
+  SCENE: ${SCENE:-}
+  USE_LLM_JUDGE: ${USE_LLM_JUDGE:-false}
+  JUDGE_PROVIDER: ${JUDGE_PROVIDER:-azure_foundry}
+  JUDGE_MODEL: ${JUDGE_MODEL:-claude-opus-4-6}
+  ANTHROPIC_FOUNDRY_API_KEY: ${ANTHROPIC_FOUNDRY_API_KEY:-}
+  ANTHROPIC_FOUNDRY_RESOURCE: ${ANTHROPIC_FOUNDRY_RESOURCE:-}
+  FOUNDRY_BASE_URL: ${FOUNDRY_BASE_URL:-}
+  FORCE: ${FORCE:-false}
+  AZURE_OPENAI_API_KEY: ${AZURE_OPENAI_API_KEY:-}
+  AZURE_OPENAI_ENDPOINT: ${AZURE_OPENAI_ENDPOINT:-}
+  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+  OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+  WEIGHTS_DIR: /workspace/weights
+  MODEL_REPO: ${MODEL_REPO:-aaaaaap/ImpromptuVLAModel}
+  MODEL_CHECKPOINT: ${MODEL_CHECKPOINT:-/workspace/weights/ImpromptuVLAModel/3B_AD_finetune}
+  TEMPLATE: ${TEMPLATE:-qwen2_vl}
+  TENSOR_PARALLEL_SIZE: ${TENSOR_PARALLEL_SIZE:-1}
+  DATA_PARALLEL_SIZE: ${DATA_PARALLEL_SIZE:-1}
+
+services:
+
+  # ------------------------------------------------------------------
+  # Main benchmark inference service
+  # ------------------------------------------------------------------
+  inference:
+    build:
+      context: ../../..
+      dockerfile: evaluation/models/impromptu_vla/Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    image: benchmark-impromptu-vla:latest
+
+    environment:
+      <<: *common-env
+
+    volumes: *shared-volumes
+    <<: *gpu-config
+    working_dir: /workspace/repo/evaluation/models/impromptu_vla
+    restart: "no"
+    command:
+      - uv
+      - run
+      - python
+      - /workspace/repo/evaluation/models/impromptu_vla/inference.py
+      - --bench-dir
+      - /workspace/data/causal_drive_bench/${DATASET:-causal_nuscenes}
+      - --output-base
+      - /workspace/data/cdb_outputs
+      - --weights-path
+      - /workspace/weights
+      - --device
+      - ${DEVICE:-cuda}
+      - --mode
+      - ${MODE:-full}
+      - --batch-size
+      - "${BATCH_SIZE:-1}"
+    depends_on:
+      weight-downloader:
+        condition: service_completed_successfully
+        required: false
+
+  # ------------------------------------------------------------------
+  # Original Impromptu-VLA inference (sanity check)
+  # Runs sglang_infer.py with the default QA dataset.
+  # ------------------------------------------------------------------
+  original:
+    build:
+      context: ../../..
+      dockerfile: evaluation/models/impromptu_vla/Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    image: benchmark-impromptu-vla:latest
+
+    environment:
+      <<: *common-env
+
+    volumes: *shared-volumes
+    <<: *gpu-config
+    working_dir: /workspace/model
+    restart: "no"
+    profiles: [original]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        python train/inference_scripts/sglang_infer.py \
+          --model_name_or_path ${MODEL_CHECKPOINT:-/workspace/weights/ImpromptuVLAModel/3B_AD_finetune} \
+          --save_name /workspace/data/cdb_outputs/impromptu_vla_original \
+          --template ${TEMPLATE:-qwen2_vl} \
+          --tensor_parallel_size ${TENSOR_PARALLEL_SIZE:-1} \
+          --data_parallel_size ${DATA_PARALLEL_SIZE:-1}
+
+  # ------------------------------------------------------------------
+  # Post-processing service (run with --profile postprocess)
+  # ------------------------------------------------------------------
+  postprocess:
+    image: benchmark-impromptu-vla:latest
+
+    environment:
+      <<: *common-env
+
+    volumes: *shared-volumes
+    working_dir: /workspace/repo/evaluation/models/impromptu_vla
+    restart: "no"
+    profiles: [postprocess]
+    command:
+      - uv
+      - run
+      - python
+      - /workspace/repo/evaluation/models/impromptu_vla/postprocess.py
+      - --bench-dir
+      - /workspace/data/causal_drive_bench/${DATASET:-causal_nuscenes}
+      - --run-dir
+      - ${RUN_DIR:-/workspace/data/cdb_outputs/latest}
+      - --mode
+      - ${MODE:-full}
+
+  # ------------------------------------------------------------------
+  # Jupyter notebook server (run with --profile jupyter)
+  # Starts at http://localhost:8888 — token printed to console.
+  # ------------------------------------------------------------------
+  jupyter:
+    image: benchmark-impromptu-vla:latest
+
+    environment:
+      <<: *common-env
+
+    ports:
+      - "${JUPYTER_PORT:-8888}:8888"
+    volumes: *shared-volumes
+    <<: *gpu-config
+    working_dir: /workspace/
+    restart: "no"
+    profiles: [jupyter]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        uv run jupyter notebook \
+          --ip=0.0.0.0 --port=8888 \
+          --no-browser --allow-root \
+          --NotebookApp.token=''
+
+  # ------------------------------------------------------------------
+  # Weight downloader (run with --profile setup)
+  # Downloads MODEL_VARIANT from aaaaaap/ImpromptuVLAModel.
+  # ------------------------------------------------------------------
+  weight-downloader:
+    image: python:3.11-slim
+
+    environment:
+      <<: *common-env
+
+    volumes:
+      - type: bind
+        source: ${WEIGHTS_DIR}
+        target: /workspace/weights
+    restart: "no"
+    profiles: [setup]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        pip install -q huggingface_hub && \
+        hf auth login --token "$HF_TOKEN" && \
+        hf download "$MODEL_REPO" \
+          --include "${MODEL_VARIANT:-3B_AD_finetune}/*" \
+          --local-dir /workspace/weights/ImpromptuVLAModel

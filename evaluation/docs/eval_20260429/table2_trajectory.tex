@@ -1,0 +1,16 @@
+\begin{table}[h!]
+  \caption{Trajectory-level evaluation. BTE-ADE measures sensitivity of the planned trajectory to a factually incorrect rationale; near-zero BTE-ADE indicates the rationale is decorative. CTE-ADE-R2 covers Rung 2 binary interventions (CDE, NIE, NDE, AB) and CTE-ADE-R3 covers Rung 3 counterfactuals (CR, NC, WC, TWC). Trajectory-producing models only.}
+  \label{tab:trajectory}
+  \centering
+  \footnotesize
+  \begin{tabular}{l c c c}
+    \toprule
+    Model & BTE-ADE (m) $\uparrow$ & CTE-ADE-R2 (m) $\downarrow$ & CTE-ADE-R3 (m) $\downarrow$ \\
+    \midrule
+    WiseAD                           & 2.90 & 3.50 & 1.76 \\
+    RecogDrive                       & 2.01 & 3.69 & 1.94 \\
+    OpenREAD                         & 3.97 & \texttt{[X]} & \texttt{[X]} \\
+    AlpaMayo-1.5                     & 1.33 & 1.81 & 1.47 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

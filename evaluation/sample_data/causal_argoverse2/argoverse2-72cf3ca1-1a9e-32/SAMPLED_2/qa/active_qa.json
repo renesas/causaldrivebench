@@ -1,0 +1,114 @@
+{
+  "questions": [
+    {
+      "id": "Q1",
+      "graph_structure": "Direct",
+      "question_type": "CaI",
+      "rung": 0,
+      "isolation_safe": true,
+      "counterfactual_frame": null,
+      "preamble": "You are driving straight on a multi-lane road approaching a signalized intersection. The road surface is dry but there is snow on the shoulders. A large semi-truck with trailer is traveling in the adjacent lane to your left, and a sedan is following behind you in your lane.",
+      "question": "Which of the following is currently influencing your driving behavior?",
+      "answer_format": "mcq",
+      "options": [
+        "A) The yellow traffic signal ahead at the intersection, which requires you to slow down and prepare to stop",
+        "B) The semi-truck with trailer in the adjacent lane to your left, which is limiting your available lane space",
+        "C) The sedan following behind you in your lane, which is restricting how quickly you can brake",
+        "D) The crosswalk markings at the intersection ahead, which are preventing you from proceeding"
+      ],
+      "correct_answer": "A",
+      "reasoning": "You are decelerating as you approach the intersection, and the yellow traffic signal overhead is clearly the reason. The signal requires you to slow down and prepare to stop before entering the intersection. The semi-truck in the adjacent lane is not encroaching into your lane or forcing any lateral adjustment, so it is not influencing your driving. The sedan behind you is simply following at a safe distance and is not constraining your braking decisions at this moment. The crosswalk at the intersection is unoccupied and not independently affecting your behavior beyond what the yellow signal already demands.",
+      "meta": {
+        "referenced_elements": [
+          "n1"
+        ],
+        "causal_status": "active_sustaining",
+        "effect_types": [
+          "INHIBITS_PROCEED"
+        ],
+        "full_graph_conditioned": false,
+        "redundancy_check": "none",
+        "behavioral_impact": null,
+        "confounding_type": null,
+        "counterfactual_intervention": null,
+        "distractor_types": {
+          "A": "correct",
+          "B": "mis_causal_visual",
+          "C": "mis_visual",
+          "D": "mis_causal"
+        }
+      }
+    },
+    {
+      "id": "Q2",
+      "graph_structure": "Direct",
+      "question_type": "CR",
+      "rung": 3,
+      "isolation_safe": false,
+      "counterfactual_frame": "sustaining_t0",
+      "preamble": "You are driving straight on a multi-lane road approaching a signalized intersection. There is a yellow traffic signal visible ahead. You have been slowing down steadily as you approach the intersection. A semi-truck with trailer is in the adjacent lane to your left, and a sedan follows behind you.",
+      "question": "If the traffic signal ahead turned green right now, would you still be slowing down as you are?",
+      "answer_format": "binary",
+      "correct_answer": "No",
+      "reasoning": "You are currently decelerating because the yellow signal ahead requires you to prepare to stop before the intersection. If that signal turned green right now, you would no longer need to slow down and could maintain or increase your speed to proceed straight through. No other element is currently causing you to decelerate. The truck beside you is staying in its own lane and the sedan behind you is not constraining your forward speed. So without the yellow signal, you would not be slowing down like this.",
+      "meta": {
+        "referenced_elements": [
+          "n1"
+        ],
+        "causal_status": "active_sustaining",
+        "effect_types": [
+          "INHIBITS_PROCEED"
+        ],
+        "full_graph_conditioned": true,
+        "redundancy_check": "unique",
+        "behavioral_impact": "speed_changed",
+        "confounding_type": null,
+        "counterfactual_intervention": {
+          "target_entity_id": "n1",
+          "target_entity_type": "infrastructure",
+          "operation": "state_change",
+          "operation_detail": "Traffic signal changes from yellow to green",
+          "evaluation_mode": "llm",
+          "temporal_anchor": "t0",
+          "committed_maneuver": null,
+          "frozen_entities": [
+            "vehicle_3"
+          ],
+          "propagated_descendants": [],
+          "trajectory_changes": true
+        }
+      }
+    },
+    {
+      "id": "Q3",
+      "graph_structure": "Direct",
+      "question_type": "SC",
+      "rung": 3,
+      "isolation_safe": false,
+      "counterfactual_frame": "sustaining_t0",
+      "preamble": "You are driving straight on a multi-lane road approaching a signalized intersection with a yellow traffic signal visible ahead. You have been steadily decelerating over the last couple of seconds. A semi-truck with trailer occupies the adjacent lane to your left, a nearly stopped car is ahead in that adjacent lane, and a sedan follows behind you in your lane.",
+      "question": "Is the yellow traffic signal ahead, on its own, enough to explain why you are currently slowing down?",
+      "answer_format": "binary",
+      "correct_answer": "Yes",
+      "reasoning": "You are decelerating as you approach the intersection, and the yellow signal is the only element actively requiring you to reduce speed right now. The truck and its trailer in the adjacent lane are not intruding into your lane and are not making you slow down. The sedan behind you is following at a comfortable distance and not affecting your forward speed. The crosswalk ahead is empty. The yellow signal alone fully accounts for your current deceleration because it demands that you prepare to stop before entering the intersection.",
+      "meta": {
+        "referenced_elements": [
+          "n1"
+        ],
+        "causal_status": "active_sustaining",
+        "effect_types": [
+          "INHIBITS_PROCEED"
+        ],
+        "full_graph_conditioned": true,
+        "redundancy_check": "unique",
+        "behavioral_impact": "speed_changed",
+        "confounding_type": null,
+        "counterfactual_intervention": null
+      }
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 51880,
+    "completion_tokens": 2315
+  }
+}

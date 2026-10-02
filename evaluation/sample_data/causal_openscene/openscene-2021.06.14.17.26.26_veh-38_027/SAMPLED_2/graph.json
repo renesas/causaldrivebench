@@ -1,0 +1,145 @@
+{
+  "scene_id": "las_vegas_strip_straight",
+  "scene_context": {
+    "road_geometry": "Wide multi-lane divided road (Las Vegas Strip), approximately 4-5 lanes in each direction separated by lane dividers. Right side bounded by bollard-lined sidewalk with commercial establishments. Pedestrian crosswalks present behind ego at a cross-street intersection. Green directional arrows indicate all lanes in ego's section flow in the same direction (northbound).",
+    "navigation_intent": "GO STRAIGHT - ego continues forward in current lane on the Strip."
+  },
+  "ego_state": {
+    "speed_mps": "10.824",
+    "inferred_acceleration": "constant",
+    "inferred_heading_change": "straight",
+    "behavior_matches_nav": "true",
+    "behavior_explanation": "Ego maintains a near-constant speed of approximately 10.8 m/s traveling straight on the Las Vegas Strip. No obstacles, signals, or other constraints are affecting ego's current trajectory."
+  },
+  "nodes": [
+    {
+      "id": "ego",
+      "type": "EGO",
+      "category": "vehicle.car",
+      "label": "Ego vehicle",
+      "state": "traveling straight at constant speed",
+      "position_relative_to_ego": "center",
+      "visible_in": "BEV, STATE",
+      "motion": {
+        "is_static": "false",
+        "direction": "same_direction",
+        "relative_speed": "N/A",
+        "trajectory_prediction": "Continue straight at approximately 10.8 m/s"
+      }
+    },
+    {
+      "id": "vehicle_1",
+      "type": "OTHER_AGENT",
+      "category": "vehicle.car",
+      "label": "Silver sedan in ego's lane ahead",
+      "state": "traveling straight, faster than ego",
+      "position_relative_to_ego": "ahead, same lane, slightly left",
+      "visible_in": "CAM_FRONT, BEV, STATE",
+      "motion": {
+        "is_static": "false",
+        "direction": "same_direction",
+        "relative_speed": "moderate",
+        "trajectory_prediction": "Continue straight, pulling further ahead of ego"
+      }
+    }
+  ],
+  "ego_edges": [
+    {
+      "source": "vehicle_1",
+      "target": "ego",
+      "effect_type": "CONSTRAINS_LONGITUDINAL",
+      "mechanism": "Lead vehicle in ego's lane, currently faster but a single deceleration step would make it a live speed constraint",
+      "affected_state": [
+        "speed",
+        "acceleration"
+      ],
+      "active": false,
+      "causal_status": "dormant",
+      "justification": "vehicle_1 is in ego's lane ahead at x=20.4, traveling at 12.3 m/s vs ego's 10.8 m/s. It is pulling away so ego is not currently constrained, but a single-step deceleration by vehicle_1 would immediately create a speed constraint for ego. Per TREE 5 Q6 terminal assignment."
+    }
+  ],
+  "inter_node_edges": [],
+  "distractors": [
+    {
+      "id": "vehicle_2",
+      "type": "OTHER_AGENT",
+      "category": "vehicle.car",
+      "position_relative_to_ego": "ahead-left, adjacent lane",
+      "rejection_reason": "TREE 7 Q2: Entity is ahead and pulling away (gap increased from x=4.6 to x=29.0 over 1.5s, speed 16.4 m/s vs ego 10.8 m/s). Disqualifier applies — no CONSTRAINS_LATERAL. Q7: not merging into ego's lane. DISTRACTOR."
+    },
+    {
+      "id": "pedestrian_1",
+      "type": "OTHER_AGENT",
+      "category": "human.pedestrian",
+      "position_relative_to_ego": "ahead-right, on sidewalk",
+      "rejection_reason": "TREE 1 Q5: Physically separated from ego's road by bollard barrier visible in CAM_FRONT and CAM_FRONT_RIGHT across all timesteps. No crosswalk exception — pedestrian is walking along sidewalk parallel to road, not near any crosswalk on ego's forward path."
+    },
+    {
+      "id": "pedestrian_2",
+      "type": "OTHER_AGENT",
+      "category": "human.pedestrian",
+      "position_relative_to_ego": "ahead-right, on sidewalk",
+      "rejection_reason": "TREE 1 Q5: Physically separated by bollard barrier. Walking along sidewalk at y=-10.4, no crosswalk on ego's forward path applies."
+    },
+    {
+      "id": "pedestrian_3",
+      "type": "OTHER_AGENT",
+      "category": "human.pedestrian",
+      "position_relative_to_ego": "ahead-right, on sidewalk",
+      "rejection_reason": "TREE 1 Q5: Physically separated by bollard barrier. On walkway at y=-9.3, walking parallel to road."
+    },
+    {
+      "id": "pedestrian_4",
+      "type": "OTHER_AGENT",
+      "category": "human.pedestrian",
+      "position_relative_to_ego": "ahead-right, on sidewalk",
+      "rejection_reason": "TREE 1 Q5: Physically separated by bollard barrier at y=-10.1, walking along sidewalk."
+    },
+    {
+      "id": "pedestrian_5",
+      "type": "OTHER_AGENT",
+      "category": "human.pedestrian",
+      "position_relative_to_ego": "ahead-right, on sidewalk",
+      "rejection_reason": "TREE 1 Q5: Physically separated by bollard barrier visible in cameras. On walkway at y=-10.4, walking along sidewalk."
+    },
+    {
+      "id": "pedestrian_6",
+      "type": "OTHER_AGENT",
+      "category": "human.pedestrian",
+      "position_relative_to_ego": "ahead-right, on sidewalk",
+      "rejection_reason": "TREE 1 Q5: Physically separated by bollard barrier. On walkway at y=-11.2, walking along sidewalk."
+    },
+    {
+      "id": "pedestrian_7",
+      "type": "OTHER_AGENT",
+      "category": "human.pedestrian",
+      "position_relative_to_ego": "behind-right, on sidewalk",
+      "rejection_reason": "TREE 1 Q5: Behind ego at x=-21.8, physically separated by bollard barrier visible in CAM_BACK. Nearby crosswalk is behind ego, not on ego's forward path for GO STRAIGHT."
+    },
+    {
+      "id": "pedestrian_8",
+      "type": "OTHER_AGENT",
+      "category": "human.pedestrian",
+      "position_relative_to_ego": "behind-right, on sidewalk",
+      "rejection_reason": "TREE 1 Q5: Behind ego at x=-22.7, physically separated by bollard barrier visible in CAM_BACK. Crosswalk behind ego not on forward path."
+    },
+    {
+      "id": "pedestrian_9",
+      "type": "OTHER_AGENT",
+      "category": "human.pedestrian",
+      "position_relative_to_ego": "behind-right, on sidewalk",
+      "rejection_reason": "TREE 1 Q5: Behind ego at x=-21.8, physically separated by bollard barrier visible in CAM_BACK. Crosswalk behind ego not on forward path."
+    },
+    {
+      "id": "pedestrian_10",
+      "type": "OTHER_AGENT",
+      "category": "human.pedestrian",
+      "position_relative_to_ego": "behind-right, on sidewalk",
+      "rejection_reason": "TREE 1 Q5: Behind ego at x=-27.9, physically separated by bollard barrier visible in CAM_BACK. On walkway, not on ego's forward path."
+    }
+  ],
+  "_usage": {
+    "prompt_tokens": 54392,
+    "completion_tokens": 3622
+  }
+}

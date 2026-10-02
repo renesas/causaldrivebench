@@ -1,0 +1,26 @@
+{
+  "data_root": "/workspace/data",
+  "records": "records/openscene",
+  "outputs": "outputs/causal_openscene",
+  "n_samples": 1,
+  "missing_graph": [],
+  "missing_qa": [],
+  "samples": [
+    {
+      "scene": "openscene-2021.06.14.17.26.26_veh-38_027",
+      "sample": "SAMPLED_2",
+      "files": {
+        "meta": true,
+        "state": true,
+        "calib": true,
+        "frames": true,
+        "graph": true,
+        "qa": {
+          "active_qa.json": true,
+          "dormant_qa.json": true,
+          "distractor_qa.json": true
+        }
+      }
+    }
+  ]
+}

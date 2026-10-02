@@ -1,0 +1,22 @@
+# =====================================================================
+# Evaluation wrapper dependencies for Alpamayo 1.0
+#
+# NOTE: Alpamayo's own dependencies (torch, transformers, flash-attn,
+# etc.) are managed by the cloned repo's pyproject.toml via uv.
+# This file covers only the benchmark evaluation framework scripts
+# (inference.py, dataloader.py, postprocess.py).
+# =====================================================================
+
+# TODO: May be these are overriding the uv config in alpamayo. ensure it's not conflicting.
+
+# # Progress / serialisation
+# tqdm
+# jsonlines
+
+# LLM Judge (evaluation/common/llm_judge.py)
+anthropic>=0.40.0
+openai>=1.0.0
+
+
+# Notebook server
+jupyter

@@ -1,0 +1,114 @@
+{
+  "questions": [
+    {
+      "id": "DQ1",
+      "rung": 0,
+      "category": "DQ",
+      "subtype": "DQ-Binary",
+      "preamble": "You are driving straight on a wide multi-lane boulevard at a steady speed. A silver sedan is visible ahead in your lane, traveling in the same direction.",
+      "question": "Is the silver sedan ahead in your lane currently restricting your speed or requiring you to adjust your driving?",
+      "answer_format": "binary",
+      "correct_answer": "No",
+      "reasoning": "The silver sedan ahead is moving faster than you and the gap between you is growing. You can see across the timesteps that it pulls further away in both the front camera and the overhead view. Because it is not slowing you down or blocking your path, it is not currently affecting your driving. If it were to slow down, that would change, but right now you are free to maintain your speed without any adjustment.",
+      "activation_plausibility": "N/A",
+      "meta": {
+        "referenced_elements": [
+          "vehicle_1"
+        ],
+        "causal_status": "dormant",
+        "effect_types": [
+          "CONSTRAINS_LONGITUDINAL"
+        ],
+        "latency_mechanism": "decoupled",
+        "shielding_element_status": "N/A",
+        "confounding_type": null,
+        "trajectory_sensitivity": "N/A",
+        "influence_classification": "N/A",
+        "distractor_types": {},
+        "counterfactual_intervention": null
+      }
+    },
+    {
+      "id": "EL1",
+      "rung": 1,
+      "category": "EL",
+      "subtype": "EL-Decouple",
+      "preamble": "You are driving straight at a steady speed on a wide multi-lane boulevard. A silver sedan is ahead of you in the same lane, clearly visible through your windshield and growing smaller over time as the gap between you increases.",
+      "question": "Is the reason the silver sedan ahead is not affecting your driving that it is traveling faster than you and the distance between you is increasing?",
+      "answer_format": "binary",
+      "correct_answer": "Yes",
+      "reasoning": "The silver sedan is in your lane ahead, which is exactly the kind of vehicle that would normally restrict your speed. However, looking at the front camera across the four timesteps, the sedan is visibly pulling away from you, appearing smaller and further ahead over time. The overhead view confirms the gap is growing. Because it is moving faster, the distance between you keeps increasing, so there is no speed constraint on you. If it were traveling at your speed or slower, it would immediately become a factor you would need to respond to.",
+      "activation_plausibility": "N/A",
+      "meta": {
+        "referenced_elements": [
+          "vehicle_1"
+        ],
+        "causal_status": "dormant",
+        "effect_types": [
+          "CONSTRAINS_LONGITUDINAL"
+        ],
+        "latency_mechanism": "decoupled",
+        "shielding_element_status": "N/A",
+        "confounding_type": null,
+        "trajectory_sensitivity": "N/A",
+        "influence_classification": "N/A",
+        "distractor_types": {},
+        "counterfactual_intervention": null
+      }
+    },
+    {
+      "id": "AB1",
+      "rung": 2,
+      "category": "AB",
+      "subtype": "AB-Element",
+      "preamble": "You are driving straight at a steady speed on a wide multi-lane boulevard. The silver sedan ahead in your lane is currently about four car-lengths ahead and pulling away from you. You are traveling at roughly 24 mph with no speed adjustments, and your projected path continues straight at the same speed for the next several seconds.",
+      "question": "If the silver sedan ahead in your lane suddenly braked hard, would you need to adjust your speed or steering?",
+      "answer_format": "binary",
+      "correct_answer": "Yes",
+      "reasoning": "The silver sedan is only about four car-lengths ahead in your lane. At your current speed of roughly 24 mph, you are covering that distance in just a few seconds. If the sedan braked hard, the gap that is currently growing would shrink rapidly, and the sedan would quickly become slower than you. With only about 20 meters of separation and your vehicle closing that gap, you would need to brake to avoid a rear-end collision. There is no lane offset between you and the sedan since you share the same lane, so steering alone would require a full lane change. The combination of modest gap and your steady forward speed means a hard brake by the sedan would immediately demand a response from you.",
+      "activation_plausibility": "High",
+      "meta": {
+        "referenced_elements": [
+          "vehicle_1"
+        ],
+        "causal_status": "dormant",
+        "effect_types": [
+          "CONSTRAINS_LONGITUDINAL"
+        ],
+        "latency_mechanism": "N/A",
+        "shielding_element_status": "N/A",
+        "confounding_type": null,
+        "trajectory_sensitivity": "trajectory_dependent",
+        "influence_classification": "unique",
+        "distractor_types": {},
+        "counterfactual_intervention": {
+          "target_entity_id": "vehicle_1",
+          "target_entity_type": "agent",
+          "operation": "activate",
+          "operation_detail": "Silver sedan ahead in ego's lane brakes hard, rapidly decelerating to well below ego's current speed",
+          "evaluation_mode": "planner",
+          "temporal_anchor": "t0",
+          "frozen_entities": [
+            "vehicle_2",
+            "pedestrian_1",
+            "pedestrian_2",
+            "pedestrian_3",
+            "pedestrian_4",
+            "pedestrian_5",
+            "pedestrian_6",
+            "pedestrian_7",
+            "pedestrian_8",
+            "pedestrian_9",
+            "pedestrian_10"
+          ],
+          "propagated_descendants": [],
+          "trajectory_changes": true
+        }
+      }
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 44441,
+    "completion_tokens": 2580
+  }
+}

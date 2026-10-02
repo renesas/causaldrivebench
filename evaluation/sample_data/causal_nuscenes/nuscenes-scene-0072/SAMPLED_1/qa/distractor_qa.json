@@ -1,0 +1,66 @@
+{
+  "questions": [
+    {
+      "id": "CI1",
+      "rung": 1,
+      "category": "CI",
+      "difficulty": "medium",
+      "spatial_context": null,
+      "question": "You're slowing down significantly right now. Is that large truck visible behind you the reason you're easing off the throttle?",
+      "answer_format": "binary",
+      "correct_answer": "No",
+      "reasoning": "No. I am decelerating because of the crosswalk ahead at the intersection, which is on my forward path and requires caution for any pedestrians who may be crossing. The large truck behind me is parked in a lot off the roadway to my right-rear, separated from my lane by a curb and walkway. It is stationary, not following me, and has no influence on my speed. My deceleration is entirely about the crosswalk ahead, not anything behind me.",
+      "meta": {
+        "target_element": "truck_1",
+        "target_temporal_status": "present_at_t0",
+        "target_last_relevant_time": null,
+        "visual_salience": "High",
+        "counterfactual_coherence": "N/A",
+        "counterfactual_premise": null,
+        "scene_specificity": "N/A",
+        "behavioral_impact": "N/A",
+        "contrast_pair": false,
+        "contrast_active_element": null,
+        "referenced_active_elements": [
+          "n1"
+        ],
+        "empty_graph_fallback": false,
+        "counterfactual_intervention": null,
+        "distractor_types": {}
+      }
+    },
+    {
+      "id": "NI1",
+      "rung": 2,
+      "category": "NI",
+      "difficulty": "medium",
+      "spatial_context": null,
+      "question": "Picture the crosswalk markings at the intersection ahead gone entirely. Now also picture that large truck behind you gone. Which removal would actually change what you're doing right now \u2014 the crosswalk, the truck, or both?",
+      "answer_format": "binary",
+      "correct_answer": "No",
+      "reasoning": "Removing the truck behind me would change nothing about my driving. It is parked off the roadway in a lot to my right-rear, completely separated from my travel lane. My deceleration is caused by the crosswalk markings ahead at the intersection, which require me to slow down and watch for pedestrians. If the crosswalk were removed, I would have less reason to slow this much. The truck's presence or absence is irrelevant to any decision I am making.",
+      "meta": {
+        "target_element": "truck_1",
+        "target_temporal_status": "present_at_t0",
+        "target_last_relevant_time": null,
+        "visual_salience": "High",
+        "counterfactual_coherence": "N/A",
+        "counterfactual_premise": null,
+        "scene_specificity": "N/A",
+        "behavioral_impact": "no_change",
+        "contrast_pair": true,
+        "contrast_active_element": "n1",
+        "referenced_active_elements": [
+          "n1"
+        ],
+        "empty_graph_fallback": false,
+        "counterfactual_intervention": null,
+        "distractor_types": {}
+      }
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 45226,
+    "completion_tokens": 2116
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "scene": "nuscenes-scene-0072",
+  "maneuver_type": "SAMPLED_1",
+  "nav_command": "GO STRAIGHT",
+  "dataset": "nuscenes",
+  "nuscenes_scene": "scene-0072",
+  "location": "boston-seaport",
+  "t0_sample_token": "99c3a7061764434d916a43a06c28a5e3",
+  "t0_frame_idx": 11,
+  "sample_idx": 1,
+  "timestamp": 1533153635698275,
+  "n_agents": 5
+}

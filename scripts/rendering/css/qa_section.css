@@ -1,0 +1,99 @@
+/* ── Q&A Section ── */
+.qa-section-title {
+    max-width: 1600px; margin: 20px auto 0 auto; font-size: 20px; font-weight: 700;
+    border-bottom: 2px solid #333; padding-bottom: 8px;
+}
+.qa-tabs {
+    max-width: 1600px; margin: 12px auto 0 auto;
+    display: flex; gap: 0; border-bottom: 2px solid #333;
+}
+.qa-tab {
+    padding: 10px 24px; cursor: pointer; font-size: 14px; font-weight: 600;
+    color: #888; border-bottom: 3px solid transparent; transition: all 0.2s; user-select: none;
+}
+.qa-tab:hover { color: #ccc; }
+.qa-tab.active { color: #3498DB; border-bottom-color: #3498DB; }
+.qa-tab-content { display: none; max-width: 1600px; margin: 0 auto; }
+.qa-tab-content.active { display: block; }
+.qa-tab-badge {
+    display: inline-block; background: #16213e; color: #3498DB; padding: 1px 8px;
+    border-radius: 10px; font-size: 11px; margin-left: 6px; font-weight: 400;
+}
+.qa-card {
+    background: #16213e; border: 1px solid #333; border-radius: 8px;
+    padding: 16px; margin: 10px 0; transition: border-color 0.2s;
+}
+.qa-card:hover { border-color: #555; }
+.qa-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.qa-id {
+    font-weight: 700; font-size: 15px; color: #fff;
+    background: #0f0f1a; padding: 2px 10px; border-radius: 4px; border: 1px solid #444;
+}
+.qa-preamble {
+    color: #888; font-size: 12px; font-style: italic; margin-bottom: 8px;
+    padding: 8px; background: #0f0f1a; border-radius: 4px; border-left: 3px solid #333;
+}
+.qa-question {
+    color: #eee; font-size: 14px; margin-bottom: 8px; line-height: 1.6;
+    padding: 10px; background: #1a2744; border-radius: 6px; border-left: 3px solid #3498DB;
+}
+.qa-answer {
+    color: #ccc; font-size: 13px; line-height: 1.6; margin-bottom: 8px;
+    padding: 10px; background: #0f1a2e; border-radius: 6px; border-left: 3px solid #2ECC71;
+}
+.qa-causes { font-size: 12px; color: #aaa; margin-bottom: 6px; }
+.cause-tag {
+    display: inline-block; background: #F39C1222; color: #F39C12; border: 1px solid #F39C1255;
+    padding: 2px 8px; border-radius: 4px; font-size: 11px; margin: 2px 4px 2px 0;
+}
+.qa-meta { font-size: 11px; color: #666; font-family: monospace; margin-top: 4px; }
+.cf-card {
+    background: #16213e; border: 1px solid #E74C3C44; border-radius: 8px;
+    padding: 16px; margin: 10px 0;
+}
+.cf-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.cf-intervention {
+    background: #1a1a2e; border: 1px solid #444; border-radius: 6px;
+    padding: 10px; margin: 10px 0; font-size: 13px; line-height: 1.6;
+}
+.cf-intervention code {
+    background: #E74C3C22; color: #E74C3C; padding: 2px 8px; border-radius: 4px;
+    font-family: monospace; font-size: 13px;
+}
+.traj-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12px; }
+.traj-table th {
+    background: #0f0f1a; padding: 8px 10px; text-align: center; font-weight: 600;
+    border-bottom: 2px solid #444; color: #aaa; font-size: 11px; text-transform: uppercase;
+}
+.traj-table td { padding: 8px 10px; text-align: center; border-bottom: 1px solid #333; }
+.cf-best {
+    background: #2ECC7111; border: 1px solid #2ECC7144; border-radius: 8px;
+    padding: 14px; margin: 12px 0;
+}
+.cf-best-header { font-size: 15px; font-weight: 700; color: #2ECC71; margin-bottom: 8px; }
+.cf-bev-btn {
+    background: #E74C3C22; color: #E74C3C; border: 1px solid #E74C3C55;
+    padding: 8px 20px; border-radius: 6px; cursor: pointer; font-size: 13px;
+    font-weight: 600; transition: all 0.2s;
+}
+.cf-bev-btn:hover { background: #E74C3C44; }
+.cf-img-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 8px; margin-top: 10px;
+}
+.cf-img-grid img { width: 100%; border-radius: 6px; border: 1px solid #333; cursor: pointer; }
+.cf-img-grid .img-label { font-size: 11px; color: #888; text-align: center; margin-top: 4px; }
+.cf-rejected {
+    background: #E74C3C11; border: 1px solid #E74C3C33; border-radius: 6px;
+    padding: 10px; margin: 10px 0; font-size: 12px; color: #aaa;
+}
+.cf-rejected ul { margin-left: 16px; margin-top: 4px; }
+.cf-rejected li { margin: 4px 0; }
+/* Lightbox */
+.qa-lightbox {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9); z-index: 9999; justify-content: center; align-items: center;
+    cursor: pointer;
+}
+.qa-lightbox.active { display: flex; }
+.qa-lightbox img { max-width: 95%; max-height: 95%; border-radius: 8px; }

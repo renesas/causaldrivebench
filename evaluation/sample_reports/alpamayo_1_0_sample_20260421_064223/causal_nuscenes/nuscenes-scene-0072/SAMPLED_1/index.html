@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>nuscenes-scene-0072/SAMPLED_1 — CausalDriveBench</title>
+<style>/* CausalDriveBench evaluation report stylesheet
+   Embedded inline in every generated HTML file for full portability.
+   Edit here, not in html_reporter.py. */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f0f2f5; color: #1a1a2e; line-height: 1.6; font-size: 14px;
+}
+a { color: #2563eb; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── Page header ── */
+.page-header {
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d6a9f 100%);
+  color: #fff; padding: 18px 28px;
+  display: flex; justify-content: space-between; align-items: flex-start;
+}
+.page-header-left h1 { font-size: 1.25em; font-weight: 700; letter-spacing: 0.02em; }
+.breadcrumb { font-size: 0.82em; margin-top: 6px; opacity: 0.85; }
+.breadcrumb a { color: #93c5fd; }
+.breadcrumb span { margin: 0 6px; opacity: 0.6; }
+.container { max-width: 1280px; margin: 0 auto; padding: 20px 24px; }
+
+/* ── Download PDF button (header) ── */
+.btn-pdf {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 16px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.12); color: #fff; cursor: pointer;
+  font-size: 0.82em; font-weight: 600; white-space: nowrap;
+  transition: background 0.15s; align-self: flex-start; margin-top: 2px;
+  text-decoration: none;
+}
+.btn-pdf:hover { background: rgba(255,255,255,0.24); color: #fff; }
+
+/* ── Cards ── */
+.card {
+  background: #fff; border-radius: 10px; padding: 20px 24px;
+  margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.08);
+}
+.card-title {
+  font-size: 1em; font-weight: 700; color: #374151;
+  padding-bottom: 10px; margin-bottom: 14px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+/* ── Metric cards grid ── */
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px; margin-bottom: 20px;
+}
+.metric-card {
+  background: #f8fafc; border: 1px solid #e2e8f0;
+  border-radius: 8px; padding: 16px; text-align: center;
+}
+.metric-card .big { font-size: 2.1em; font-weight: 800; color: #1e3a5f; }
+.metric-card .sub { font-size: 0.78em; color: #6b7280; margin-top: 2px; }
+
+/* ── Accuracy bars ── */
+.acc-row { display: flex; align-items: center; gap: 12px; margin: 6px 0; }
+.acc-label {
+  width: 120px; font-size: 0.85em; font-weight: 600; color: #374151;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.acc-track { flex: 1; height: 18px; background: #e5e7eb; border-radius: 9px; overflow: hidden; }
+.acc-fill  { height: 100%; border-radius: 9px; }
+.acc-fill.hi  { background: #16a34a; }
+.acc-fill.mid { background: #d97706; }
+.acc-fill.lo  { background: #dc2626; }
+.acc-value { width: 90px; text-align: right; font-size: 0.85em; font-weight: 600; color: #374151; }
+
+/* ── Tables ── */
+table { width: 100%; border-collapse: collapse; font-size: 0.87em; }
+thead th {
+  background: #f1f5f9; padding: 10px 12px; text-align: left;
+  font-weight: 700; border-bottom: 2px solid #cbd5e1; white-space: nowrap;
+}
+tbody td { padding: 9px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: #f8fafc; }
+tbody tr.correct { border-left: 3px solid #16a34a; }
+tbody tr.wrong   { border-left: 3px solid #dc2626; }
+
+/* ── Badges ── */
+.badge {
+  display: inline-block; padding: 2px 8px; border-radius: 12px;
+  font-size: 0.78em; font-weight: 700; letter-spacing: 0.02em;
+}
+.badge-ladder     { background: #dbeafe; color: #1d4ed8; }
+.badge-dormant    { background: #fef9c3; color: #854d0e; }
+.badge-distractor { background: #fee2e2; color: #991b1b; }
+.badge-unknown    { background: #f1f5f9; color: #475569; }
+.badge-correct    { background: #dcfce7; color: #15803d; }
+.badge-wrong      { background: #fee2e2; color: #b91c1c; }
+/* Rung badges (Pearl's Ladder of Causation) */
+.badge-rung-0 { background: #f1f5f9; color: #475569; }
+.badge-rung-1 { background: #dbeafe; color: #1d4ed8; }
+.badge-rung-2 { background: #ede9fe; color: #6d28d9; }
+.badge-rung-3 { background: #fce7f3; color: #9d174d; }
+/* Question-type badges */
+.badge-qtype { background: #ecfdf5; color: #065f46; }
+
+/* ── SVG bar charts ── */
+.svg-chart-wrap { margin: 12px 0; overflow-x: auto; }
+.svg-chart-wrap svg text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+.chart-section { margin-top: 18px; }
+.chart-section-title { font-size: 0.88em; font-weight: 700; color: #374151; margin-bottom: 6px; }
+
+/* ── Binary metrics table ── */
+.binary-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 10px 0;
+}
+.binary-cell { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;
+  padding: 10px; text-align: center; }
+.binary-cell .val { font-size: 1.4em; font-weight: 800; color: #1e3a5f; }
+.binary-cell .lbl { font-size: 0.78em; color: #6b7280; margin-top: 2px; }
+
+/* ── Metadata breakdown section ── */
+.meta-breakdown { margin-top: 18px; }
+.meta-breakdown-title { font-size: 0.88em; font-weight: 700; color: #374151; margin-bottom: 8px; }
+.meta-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+
+/* ── Collapsible model output ── */
+details summary {
+  cursor: pointer; color: #2563eb; font-size: 0.85em;
+  user-select: none; padding: 2px 0;
+}
+.output-text {
+  white-space: pre-wrap; word-break: break-word;
+  background: #f8fafc; border: 1px solid #e2e8f0;
+  border-radius: 6px; padding: 10px 12px; font-size: 0.83em;
+  font-family: 'SF Mono', 'Fira Code', monospace; margin-top: 6px;
+  max-height: 300px; overflow-y: auto;
+}
+
+/* ── MCQ options ── */
+.qa-options { list-style: none; margin: 4px 0 0; padding: 0; }
+.qa-option {
+  padding: 3px 8px; margin: 2px 0; border-radius: 4px;
+  font-size: 0.82em; border: 1px solid transparent;
+}
+.qa-option-correct {
+  background: #dcfce7; border-color: #16a34a; color: #14532d; font-weight: 600;
+}
+.qa-option-predicted-wrong {
+  background: #fee2e2; border-color: #dc2626; color: #7f1d1d;
+}
+
+/* ── Expected reasoning ── */
+.reasoning-text {
+  white-space: pre-wrap; word-break: break-word;
+  background: #fffbeb; border: 1px solid #d97706;
+  border-radius: 6px; padding: 8px 10px; font-size: 0.82em;
+  color: #451a03; margin-top: 4px;
+  max-height: 200px; overflow-y: auto;
+}
+
+/* ── LLM judge score (per-question and aggregate) ── */
+.judge-score-grid {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;
+}
+.judge-dim {
+  background: #f8fafc; border: 1px solid #e2e8f0;
+  border-radius: 6px; padding: 8px 10px; text-align: center; min-width: 90px;
+}
+.judge-composite { border-color: #2563eb; background: #eff6ff; }
+.dim-name { font-size: 0.72em; color: #6b7280; margin-top: 2px; }
+.dim-val  { font-size: 1.1em; font-weight: 700; color: #1e3a5f; }
+.judge-composite .dim-val { font-size: 1.4em; font-weight: 800; }
+
+/* ── Run cards (root page) ── */
+.run-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+.run-card {
+  background: #fff; border-radius: 10px; padding: 18px 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.08); border-top: 4px solid #2563eb;
+}
+.run-card h3 { font-size: 0.95em; font-weight: 700; margin-bottom: 10px; word-break: break-all; }
+.run-card .run-acc { font-size: 1.8em; font-weight: 800; color: #1e3a5f; }
+.run-card .run-meta { font-size: 0.8em; color: #6b7280; margin-top: 6px; }
+
+/* ── Model comparison ── */
+.model-section { margin-bottom: 20px; }
+
+/* ── Print / PDF visibility ── */
+.screen-only { /* visible by default */ }
+.print-only  { display: none; }
+
+/* ── QA Accordion ── */
+.qa-accordion { display: flex; flex-direction: column; gap: 5px; }
+.qa-item { border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; }
+.qa-item.correct { border-left: 4px solid #16a34a; }
+.qa-item.wrong   { border-left: 4px solid #dc2626; }
+.qa-summary {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+  padding: 9px 13px; cursor: pointer; list-style: none;
+  font-size: 0.85em; user-select: none;
+}
+.qa-summary::-webkit-details-marker { display: none; }
+.qa-item.correct > summary { background: #f0fdf4; }
+.qa-item.wrong   > summary { background: #fff5f5; }
+.qa-summary-qid { font-family: 'SF Mono','Fira Code',monospace; font-size: 0.88em; color: #374151; font-weight: 700; }
+.qa-summary-q { flex: 1; min-width: 150px; max-width: 360px; color: #4b5563; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.qa-summary-answer { font-weight: 700; color: #1e3a5f; font-size: 0.88em; }
+.qa-chevron { margin-left: auto; color: #9ca3af; transition: transform 0.15s; flex-shrink: 0; }
+details[open] > summary .qa-chevron { transform: rotate(90deg); }
+.qa-detail { border-top: 1px solid #f1f5f9; }
+.qa-kv-table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
+.qa-kv-table tr { border-top: 1px solid #f1f5f9; }
+.qa-kv-table tr:first-child { border-top: none; }
+.qa-kv-key { width: 150px; padding: 7px 14px; font-weight: 700; color: #6b7280; white-space: nowrap; vertical-align: top; background: #fafafa; }
+.qa-kv-val { padding: 7px 14px; color: #1f2937; vertical-align: top; }
+
+/* ── Tag chips ── */
+.tag-chip { display: inline-block; padding: 1px 7px; border-radius: 10px; font-size: 0.75em; font-weight: 600; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+
+/* ── Legend ── */
+.legend-panel { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0; margin-bottom: 18px; }
+.legend-panel > summary { font-size: 0.82em; font-weight: 700; color: #6b7280; cursor: pointer; user-select: none; padding: 8px 14px; }
+.legend-body { display: flex; flex-wrap: wrap; gap: 24px; padding: 6px 14px 14px; }
+.legend-section-title { font-size: 0.74em; font-weight: 800; color: #374151; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.05em; }
+.legend-row { display: flex; align-items: center; gap: 6px; margin: 3px 0; font-size: 0.78em; color: #4b5563; }
+.legend-swatch { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+
+/* ── Trajectory evaluation ── */
+.traj-bte-card { border-radius: 8px; padding: 12px 16px; min-width: 140px; text-align: center; border: 2px solid transparent; }
+.traj-grade-excellent { background: #dcfce7; border-color: #16a34a; color: #14532d; }
+.traj-grade-good      { background: #d1fae5; border-color: #059669; color: #065f46; }
+.traj-grade-fair      { background: #fef9c3; border-color: #ca8a04; color: #713f12; }
+.traj-grade-poor      { background: #fee2e2; border-color: #dc2626; color: #7f1d1d; }
+.traj-grade-na        { background: #f1f5f9; border-color: #cbd5e1; color: #6b7280; }
+.traj-ade-val { font-size: 1.5em; font-weight: 800; }
+.traj-grade-label { font-size: 0.75em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+.traj-type-label { font-size: 0.78em; font-weight: 600; margin-bottom: 5px; opacity: 0.8; }
+.traj-sub { font-size: 0.72em; margin-top: 4px; opacity: 0.75; }
+.traj-layout { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; margin-top: 10px; }
+.traj-cte-list { display: flex; flex-direction: column; gap: 7px; flex: 1; min-width: 220px; }
+.traj-cte-item { border: 1px solid #e5e7eb; border-radius: 6px; padding: 9px 13px; font-size: 0.84em; }
+.traj-cte-header { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-bottom: 3px; }
+.traj-cte-type { font-weight: 700; font-size: 0.88em; color: #374151; }
+.traj-cte-ade { font-weight: 700; color: #1e3a5f; }
+.traj-flag { display: inline-block; padding: 1px 6px; border-radius: 9px; font-size: 0.74em; font-weight: 700; }
+.traj-flag-same     { background: #fef9c3; color: #854d0e; }
+.traj-flag-mismatch { background: #fee2e2; color: #991b1b; }
+.traj-flag-good     { background: #d1fae5; color: #065f46; }
+.traj-flag-full     { background: #dbeafe; color: #1d4ed8; }
+.traj-parse-fail    { color: #9ca3af; font-style: italic; font-size: 0.84em; }
+.traj-interp { margin-top: 12px; padding: 9px 13px; background: #f8fafc; border-radius: 6px; font-size: 0.81em; color: #4b5563; border-left: 3px solid #93c5fd; }
+.traj-aggregate-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+.traj-agg-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 14px; min-width: 130px; }
+.traj-agg-val { font-size: 1.15em; font-weight: 800; color: #1e3a5f; }
+.traj-agg-lbl { font-size: 0.74em; color: #6b7280; margin-top: 1px; }
+
+/* ── Graph structure topology ── */
+.graph-topo-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.graph-topo-chip { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 5px; padding: 4px 9px; font-size: 0.77em; color: #1e40af; }
+.graph-topo-chip span { font-weight: 700; }
+.graph-subgraph-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.graph-subgraph-chip { border-radius: 5px; padding: 4px 9px; font-size: 0.77em; font-weight: 700; background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+.graph-subgraph-chip.count-0 { background: #f1f5f9; color: #9ca3af; border-color: #e2e8f0; font-weight: 400; }
+
+/* ── Print media query ── */
+@media print {
+  /* Hide navigation and interactive elements */
+  .btn-pdf     { display: none !important; }
+  .screen-only { display: none !important; }
+
+  /* Reveal print-only content (e.g. full Q&A on scene pages) */
+  .print-only  { display: block !important; }
+
+  /* Expand all <details> without JS */
+  details                  { display: block !important; }
+  details > :not(summary)  { display: block !important; }
+  details > summary        { display: none  !important; }
+  .output-text    { max-height: none !important; overflow: visible !important; }
+  .reasoning-text { max-height: none !important; overflow: visible !important; }
+  /* Expand QA accordion items for print */
+  .qa-item { break-inside: avoid; }
+  .qa-item > summary { display: flex !important; }
+  .qa-chevron { display: none; }
+
+  /* Preserve colours for bars and badges */
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  /* Keep gradient header */
+  .page-header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2d6a9f 100%) !important;
+  }
+
+  /* Layout tweaks */
+  .card { break-inside: avoid; box-shadow: none; border: 1px solid #e5e7eb; }
+  a { color: inherit; text-decoration: none; }
+  .run-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>CausalDriveBench Evaluation Report</h1>
+    <div class="breadcrumb"><a href="../../../../index.html">All Runs</a><span>›</span><a href="../../../index.html">alpamayo_1_0_sample_20260421_064223</a><span>›</span><a href="../../index.html">causal_nuscenes</a><span>›</span><a href="../index.html">nuscenes-scene-0072</a><span>›</span><strong>SAMPLED_1</strong></div>
+  </div>
+  <button class="btn-pdf" onclick="window.print()">⬇ Download PDF</button>
+</div>
+<div class="container">
+
+<details class="legend-panel">
+<summary>Legend — color and badge guide</summary>
+<div class="legend-body">
+  <div>
+    <div class="legend-section-title">Accuracy</div>
+    <div class="legend-row"><span class="legend-swatch" style="background:#16a34a"></span>≥ 70% — high</div>
+    <div class="legend-row"><span class="legend-swatch" style="background:#d97706"></span>45–70% — mid</div>
+    <div class="legend-row"><span class="legend-swatch" style="background:#dc2626"></span>&lt; 45% — low</div>
+  </div>
+  <div>
+    <div class="legend-section-title">QA Type</div>
+    <div class="legend-row"><span class="badge badge-ladder">ladder</span> causal-chain questions (Rungs 1–3)</div>
+    <div class="legend-row"><span class="badge badge-dormant">dormant</span> dormant-edge questions</div>
+    <div class="legend-row"><span class="badge badge-distractor">distractor</span> irrelevant-object questions</div>
+  </div>
+  <div>
+    <div class="legend-section-title">Causal Rung (Pearl)</div>
+    <div class="legend-row"><span class="badge badge-rung-0">Rung 0</span> observational (what is?)</div>
+    <div class="legend-row"><span class="badge badge-rung-1">Rung 1</span> interventional (what if?)</div>
+    <div class="legend-row"><span class="badge badge-rung-2">Rung 2</span> counterfactual — effect</div>
+    <div class="legend-row"><span class="badge badge-rung-3">Rung 3</span> counterfactual — cause</div>
+  </div>
+  <div>
+    <div class="legend-section-title">Trajectory Grade (ADE)</div>
+    <div class="legend-row"><span class="traj-bte-card traj-grade-excellent" style="padding:1px 7px;font-size:0.78em">EXCELLENT</span> ADE &lt; 0.5 m</div>
+    <div class="legend-row"><span class="traj-bte-card traj-grade-good" style="padding:1px 7px;font-size:0.78em">GOOD</span> ADE &lt; 1.0 m</div>
+    <div class="legend-row"><span class="traj-bte-card traj-grade-fair" style="padding:1px 7px;font-size:0.78em">FAIR</span> ADE &lt; 2.0 m</div>
+    <div class="legend-row"><span class="traj-bte-card traj-grade-poor" style="padding:1px 7px;font-size:0.78em">POOR</span> ADE ≥ 2.0 m</div>
+  </div>
+  <div>
+    <div class="legend-section-title">CTE Flags</div>
+    <div class="legend-row"><span class="traj-flag traj-flag-full">FULL_MATCH</span> correct VQA + distinct + ADE &lt; 0.75 m</div>
+    <div class="legend-row"><span class="traj-flag traj-flag-good">GOOD_COUNTERFACTUAL</span> distinct trajectory + ADE &lt; 1.5 m</div>
+    <div class="legend-row"><span class="traj-flag traj-flag-same">TRAJECTORY_SAME_AS_BTE</span> predicted same path as baseline</div>
+    <div class="legend-row"><span class="traj-flag traj-flag-mismatch">ANSWER_MISMATCH</span> CTE VQA answer differs from original</div>
+  </div>
+</div>
+</details>
+<div class="card">
+  <div class="card-title">Sample: nuscenes-scene-0072 / SAMPLED_1</div>
+  <p style="font-size:0.82em;color:#6b7280">Generated: 2026-04-29 06:33:53 &nbsp;|&nbsp;
+     Run: alpamayo_1_0_sample_20260421_064223 &nbsp;|&nbsp; Dataset: causal_nuscenes</p>
+  
+</div>
+<div class="metric-grid">
+  <div class="metric-card"><div class="big">75.0%</div><div class="sub">Overall Accuracy</div></div>
+  <div class="metric-card"><div class="big">8</div><div class="sub">Total Questions</div></div>
+  <div class="metric-card"><div class="big">6</div><div class="sub">Correct</div></div>
+  <div class="metric-card"><div class="big">2</div><div class="sub">Wrong</div></div>
+  
+</div><div class="card"><div class="chart-section"><div class="chart-section-title">Accuracy by QA Type</div><div class="svg-chart-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="520" height="142" role="img" aria-label="Accuracy bar chart">  <text x="0" y="37" font-size="11" fill="#374151" font-weight="600">Overall</text>  <rect x="140" y="20" width="320" height="22" rx="4" fill="#e5e7eb"/>  <rect x="140" y="20" width="240" height="22" rx="4" fill="#16a34a"/>  <text x="466" y="37" font-size="10" fill="#374151">75.0% (6/8)</text>  <text x="0" y="65" font-size="11" fill="#374151" font-weight="600">distractor</text>  <rect x="140" y="48" width="320" height="22" rx="4" fill="#e5e7eb"/>  <rect x="140" y="48" width="160" height="22" rx="4" fill="#d97706"/>  <text x="466" y="65" font-size="10" fill="#374151">50.0% (1/2)</text>  <text x="0" y="93" font-size="11" fill="#374151" font-weight="600">dormant</text>  <rect x="140" y="76" width="320" height="22" rx="4" fill="#e5e7eb"/>  <rect x="140" y="76" width="213" height="22" rx="4" fill="#d97706"/>  <text x="466" y="93" font-size="10" fill="#374151">66.7% (2/3)</text>  <text x="0" y="121" font-size="11" fill="#374151" font-weight="600">ladder</text>  <rect x="140" y="104" width="320" height="22" rx="4" fill="#e5e7eb"/>  <rect x="140" y="104" width="320" height="22" rx="4" fill="#16a34a"/>  <text x="466" y="121" font-size="10" fill="#374151">100.0% (3/3)</text></svg></div></div><div class="meta-breakdown"><details style="margin:8px 0"><summary style="cursor:pointer;font-size:0.88em;font-weight:700;color:#374151;padding:4px 0">By Question Type</summary><div style="margin-top:8px"><div class="svg-chart-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="520" height="254" role="img" aria-label="Accuracy bar chart">  <text x="0" y="37" font-size="11" fill="#374151" font-weight="600">AB</text>  <rect x="140" y="20" width="320" height="22" rx="4" fill="#e5e7eb"/>  <rect x="140" y="20" width="1" height="22" rx="4" fill="#dc2626"/>  <text x="466" y="37" font-size="10" fill="#374151">0.0% (0/1)</text>  <text x="0" y="65" font-size="11" fill="#374151" font-weight="600">CI</text>  <rect x="140" y="48" width="320" height="22" rx="4" fill="#e5e7eb"/>  <rect x="140" y="48" width="1" height="22" rx="4" fill="#dc2626"/>  <text x="466" y="65" font-size="10" fill="#374151">0.0% (0/1)</text>  <text x="0" y="93" font-size="11" fill="#374151" font-weight="600">CR</text>  <rect x="140" y="76" width="320" height="22" rx="4" fill="#e5e7eb"/>  <rect x="140" y="76" width="320" height="22" rx="4" fill="#16a34a"/>  <text x="466" y="93" font-size="10" fill="#374151">100.0% (1/1)</text>  <text x="0" y="121" font-size="11" fill="#374151" font-weight="600">CaI</text>  <rect x="140" y="104" width="320" height="22" rx="4" fill="#e5e7eb"/>  <rect x="140" y="104" width="320" height="22" rx="4" fill="#16a34a"/>  <text x="466" y="121" font-size="10" fill="#374151">100.0% (1/1)</text>  <text x="0" y="149" font-size="11" fill="#374151" font-weight="600">DQ</text>  <rect x="140" y="132" width="320" height="22" rx="4" fill="#e5e7eb"/>  <rect x="140" y="132" width="320" height="22" rx="4" fill="#16a34a"/>  <text x="466" y="149" font-size="10" fill="#374151">100.0% (1/1)</text>  <text x="0" y="177" font-size="11" fill="#374151" font-weight="600">EL</text>  <rect x="140" y="160" width="320" height="22" rx="4" fill="#e5e7eb"/>  <rect x="140" y="160" width="320" height="22" rx="4" fill="#16a34a"/>  <text x="466" y="177" font-size="10" fill="#374151">100.0% (1/1)</text>  <text x="0" y="205" font-size="11" fill="#374151" font-weight="600">NI</text>  <rect x="140" y="188" width="320" height="22" rx="4" fill="#e5e7eb"/>  <rect x="140" y="188" width="320" height="22" rx="4" fill="#16a34a"/>  <text x="466" y="205" font-size="10" fill="#374151">100.0% (1/1)</text>  <text x="0" y="233" font-size="11" fill="#374151" font-weight="600">SC</text>  <rect x="140" y="216" width="320" height="22" rx="4" fill="#e5e7eb"/>  <rect x="140" y="216" width="320" height="22" rx="4" fill="#16a34a"/>  <text x="466" y="233" font-size="10" fill="#374151">100.0% (1/1)</text></svg></div></div></details><details style="margin:8px 0"><summary style="cursor:pointer;font-size:0.88em;font-weight:700;color:#374151;padding:4px 0">By Graph Structure</summary><div style="margin-top:8px"><div class="svg-chart-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="520" height="86" role="img" aria-label="Accuracy bar chart">  <text x="0" y="37" font-size="11" fill="#374151" font-weight="600"></text>  <rect x="140" y="20" width="320" height="22" rx="4" fill="#e5e7eb"/>  <rect x="140" y="20" width="192" height="22" rx="4" fill="#d97706"/>  <text x="466" y="37" font-size="10" fill="#374151">60.0% (3/5)</text>  <text x="0" y="65" font-size="11" fill="#374151" font-weight="600">Direct</text>  <rect x="140" y="48" width="320" height="22" rx="4" fill="#e5e7eb"/>  <rect x="140" y="48" width="320" height="22" rx="4" fill="#16a34a"/>  <text x="466" y="65" font-size="10" fill="#374151">100.0% (3/3)</text></svg></div></div></details><details style="margin:8px 0"><summary style="cursor:pointer;font-size:0.88em;font-weight:700;color:#374151;padding:4px 0">By Causal Rung</summary><div style="margin-top:8px"><div class="svg-chart-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="520" height="142" role="img" aria-label="Accuracy bar chart">  <text x="0" y="37" font-size="11" fill="#374151" font-weight="600">0</text>  <rect x="140" y="20" width="320" height="22" rx="4" fill="#e5e7eb"/>  <rect x="140" y="20" width="320" height="22" rx="4" fill="#16a34a"/>  <text x="466" y="37" font-size="10" fill="#374151">100.0% (2/2)</text>  <text x="0" y="65" font-size="11" fill="#374151" font-weight="600">1</text>  <rect x="140" y="48" width="320" height="22" rx="4" fill="#e5e7eb"/>  <rect x="140" y="48" width="160" height="22" rx="4" fill="#d97706"/>  <text x="466" y="65" font-size="10" fill="#374151">50.0% (1/2)</text>  <text x="0" y="93" font-size="11" fill="#374151" font-weight="600">2</text>  <rect x="140" y="76" width="320" height="22" rx="4" fill="#e5e7eb"/>  <rect x="140" y="76" width="160" height="22" rx="4" fill="#d97706"/>  <text x="466" y="93" font-size="10" fill="#374151">50.0% (1/2)</text>  <text x="0" y="121" font-size="11" fill="#374151" font-weight="600">3</text>  <rect x="140" y="104" width="320" height="22" rx="4" fill="#e5e7eb"/>  <rect x="140" y="104" width="320" height="22" rx="4" fill="#16a34a"/>  <text x="466" y="121" font-size="10" fill="#374151">100.0% (2/2)</text></svg></div></div></details></div><div style="margin-top:14px"><div class="chart-section-title">Binary Question Metrics (Yes/No)</div><div class="binary-grid"><div class="binary-cell"><div class="val">50.00%</div><div class="lbl">Precision</div></div><div class="binary-cell"><div class="val">50.00%</div><div class="lbl">Recall</div></div><div class="binary-cell"><div class="val">50.00%</div><div class="lbl">F1</div></div><div class="binary-cell"><div class="val">7</div><div class="lbl">Binary Qs</div></div></div></div><p style="font-size:0.83em;margin-top:8px">Answer bias: <strong style="color:#dc2626">+29.2%</strong><span style="color:#6b7280"> (max predicted % − uniform expected %)</span></p></div>
+
+<div class="card">
+  <div class="card-title">Question Results (8 questions)</div>
+  <div class="qa-accordion"><details class="qa-item correct"><summary class="qa-summary"><code class="qa-summary-qid">CaI1</code> <span class="badge badge-ladder">ladder</span> <span class="badge badge-rung-0">Rung 0</span> <span class="tag-chip">CaI</span> <span class="tag-chip">Direct</span> <span class="qa-summary-q">What is the primary reason you are easing off the speed right now as you approach this int…</span> <span class="qa-summary-answer">Pred: A → GT: A</span> <span class="badge badge-correct">✓ correct</span> <span class="qa-chevron">▶</span></summary><div class="qa-detail"><table class="qa-kv-table"><tbody><tr><td class="qa-kv-key">Question</td><td class="qa-kv-val">What is the primary reason you are easing off the speed right now as you approach this intersection?</td></tr><tr><td class="qa-kv-key">Options</td><td class="qa-kv-val"><ul class="qa-options"><li class="qa-option qa-option-correct">A) The crosswalk markings spanning my forward path through the intersection</li><li class="qa-option">B) The pedestrian on the far sidewalk who is walking parallel to the road</li><li class="qa-option">C) The pedestrian crossing warning sign posted on the right side of the road</li><li class="qa-option">D) The parked truck and car visible behind me in the adjacent lot</li></ul></td></tr><tr><td class="qa-kv-key">Predicted</td><td class="qa-kv-val"><strong>A</strong></td></tr><tr><td class="qa-kv-key">Ground Truth</td><td class="qa-kv-val">A</td></tr><tr><td class="qa-kv-key">Result</td><td class="qa-kv-val"><span class="badge badge-correct">✓ correct</span></td></tr><tr><td class="qa-kv-key">Causal Status</td><td class="qa-kv-val"><span class="tag-chip">active_sustaining</span></td></tr><tr><td class="qa-kv-key">Inference Time</td><td class="qa-kv-val">1.25 s</td></tr><tr><td class="qa-kv-key">Model Output</td><td class="qa-kv-val"><div class='output-text'>&lt;think&gt;
+Let me analyse the causal structure in the scene.
+
+Looking at the spatial configuration, I can identify the relevant actors and
+their relationships. The ego vehicle trajectory and surrounding context provide
+strong cues for causal attribution.
+
+Based on my analysis:
+- The primary mechanism involves direct interaction between the agents
+- The counterfactual reasoning supports option A
+- Spatial grounding confirms this interpretation
+
+Answer: A
+&lt;/think&gt;</div></td></tr><tr><td class="qa-kv-key">Expected Reasoning</td><td class="qa-kv-val"><div class='reasoning-text'>I am decelerating because of the crosswalk markings that lie directly across my forward path at this intersection. The crosswalk creates a zone where pedestrians may enter at any moment, requiring me to slow to a cautious speed before proceeding. The pedestrian visible ahead is currently on the far sidewalk and not stepping into the crosswalk, so while I am monitoring them, they are not the direct constraint right now. The pedestrian warning sign is informational but does not itself restrict my movement. The truck and car behind me in the parking area are not on my road and have no bearing on my forward speed.</div></td></tr></tbody></table></div></details>
+<details class="qa-item correct"><summary class="qa-summary"><code class="qa-summary-qid">CR1</code> <span class="badge badge-ladder">ladder</span> <span class="badge badge-rung-3">Rung 3</span> <span class="tag-chip">CR</span> <span class="tag-chip">Direct</span> <span class="qa-summary-q">You are nearly at a stop approaching this intersection. Given the pedestrian's current pos…</span> <span class="qa-summary-answer">Pred: No → GT: No</span> <span class="badge badge-correct">✓ correct</span> <span class="qa-chevron">▶</span></summary><div class="qa-detail"><table class="qa-kv-table"><tbody><tr><td class="qa-kv-key">Question</td><td class="qa-kv-val">You are nearly at a stop approaching this intersection. Given the pedestrian's current position on the far sidewalk, if the crosswalk markings ahead were not there, would you still be decelerating this significantly at this point?</td></tr><tr><td class="qa-kv-key">Predicted</td><td class="qa-kv-val"><strong>No</strong></td></tr><tr><td class="qa-kv-key">Ground Truth</td><td class="qa-kv-val">No</td></tr><tr><td class="qa-kv-key">Result</td><td class="qa-kv-val"><span class="badge badge-correct">✓ correct</span></td></tr><tr><td class="qa-kv-key">Causal Status</td><td class="qa-kv-val"><span class="tag-chip">active_sustaining</span></td></tr><tr><td class="qa-kv-key">Inference Time</td><td class="qa-kv-val">1.65 s</td></tr><tr><td class="qa-kv-key">Model Output</td><td class="qa-kv-val"><div class='output-text'>&lt;think&gt;
+Examining the scene carefully.
+
+The causal chain involves: ego vehicle → environmental trigger → response.
+The graph structure and isolation conditions are satisfied.
+My reasoning about the counterfactual scenario leads to a clear conclusion.
+
+Answer: No
+&lt;/think&gt;</div></td></tr><tr><td class="qa-kv-key">Expected Reasoning</td><td class="qa-kv-val"><div class='reasoning-text'>I am decelerating to near-stop speed specifically because the crosswalk markings ahead span my forward path, creating a protected pedestrian zone I must yield to before entering. The pedestrian is currently on the far sidewalk and not in the roadway, so without the crosswalk designation there would be no marked crossing zone compelling me to slow this aggressively. I would be proceeding through the intersection at a more normal approach speed since no obstacle or signal is blocking my straight-through path. The crosswalk is the sole active constraint producing my current heavy deceleration.</div></td></tr></tbody></table></div></details>
+<details class="qa-item correct"><summary class="qa-summary"><code class="qa-summary-qid">SC1</code> <span class="badge badge-ladder">ladder</span> <span class="badge badge-rung-3">Rung 3</span> <span class="tag-chip">SC</span> <span class="tag-chip">Direct</span> <span class="qa-summary-q">Forget every other element in this scene. With only the crosswalk ahead on your path and n…</span> <span class="qa-summary-answer">Pred: Yes → GT: Yes</span> <span class="badge badge-correct">✓ correct</span> <span class="qa-chevron">▶</span></summary><div class="qa-detail"><table class="qa-kv-table"><tbody><tr><td class="qa-kv-key">Question</td><td class="qa-kv-val">Forget every other element in this scene. With only the crosswalk ahead on your path and nothing else visible, would you still be slowing down the way you are right now?</td></tr><tr><td class="qa-kv-key">Predicted</td><td class="qa-kv-val"><strong>Yes</strong></td></tr><tr><td class="qa-kv-key">Ground Truth</td><td class="qa-kv-val">Yes</td></tr><tr><td class="qa-kv-key">Result</td><td class="qa-kv-val"><span class="badge badge-correct">✓ correct</span></td></tr><tr><td class="qa-kv-key">Causal Status</td><td class="qa-kv-val"><span class="tag-chip">active_sustaining</span></td></tr><tr><td class="qa-kv-key">Inference Time</td><td class="qa-kv-val">2.55 s</td></tr><tr><td class="qa-kv-key">Model Output</td><td class="qa-kv-val"><div class='output-text'>&lt;think&gt;
+Examining the scene carefully.
+
+The causal chain involves: ego vehicle → environmental trigger → response.
+The graph structure and isolation conditions are satisfied.
+My reasoning about the counterfactual scenario leads to a clear conclusion.
+
+Answer: Yes
+&lt;/think&gt;</div></td></tr><tr><td class="qa-kv-key">Expected Reasoning</td><td class="qa-kv-val"><div class='reasoning-text'>I am decelerating because the crosswalk spans my forward path at this intersection. Even in complete isolation with no other vehicles, pedestrians, or signs present, the crosswalk markings alone would compel me to slow down before entering the crossing zone. A marked crosswalk requires cautious speed management regardless of whether anyone is visibly about to cross, because a pedestrian could appear from either side at any moment. My current deceleration profile is entirely consistent with what the crosswalk alone demands, so yes, this single element is sufficient to produce my observed behavior.</div></td></tr></tbody></table></div></details>
+<details class="qa-item correct"><summary class="qa-summary"><code class="qa-summary-qid">DQ1</code> <span class="badge badge-dormant">dormant</span> <span class="badge badge-rung-0">Rung 0</span> <span class="tag-chip">DQ</span> <span class="qa-summary-q">That person up ahead near the crosswalk looks like they could walk into your path. Are the…</span> <span class="qa-summary-answer">Pred: No → GT: No</span> <span class="badge badge-correct">✓ correct</span> <span class="qa-chevron">▶</span></summary><div class="qa-detail"><table class="qa-kv-table"><tbody><tr><td class="qa-kv-key">Question</td><td class="qa-kv-val">That person up ahead near the crosswalk looks like they could walk into your path. Are they part of why you're easing off the gas right now?</td></tr><tr><td class="qa-kv-key">Predicted</td><td class="qa-kv-val"><strong>No</strong></td></tr><tr><td class="qa-kv-key">Ground Truth</td><td class="qa-kv-val">No</td></tr><tr><td class="qa-kv-key">Result</td><td class="qa-kv-val"><span class="badge badge-correct">✓ correct</span></td></tr><tr><td class="qa-kv-key">Causal Status</td><td class="qa-kv-val"><span class="tag-chip">dormant</span></td></tr><tr><td class="qa-kv-key">Inference Time</td><td class="qa-kv-val">1.37 s</td></tr><tr><td class="qa-kv-key">Model Output</td><td class="qa-kv-val"><div class='output-text'>&lt;think&gt;
+Examining the scene carefully.
+
+The causal chain involves: ego vehicle → environmental trigger → response.
+The graph structure and isolation conditions are satisfied.
+My reasoning about the counterfactual scenario leads to a clear conclusion.
+
+Answer: No
+&lt;/think&gt;</div></td></tr><tr><td class="qa-kv-key">Expected Reasoning</td><td class="qa-kv-val"><div class='reasoning-text'>No, the pedestrian ahead is not part of why I am slowing down. Looking at the scene, that person is on the far sidewalk across the intersection, not on the crosswalk or roadway. They are walking along the sidewalk and are physically separated from my travel lane. I am decelerating because of the crosswalk marking itself on my path, not because of that pedestrian.</div></td></tr></tbody></table></div></details>
+<details class="qa-item correct"><summary class="qa-summary"><code class="qa-summary-qid">EL1</code> <span class="badge badge-dormant">dormant</span> <span class="badge badge-rung-1">Rung 1</span> <span class="tag-chip">EL</span> <span class="qa-summary-q">You're already slowing for the crosswalk ahead. Is the pedestrian near the intersection th…</span> <span class="qa-summary-answer">Pred: No → GT: No</span> <span class="badge badge-correct">✓ correct</span> <span class="qa-chevron">▶</span></summary><div class="qa-detail"><table class="qa-kv-table"><tbody><tr><td class="qa-kv-key">Question</td><td class="qa-kv-val">You're already slowing for the crosswalk ahead. Is the pedestrian near the intersection the reason you're reducing speed?</td></tr><tr><td class="qa-kv-key">Predicted</td><td class="qa-kv-val"><strong>No</strong></td></tr><tr><td class="qa-kv-key">Ground Truth</td><td class="qa-kv-val">No</td></tr><tr><td class="qa-kv-key">Result</td><td class="qa-kv-val"><span class="badge badge-correct">✓ correct</span></td></tr><tr><td class="qa-kv-key">Causal Status</td><td class="qa-kv-val"><span class="tag-chip">dormant</span></td></tr><tr><td class="qa-kv-key">Inference Time</td><td class="qa-kv-val">1.26 s</td></tr><tr><td class="qa-kv-key">Model Output</td><td class="qa-kv-val"><div class='output-text'>&lt;think&gt;
+Examining the scene carefully.
+
+The causal chain involves: ego vehicle → environmental trigger → response.
+The graph structure and isolation conditions are satisfied.
+My reasoning about the counterfactual scenario leads to a clear conclusion.
+
+Answer: No
+&lt;/think&gt;</div></td></tr><tr><td class="qa-kv-key">Expected Reasoning</td><td class="qa-kv-val"><div class='reasoning-text'>No, that pedestrian is not the reason I am reducing speed. The pedestrian is currently on the far sidewalk across the intersection, moving along it but not stepping onto the crosswalk or into the roadway. I am slowing because the crosswalk marking is on my forward path and I need to approach it cautiously regardless. Even if that pedestrian were not there at all, I would still be decelerating for the crosswalk. The pedestrian's position off the road means there is no causal connection between them and my speed right now.</div></td></tr></tbody></table></div></details>
+<details class="qa-item wrong"><summary class="qa-summary"><code class="qa-summary-qid">AB1</code> <span class="badge badge-dormant">dormant</span> <span class="badge badge-rung-2">Rung 2</span> <span class="tag-chip">AB</span> <span class="qa-summary-q">The pedestrian on the far sidewalk appears to be jogging. If they veered off the sidewalk …</span> <span class="qa-summary-answer">Pred: No → GT: Yes</span> <span class="badge badge-wrong">✗ wrong</span> <span class="qa-chevron">▶</span></summary><div class="qa-detail"><table class="qa-kv-table"><tbody><tr><td class="qa-kv-key">Question</td><td class="qa-kv-val">The pedestrian on the far sidewalk appears to be jogging. If they veered off the sidewalk and onto the near half of the crosswalk — the section directly in your travel lane — could you keep rolling through slowly, or would that change things for you?</td></tr><tr><td class="qa-kv-key">Predicted</td><td class="qa-kv-val"><strong>No</strong></td></tr><tr><td class="qa-kv-key">Ground Truth</td><td class="qa-kv-val">Yes</td></tr><tr><td class="qa-kv-key">Result</td><td class="qa-kv-val"><span class="badge badge-wrong">✗ wrong</span></td></tr><tr><td class="qa-kv-key">Causal Status</td><td class="qa-kv-val"><span class="tag-chip">dormant</span></td></tr><tr><td class="qa-kv-key">Inference Time</td><td class="qa-kv-val">2.21 s</td></tr><tr><td class="qa-kv-key">Model Output</td><td class="qa-kv-val"><div class='output-text'>&lt;think&gt;
+Examining the scene carefully.
+
+The causal chain involves: ego vehicle → environmental trigger → response.
+The graph structure and isolation conditions are satisfied.
+My reasoning about the counterfactual scenario leads to a clear conclusion.
+
+Answer: No
+&lt;/think&gt;</div></td></tr><tr><td class="qa-kv-key">Expected Reasoning</td><td class="qa-kv-val"><div class='reasoning-text'>Yes, that would change things for me. Right now I am only slowing cautiously for the crosswalk marking as a precaution, and I intend to proceed through at low speed. If the pedestrian moved off the far sidewalk and onto the near portion of the crosswalk directly in my lane, I would have to come to a complete stop and yield until they cleared my path. Even though I am already going slowly, there is a meaningful difference between a cautious roll-through of an empty crosswalk and a full stop for a pedestrian occupying the crossing directly ahead. At my current distance and low speed I could stop comfortably, but my plan would shift from proceeding to waiting.</div></td></tr></tbody></table></div></details>
+<details class="qa-item wrong"><summary class="qa-summary"><code class="qa-summary-qid">CI1</code> <span class="badge badge-distractor">distractor</span> <span class="badge badge-rung-1">Rung 1</span> <span class="tag-chip">CI</span> <span class="qa-summary-q">You're slowing down significantly right now. Is that large truck visible behind you the re…</span> <span class="qa-summary-answer">Pred: Yes → GT: No</span> <span class="badge badge-wrong">✗ wrong</span> <span class="qa-chevron">▶</span></summary><div class="qa-detail"><table class="qa-kv-table"><tbody><tr><td class="qa-kv-key">Question</td><td class="qa-kv-val">You're slowing down significantly right now. Is that large truck visible behind you the reason you're easing off the throttle?</td></tr><tr><td class="qa-kv-key">Predicted</td><td class="qa-kv-val"><strong>Yes</strong></td></tr><tr><td class="qa-kv-key">Ground Truth</td><td class="qa-kv-val">No</td></tr><tr><td class="qa-kv-key">Result</td><td class="qa-kv-val"><span class="badge badge-wrong">✗ wrong</span></td></tr><tr><td class="qa-kv-key">Inference Time</td><td class="qa-kv-val">1.60 s</td></tr><tr><td class="qa-kv-key">Model Output</td><td class="qa-kv-val"><div class='output-text'>&lt;think&gt;
+Examining the scene carefully.
+
+The causal chain involves: ego vehicle → environmental trigger → response.
+The graph structure and isolation conditions are satisfied.
+My reasoning about the counterfactual scenario leads to a clear conclusion.
+
+Answer: Yes
+&lt;/think&gt;</div></td></tr><tr><td class="qa-kv-key">Expected Reasoning</td><td class="qa-kv-val"><div class='reasoning-text'>No. I am decelerating because of the crosswalk ahead at the intersection, which is on my forward path and requires caution for any pedestrians who may be crossing. The large truck behind me is parked in a lot off the roadway to my right-rear, separated from my lane by a curb and walkway. It is stationary, not following me, and has no influence on my speed. My deceleration is entirely about the crosswalk ahead, not anything behind me.</div></td></tr></tbody></table></div></details>
+<details class="qa-item correct"><summary class="qa-summary"><code class="qa-summary-qid">NI1</code> <span class="badge badge-distractor">distractor</span> <span class="badge badge-rung-2">Rung 2</span> <span class="tag-chip">NI</span> <span class="qa-summary-q">Picture the crosswalk markings at the intersection ahead gone entirely. Now also picture t…</span> <span class="qa-summary-answer">Pred: No → GT: No</span> <span class="badge badge-correct">✓ correct</span> <span class="qa-chevron">▶</span></summary><div class="qa-detail"><table class="qa-kv-table"><tbody><tr><td class="qa-kv-key">Question</td><td class="qa-kv-val">Picture the crosswalk markings at the intersection ahead gone entirely. Now also picture that large truck behind you gone. Which removal would actually change what you're doing right now — the crosswalk, the truck, or both?</td></tr><tr><td class="qa-kv-key">Predicted</td><td class="qa-kv-val"><strong>No</strong></td></tr><tr><td class="qa-kv-key">Ground Truth</td><td class="qa-kv-val">No</td></tr><tr><td class="qa-kv-key">Result</td><td class="qa-kv-val"><span class="badge badge-correct">✓ correct</span></td></tr><tr><td class="qa-kv-key">Inference Time</td><td class="qa-kv-val">2.29 s</td></tr><tr><td class="qa-kv-key">Model Output</td><td class="qa-kv-val"><div class='output-text'>&lt;think&gt;
+Examining the scene carefully.
+
+The causal chain involves: ego vehicle → environmental trigger → response.
+The graph structure and isolation conditions are satisfied.
+My reasoning about the counterfactual scenario leads to a clear conclusion.
+
+Answer: No
+&lt;/think&gt;</div></td></tr><tr><td class="qa-kv-key">Expected Reasoning</td><td class="qa-kv-val"><div class='reasoning-text'>Removing the truck behind me would change nothing about my driving. It is parked off the roadway in a lot to my right-rear, completely separated from my travel lane. My deceleration is caused by the crosswalk markings ahead at the intersection, which require me to slow down and watch for pedestrians. If the crosswalk were removed, I would have less reason to slow this much. The truck's presence or absence is irrelevant to any decision I am making.</div></td></tr></tbody></table></div></details>
+</div>
+</div>
+</div>
+</body>
+</html>

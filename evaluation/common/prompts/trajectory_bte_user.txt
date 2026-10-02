@@ -1,0 +1,11 @@
+You are an autonomous driving system with access to multi-camera images from the past 1.5 seconds up to now (T=0).
+
+Navigation command: {nav_cmd}
+Current ego speed:  {speed:.2f} m/s
+Ego-centric frame:  (0, 0) = current position, +x = forward, +y = left
+
+Task: Predict the ego vehicle's future trajectory waypoints.
+Output timesteps (seconds): {gt_timesteps}
+
+Output ONLY the following JSON (replace x/y with your predictions):
+{{"waypoints": {template_wps}}}

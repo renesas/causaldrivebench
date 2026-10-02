@@ -1,0 +1,960 @@
+## California (US) Specific Driving Rules
+## Source: California DMV Driver Handbook (2024–2025)
+## These rules complement generic_rules.yaml and override/extend where
+## California law differs from generic practice.
+
+metadata:
+  version: "1.0"
+  jurisdiction: "US_CA"
+  authority: "California Department of Motor Vehicles (DMV), CVC (California Vehicle Code)"
+  speed_unit: "mph"
+  driving_side: "RIGHT"  # California drives on the right
+  last_updated: "2026-04-14"
+  description: >
+    California-specific driving rules covering the California Driver Handbook,
+    speed limits, HOV/carpool lanes, colored curbs, BAC laws, right-turn-on-red,
+    bicycle laws, and other CVC provisions.
+
+# ─────────────────────────────────────────────
+# SECTION 1 — SPEED LIMITS (CA)
+# ─────────────────────────────────────────────
+rules:
+
+  - rule_id: CA_SPEED_RESIDENTIAL_25MPH
+    name: "25 mph in Business and Residential Districts"
+    priority: 3
+    category: SPEED_REGULATION
+    subcategory: ZONE_LIMITS
+    jurisdiction: US_CA
+    description: >
+      The default speed limit in business and residential districts in
+      California is 25 mph unless a higher limit is posted. No sign
+      is required — this is the prima facie limit.
+    vision_cues:
+      - "Residential area: houses, driveways, parked cars along street"
+      - "Business district: storefronts, parking lots, high pedestrian activity"
+      - "No posted speed limit sign — default applies"
+    sign_names:
+      - SIGN_SPEED_LIMIT_25
+    when_to_apply:
+      - "In any urban business or residential area without a higher posted limit"
+    required_action: >
+      Travel at or below 25 mph in residential and business districts.
+    related_rules:
+      - OBEY_SPEED_LIMIT_SIGN
+      - CA_SPEED_SCHOOL_ZONE_25MPH
+
+  - rule_id: CA_SPEED_SCHOOL_ZONE_25MPH
+    name: "25 mph in School Zone (500 ft of School When Children Present)"
+    priority: 2
+    category: SPEED_REGULATION
+    subcategory: ZONE_LIMITS
+    jurisdiction: US_CA
+    description: >
+      Within 500 feet of a school when children are present or school is
+      in session, speed must not exceed 25 mph (some zones post 15 mph).
+      Flashing amber lights on school signs mean children are arriving or leaving.
+    vision_cues:
+      - "Yellow school zone sign or 5-sided school pennant sign"
+      - "Flashing amber lights on school sign"
+      - "Children on sidewalk, at crosswalk, or near school"
+      - "School hours — typically 7–8 AM and 2–4 PM"
+    sign_names:
+      - SIGN_SCHOOL_ZONE
+      - SIGN_SCHOOL_SPEED_LIMIT_25
+      - SIGN_SCHOOL_SPEED_LIMIT_15
+    when_to_apply:
+      - "Within 500 ft of school building or grounds when children are present"
+      - "Flashing amber lights on school sign are active"
+    required_action: >
+      Slow to posted school zone speed (25 or 15 mph).
+      Be prepared to stop at any time for children.
+    causal_question_examples:
+      - "Why is the vehicle driving slowly on this otherwise normal road?"
+      - "What speed limit applies near this school building?"
+    related_rules:
+      - SCHOOL_ZONE_REDUCED_SPEED
+      - SCHOOL_BUS_STOP_RED_LIGHTS
+
+  - rule_id: CA_SPEED_BLIND_INTERSECTION_15MPH
+    name: "15 mph at Blind Intersections"
+    priority: 3
+    category: SPEED_REGULATION
+    subcategory: ZONE_LIMITS
+    jurisdiction: US_CA
+    description: >
+      At intersections where visibility is obstructed within 100 feet in
+      any direction (blind intersection), the prima facie speed limit is
+      15 mph regardless of posted limits on the approaching road.
+    vision_cues:
+      - "Intersection ahead where buildings, vegetation, or parked vehicles"
+        "block view within 100 feet"
+      - "No traffic signal or stop sign controlling the intersection"
+    when_to_apply:
+      - "Approaching any uncontrolled intersection with obstructed sight lines"
+    required_action: >
+      Reduce to 15 mph. Slow enough to stop before entering intersection.
+    related_rules:
+      - INTERSECTION_FIRST_ARRIVAL_ROW
+      - CA_SPEED_RESIDENTIAL_25MPH
+
+  - rule_id: CA_SPEED_ALLEY_15MPH
+    name: "15 mph in Alleys"
+    priority: 3
+    category: SPEED_REGULATION
+    subcategory: ZONE_LIMITS
+    jurisdiction: US_CA
+    description: >
+      The prima facie speed limit in any alley is 15 mph in California.
+    vision_cues:
+      - "Narrow road between buildings with limited sight distance"
+      - "Alley entrance (narrow opening between structures or walls)"
+    when_to_apply:
+      - "Driving through any alley"
+    required_action: >
+      Reduce speed to 15 mph or below. Watch for pedestrians and vehicles
+      entering from either side.
+    related_rules:
+      - CA_SPEED_BLIND_INTERSECTION_15MPH
+      - CA_SPEED_RESIDENTIAL_25MPH
+
+  - rule_id: CA_SPEED_RAILROAD_UNCONTROLLED_15MPH
+    name: "15 mph Within 100 ft of Uncontrolled Railroad Crossing"
+    priority: 2
+    category: SPEED_REGULATION
+    subcategory: ZONE_LIMITS
+    jurisdiction: US_CA
+    description: >
+      When approaching a railroad or light-rail crossing that has no
+      flashing lights, gates, or flaggers — and the track cannot be seen
+      400 feet in both directions — speed must not exceed 15 mph
+      within 100 feet of the crossing.
+    vision_cues:
+      - "Railroad crossing ahead with no active warning devices"
+      - "Tracks visible but no gates or flashing lights"
+      - "Sight distance along tracks is limited"
+    sign_names:
+      - SIGN_RAILROAD_CROSSBUCK
+    when_to_apply:
+      - "Within 100 feet of uncontrolled railroad crossing"
+      - "Cannot see 400 feet both ways along tracks"
+    required_action: >
+      Reduce to 15 mph. Look and listen carefully before crossing.
+    related_rules:
+      - RAILROAD_CROSSING_MANDATORY_STOP
+      - RAILROAD_CROSSING_ADVANCE_SIGN
+
+  - rule_id: CA_SPEED_STREETCAR_SAFETY_ZONE_10MPH
+    name: "10 mph When Passing Bus or Streetcar Safety Zone"
+    priority: 3
+    category: SPEED_REGULATION
+    subcategory: ZONE_LIMITS
+    jurisdiction: US_CA
+    description: >
+      When passing a safety zone (island or marked zone where passengers
+      board/alight) of a streetcar or bus stopped in the road,
+      speed must not exceed 10 mph.
+    vision_cues:
+      - "Bus or streetcar stopped in travel lane at marked safety zone"
+      - "Passengers boarding or alighting from safety zone platform"
+    when_to_apply:
+      - "Bus or streetcar safety zone visible with vehicle stopped"
+    required_action: >
+      Reduce to 10 mph or below. Do not enter safety zone. Watch for pedestrians.
+    related_rules:
+      - PASS_SAFETY_ZONE_SLOWLY
+
+# ─────────────────────────────────────────────
+# SECTION 2 — LANE DISCIPLINE (CA)
+# ─────────────────────────────────────────────
+
+  - rule_id: CA_HOV_MINIMUM_OCCUPANCY
+    name: "HOV/Carpool Lane: Minimum Occupancy Requirement"
+    priority: 3
+    category: LANE_DISCIPLINE
+    subcategory: SPECIAL_LANES
+    jurisdiction: US_CA
+    description: >
+      High-Occupancy Vehicle (HOV) or carpool lanes on California freeways
+      require a minimum number of occupants (typically 2 or 3 as posted).
+      Motorcycles and qualifying low/zero-emission vehicles with DMV decals
+      may also use HOV lanes regardless of occupancy.
+    vision_cues:
+      - "Diamond symbol painted on road surface in lane"
+      - "'CARPOOL LANE' or 'HOV LANE' text on road or sign"
+      - "Double solid white lines on right side of HOV lane"
+      - "HOV hours sign: some lanes are time-restricted"
+    sign_names:
+      - SIGN_HOV_LANE
+      - MARKING_DIAMOND_HOV
+      - MARKING_DOUBLE_SOLID_WHITE
+    when_to_apply:
+      - "Considering entering HOV lane on California freeway"
+      - "Posted minimum occupancy sign present"
+    required_action: >
+      Only use HOV lane if vehicle meets minimum occupancy requirement
+      or is an exempt vehicle (motorcycle, qualifying EV with DMV decal).
+      Enter/exit only at designated dashed-line breaks, not over double solid white.
+    causal_question_examples:
+      - "Why did the car not enter the leftmost lane with diamond markings?"
+      - "Who can legally use the carpool lane?"
+    related_rules:
+      - CA_HOV_ENTER_DESIGNATED_ONLY
+      - CA_HOV_LOW_EMISSION_EXEMPT
+
+  - rule_id: CA_HOV_ENTER_DESIGNATED_ONLY
+    name: "Enter and Exit HOV Lane Only at Designated Breaks"
+    priority: 3
+    category: LANE_DISCIPLINE
+    subcategory: SPECIAL_LANES
+    jurisdiction: US_CA
+    description: >
+      HOV lanes are bordered by double solid white lines. Vehicles may only
+      enter or exit the HOV lane where the double white lines change to
+      dashed lines (designated entry/exit zones).
+    vision_cues:
+      - "Double solid white line on right boundary of HOV lane"
+      - "Transition to dashed white line = designated entry/exit point"
+    sign_names:
+      - MARKING_DOUBLE_SOLID_WHITE
+      - MARKING_BROKEN_WHITE
+    when_to_apply:
+      - "Moving into or out of HOV lane at any time"
+    required_action: >
+      Wait for broken (dashed) white line section to change lanes.
+      Never cross double solid white lines.
+    related_rules:
+      - CA_HOV_MINIMUM_OCCUPANCY
+      - NO_CROSS_SOLID_CENTER_LINE
+
+  - rule_id: CA_HOV_LOW_EMISSION_EXEMPT
+    name: "Qualifying Low/Zero Emission Vehicles May Use HOV Lane Solo"
+    priority: 4
+    category: LANE_DISCIPLINE
+    subcategory: SPECIAL_LANES
+    jurisdiction: US_CA
+    description: >
+      California allows certain low- or zero-emission vehicles (with valid
+      DMV-issued HOV decals affixed to the vehicle) to use HOV lanes with
+      only one occupant. Decal color and program change periodically.
+    vision_cues:
+      - "Green, red, purple, or white DMV decal sticker on rear bumper/side"
+      - "Vehicle type: electric, plug-in hybrid, hydrogen fuel cell"
+    sign_names:
+      - SIGN_CLEAN_AIR_VEHICLE
+    when_to_apply:
+      - "Vehicle has valid California HOV clean air vehicle decal"
+    required_action: >
+      May use HOV lane with single occupant.
+      Decal must be current and affixed as required by DMV.
+    related_rules:
+      - CA_HOV_MINIMUM_OCCUPANCY
+
+  - rule_id: CA_TWO_WAY_LEFT_TURN_LANE
+    name: "Two-Way Left Turn Lane: Enter Within 200 Feet Only"
+    priority: 4
+    category: LANE_DISCIPLINE
+    subcategory: SPECIAL_LANES
+    jurisdiction: US_CA
+    description: >
+      Some California roads have a center two-way left-turn lane (TWLTL)
+      designated for vehicles from either direction to prepare to turn left.
+      Drivers may only travel in this lane for a maximum of 200 feet
+      before the turn.
+    vision_cues:
+      - "Center lane with double yellow lines on both sides"
+      - "Left-turn arrow markings pointing in both directions"
+      - "'TWO WAY LEFT TURN ONLY' text on road"
+    sign_names:
+      - MARKING_TWO_WAY_LEFT_TURN_LANE
+    when_to_apply:
+      - "Preparing to turn left where two-way left turn lane is present"
+    required_action: >
+      Enter TWLTL only within 200 feet of the turn.
+      Do not use as a travel lane or merge lane.
+    related_rules:
+      - LEFT_TURN_FROM_CENTER_LANE
+      - SIGNAL_BEFORE_TURNING
+
+# ─────────────────────────────────────────────
+# SECTION 3 — TURNING AND SIGNALS (CA)
+# ─────────────────────────────────────────────
+
+  - rule_id: CA_RIGHT_TURN_ON_RED
+    name: "Right Turn on Red Permitted After Full Stop (Unless Posted)"
+    priority: 3
+    category: TURNING_AND_MANEUVERING
+    subcategory: TURNS
+    jurisdiction: US_CA
+    description: >
+      In California, after making a complete stop at a red light, a driver
+      may turn right if the way is clear of pedestrians and traffic, and
+      there is no NO TURN ON RED sign posted. Cannot turn on red arrow.
+    vision_cues:
+      - "Solid red circular signal at intersection"
+      - "No 'NO TURN ON RED' sign present"
+      - "No pedestrians in crosswalk on target road"
+      - "No oncoming traffic"
+    sign_names:
+      - SIGN_NO_TURN_ON_RED
+      - SIGNAL_RED
+    when_to_apply:
+      - "Red circular signal (not red arrow)"
+      - "No NO TURN ON RED sign posted"
+      - "Turning right"
+    required_action: >
+      Full stop first. Check for pedestrians and cross traffic.
+      Turn only when completely clear. Yield to all conflicting traffic.
+    causal_question_examples:
+      - "Why did the car turn right even though the light was red?"
+      - "When is it legal to turn right on red in California?"
+    related_rules:
+      - STOP_AT_RED_LIGHT
+      - PEDESTRIAN_CROSSWALK_ROW
+      - RIGHT_TURN_FROM_RIGHT_LANE
+
+  - rule_id: CA_LEFT_TURN_ONE_WAY_TO_ONE_WAY
+    name: "Left Turn on Red from One-Way Street to One-Way Street"
+    priority: 3
+    category: TURNING_AND_MANEUVERING
+    subcategory: TURNS
+    jurisdiction: US_CA
+    description: >
+      In California, a left turn on red is permitted when turning from
+      a one-way street onto a one-way street — after a full stop and
+      yielding to pedestrians and traffic, unless a NO TURN ON RED sign
+      is posted.
+    vision_cues:
+      - "One-way street markings on current road (ONE WAY sign, one-direction arrows)"
+      - "One-way street to be entered (arrows, markings)"
+      - "Red circular signal"
+      - "No NO TURN ON RED sign"
+    sign_names:
+      - SIGN_ONE_WAY
+      - SIGN_NO_TURN_ON_RED
+    when_to_apply:
+      - "On a one-way street turning left onto another one-way street"
+      - "Red circular signal (not arrow)"
+      - "No NO TURN ON RED sign"
+    required_action: >
+      Full stop. Verify both streets are one-way.
+      Yield to pedestrians and traffic. Then turn when clear.
+    related_rules:
+      - CA_RIGHT_TURN_ON_RED
+      - LEFT_TURN_YIELD_TO_ONCOMING
+
+  - rule_id: CA_SIGNAL_100FT_BEFORE_TURN
+    name: "Signal at Least 100 Feet Before Turning"
+    priority: 3
+    category: TURNING_AND_MANEUVERING
+    subcategory: TURNS
+    jurisdiction: US_CA
+    description: >
+      California law requires turn signals to be activated at least 100 feet
+      (approximately 3 seconds at 25 mph) before the turn. On a freeway,
+      signal approximately 5 seconds (400 feet) before a lane change or exit.
+    vision_cues:
+      - "Intersection or exit visible ahead"
+      - "Turn signal should be illuminated before reaching the turn"
+    when_to_apply:
+      - "Before any turn at any intersection"
+      - "Before any lane change or freeway exit"
+    required_action: >
+      Activate turn signal at least 100 ft before the turn.
+      At freeway exits: signal ~400 ft / 5 seconds before.
+    related_rules:
+      - SIGNAL_BEFORE_TURNING
+      - SIGNAL_BEFORE_LANE_CHANGE
+
+  - rule_id: CA_U_TURN_BUSINESS_DISTRICT
+    name: "U-Turns in Business Districts Only at Intersections or Divided Openings"
+    priority: 3
+    category: TURNING_AND_MANEUVERING
+    subcategory: U_TURNS
+    jurisdiction: US_CA
+    description: >
+      In a business district, U-turns may only be made at intersections or
+      at openings in a divided highway. Mid-block U-turns in business areas
+      are prohibited.
+    vision_cues:
+      - "Business district (commercial area with storefronts)"
+      - "Location is mid-block — not at intersection"
+    when_to_apply:
+      - "In a business district and considering a U-turn"
+    required_action: >
+      Only make U-turn at intersection or divided highway opening.
+      Proceed to next intersection if mid-block.
+    related_rules:
+      - OBEY_NO_U_TURN_SIGN
+      - NO_U_TURN_LOW_VISIBILITY
+
+  - rule_id: CA_U_TURN_RESIDENTIAL_200FT
+    name: "U-Turns Permitted in Residential Areas When No Vehicle Within 200 ft"
+    priority: 3
+    category: TURNING_AND_MANEUVERING
+    subcategory: U_TURNS
+    jurisdiction: US_CA
+    description: >
+      In residential districts, a U-turn is permitted at any location where
+      no vehicles are approaching within 200 feet in either direction.
+    vision_cues:
+      - "Residential area (houses, residential street)"
+      - "No vehicles visible within 200 feet in either direction"
+    when_to_apply:
+      - "In residential district, considering U-turn, path is clear 200 ft each way"
+    required_action: >
+      Check 200 ft in each direction. If clear, U-turn is legal.
+      Signal and complete turn quickly.
+    related_rules:
+      - NO_U_TURN_LOW_VISIBILITY
+      - SIGNAL_BEFORE_TURNING
+
+# ─────────────────────────────────────────────
+# SECTION 4 — PARKING (CA)
+# ─────────────────────────────────────────────
+
+  - rule_id: CA_COLORED_CURB_WHITE
+    name: "White Curb — Stop Only to Load/Unload Passengers (No Parking)"
+    priority: 5
+    category: PARKING_AND_STOPPING
+    subcategory: CURB_COLORS
+    jurisdiction: US_CA
+    description: >
+      A white-painted curb in California means stop only long enough to
+      pick up or drop off passengers. The driver must remain in the vehicle.
+      No parking — no unattended vehicle.
+    vision_cues:
+      - "Curb or road edge painted white"
+      - "Often in front of hotels, restaurants, transit stations"
+    sign_names:
+      - CURB_WHITE
+    when_to_apply:
+      - "White curb visible alongside road or parking area"
+    required_action: >
+      Brief stop for passenger loading/unloading only.
+      Remain in driver's seat. Move on immediately.
+    related_rules:
+      - CA_COLORED_CURB_RED
+
+  - rule_id: CA_COLORED_CURB_GREEN
+    name: "Green Curb — Limited Time Parking (Time Posted or 10 min Default)"
+    priority: 5
+    category: PARKING_AND_STOPPING
+    subcategory: CURB_COLORS
+    jurisdiction: US_CA
+    description: >
+      A green-painted curb in California allows parking for a limited time
+      only. The time limit is either posted on a sign or defaults to 10 minutes.
+    vision_cues:
+      - "Curb or road edge painted green"
+      - "Time limit sign nearby (e.g., '10 MIN PARKING')"
+    sign_names:
+      - CURB_GREEN
+    when_to_apply:
+      - "Green curb visible alongside intended parking space"
+    required_action: >
+      Park for the posted time limit only. Move vehicle before time expires.
+    related_rules:
+      - CA_COLORED_CURB_WHITE
+
+  - rule_id: CA_COLORED_CURB_YELLOW
+    name: "Yellow Curb — Load/Unload Freight or Passengers During Business Hours"
+    priority: 5
+    category: PARKING_AND_STOPPING
+    subcategory: CURB_COLORS
+    jurisdiction: US_CA
+    description: >
+      A yellow-painted curb allows stopping only to load or unload passengers
+      or freight, typically only during posted business hours. The driver must
+      remain with the vehicle.
+    vision_cues:
+      - "Curb or road edge painted yellow"
+      - "Typically in front of commercial buildings"
+    sign_names:
+      - CURB_YELLOW
+    when_to_apply:
+      - "Yellow curb visible — during loading/unloading activity"
+    required_action: >
+      Stop only to load or unload. Stay with vehicle or return immediately.
+      Do not park/leave vehicle unattended.
+    related_rules:
+      - CA_COLORED_CURB_WHITE
+
+  - rule_id: CA_COLORED_CURB_RED
+    name: "Red Curb — No Stopping, Standing, or Parking at Any Time"
+    priority: 4
+    category: PARKING_AND_STOPPING
+    subcategory: CURB_COLORS
+    jurisdiction: US_CA
+    description: >
+      A red-painted curb in California means no stopping, standing, or parking
+      at any time under any circumstances. Red curbs are often used at fire
+      hydrants, driveways, bus stops, and other safety-critical locations.
+    vision_cues:
+      - "Curb or road edge painted red"
+      - "Often near fire hydrants, driveways, bus zones, and intersections"
+    sign_names:
+      - CURB_RED
+    when_to_apply:
+      - "Red curb visible alongside road — at any time"
+    required_action: >
+      Do not stop, stand, or park. Move away immediately.
+    causal_question_examples:
+      - "Why did the vehicle not stop near the red curb?"
+      - "What does a red curb mean in California?"
+    related_rules:
+      - NO_PARKING_NEAR_FIRE_HYDRANT
+      - NO_PARKING_IN_PROHIBITED_ZONES
+
+  - rule_id: CA_COLORED_CURB_BLUE
+    name: "Blue Curb — Disabled Person Parking Only (Placard Required)"
+    priority: 5
+    category: PARKING_AND_STOPPING
+    subcategory: CURB_COLORS
+    jurisdiction: US_CA
+    description: >
+      A blue-painted curb designates accessible (disabled) parking.
+      Only vehicles with a valid disabled person placard or disabled
+      veteran license plates may park here.
+    vision_cues:
+      - "Curb or road edge painted blue"
+      - "International symbol of accessibility (wheelchair) on pavement or sign"
+    sign_names:
+      - CURB_BLUE
+      - SIGN_DISABLED_PARKING
+    when_to_apply:
+      - "Blue curb visible alongside parking space"
+    required_action: >
+      Park only if vehicle has valid disabled person placard or plates.
+      All others must park elsewhere.
+    related_rules:
+      - NO_PARKING_IN_PROHIBITED_ZONES
+
+  - rule_id: CA_NO_PARKING_15FT_FIRE_HYDRANT
+    name: "No Parking Within 15 Feet of Fire Hydrant"
+    priority: 4
+    category: PARKING_AND_STOPPING
+    subcategory: PROHIBITED_PARKING
+    jurisdiction: US_CA
+    description: >
+      California law prohibits parking within 15 feet of a fire hydrant.
+      This ensures emergency access. Even if no red curb is painted,
+      the 15-foot rule applies.
+    vision_cues:
+      - "Red or yellow fire hydrant on sidewalk or curb"
+      - "Distance from vehicle to hydrant — is it less than 15 feet?"
+    sign_names:
+      - SIGN_FIRE_HYDRANT
+    when_to_apply:
+      - "Parking near any fire hydrant"
+    required_action: >
+      Ensure front or rear bumper is at least 15 feet from hydrant in each direction.
+    related_rules:
+      - NO_PARKING_NEAR_FIRE_HYDRANT
+      - CA_COLORED_CURB_RED
+
+  - rule_id: CA_NO_PARKING_SIDEWALK_CROSSWALK
+    name: "No Parking on Sidewalk, in Crosswalk, or Double-Parked"
+    priority: 4
+    category: PARKING_AND_STOPPING
+    subcategory: PROHIBITED_PARKING
+    jurisdiction: US_CA
+    description: >
+      Parking on the sidewalk, in a marked or unmarked crosswalk,
+      or alongside another parked vehicle (double-parking) is prohibited
+      throughout California.
+    vision_cues:
+      - "Sidewalk ahead or alongside vehicle"
+      - "Crosswalk markings at intersection"
+      - "Parked vehicle already occupying curb lane"
+    when_to_apply:
+      - "Before parking — check location is legal"
+    required_action: >
+      Do not park on sidewalk, in crosswalk, or double-parked.
+      Find a legal parking space.
+    related_rules:
+      - NO_PARKING_IN_CROSSWALK
+      - DOUBLE_PARKING_PROHIBITED
+
+# ─────────────────────────────────────────────
+# SECTION 5 — DUI AND IMPAIRMENT (CA)
+# ─────────────────────────────────────────────
+
+  - rule_id: CA_BAC_LIMIT_21_PLUS
+    name: "BAC Limit 0.08% for Drivers 21 and Over"
+    priority: 0
+    category: VEHICLE_SAFETY
+    subcategory: IMPAIRED_DRIVING
+    jurisdiction: US_CA
+    description: >
+      In California, it is illegal for drivers aged 21 and over to drive
+      with a blood alcohol concentration (BAC) of 0.08% or higher.
+      Impairment can occur below this limit; a DUI arrest is still possible.
+    vision_cues:
+      - "Driver behavior: swerving, straddling lanes, erratic speed"
+      - "Vehicle drifting, overcorrecting, braking erratically"
+    when_to_apply:
+      - "Any time a driver operates a vehicle after consuming alcohol"
+    required_action: >
+      Do not drive if BAC may be at or above 0.08%.
+      Arrange alternate transportation if alcohol has been consumed.
+    related_rules:
+      - DUI_ABSOLUTE_PROHIBITION
+      - CA_BAC_LIMIT_UNDER_21
+      - CA_OPEN_CONTAINER_LAW
+
+  - rule_id: CA_BAC_LIMIT_UNDER_21
+    name: "BAC Limit 0.01% for Drivers Under 21 (Zero Tolerance)"
+    priority: 0
+    category: VEHICLE_SAFETY
+    subcategory: IMPAIRED_DRIVING
+    jurisdiction: US_CA
+    description: >
+      California has a zero-tolerance policy for underage drinking and
+      driving. Any BAC of 0.01% or higher is illegal for drivers under 21.
+      A BAC of 0.05% or above permits arrest.
+    vision_cues:
+      - "Driver visibly young (under 21 years old)"
+      - "Erratic driving behavior — swerving, drifting, inconsistent speed"
+    when_to_apply:
+      - "Driver is under 21 years of age and has consumed any alcohol"
+    required_action: >
+      Do not drive. Zero tolerance means any detectable alcohol is illegal.
+    related_rules:
+      - DUI_ABSOLUTE_PROHIBITION
+      - CA_BAC_LIMIT_21_PLUS
+
+  - rule_id: CA_BAC_LIMIT_COMMERCIAL
+    name: "BAC Limit 0.04% for Commercial and For-Hire Drivers"
+    priority: 0
+    category: VEHICLE_SAFETY
+    subcategory: IMPAIRED_DRIVING
+    jurisdiction: US_CA
+    description: >
+      Commercial driver's license (CDL) holders and for-hire drivers
+      (taxis, rideshare, etc.) face a stricter BAC limit of 0.04%.
+    vision_cues:
+      - "Commercial vehicle (truck, bus, taxi, rideshare markings)"
+      - "Erratic driving behavior — weaving, inconsistent speed, overcorrecting"
+    when_to_apply:
+      - "Driver holds CDL or is operating a commercial/for-hire vehicle"
+    required_action: >
+      Do not drive commercial/for-hire vehicle with BAC at or above 0.04%.
+    related_rules:
+      - DUI_ABSOLUTE_PROHIBITION
+      - CA_BAC_LIMIT_21_PLUS
+
+  - rule_id: CA_OPEN_CONTAINER_LAW
+    name: "Alcohol Containers Must Be Sealed and Stored Away from Driver"
+    priority: 3
+    category: VEHICLE_SAFETY
+    subcategory: IMPAIRED_DRIVING
+    jurisdiction: US_CA
+    description: >
+      In California, open or partially consumed alcohol containers must be
+      kept in the trunk or a locked compartment away from the passenger
+      area. Containers in the glove box or accessible to occupants
+      are a violation even if the driver is not drinking.
+    vision_cues:
+      - "Open bottle or can visible in cup holder, on seat, or on floor"
+      - "Unsecured alcohol container accessible to driver"
+    when_to_apply:
+      - "Whenever alcohol is present in the vehicle"
+    required_action: >
+      Place all open or partially consumed alcohol in the trunk.
+      Do not store in glove box or passenger compartment.
+    related_rules:
+      - CA_BAC_LIMIT_21_PLUS
+      - DUI_ABSOLUTE_PROHIBITION
+
+# ─────────────────────────────────────────────
+# SECTION 6 — CHILD AND OCCUPANT SAFETY (CA)
+# ─────────────────────────────────────────────
+
+  - rule_id: CA_CHILD_RESTRAINT_REAR_SEAT
+    name: "Children Under 8 / Under 4'9\" Must Ride in Rear Seat with Restraint"
+    priority: 1
+    category: VEHICLE_SAFETY
+    subcategory: OCCUPANT_RESTRAINTS
+    jurisdiction: US_CA
+    description: >
+      California law requires children under 8 years old OR under 4'9\" tall
+      to be secured in a child safety seat or booster seat in the rear seat.
+      Children under 2 and under 40 lbs must use a rear-facing seat.
+      Children under 2 and under 40 lbs must not be in front seat with airbag.
+    vision_cues:
+      - "Child in vehicle — assess age, size, and restraint type"
+      - "Child safety seat (rear-facing or forward-facing) in back seat"
+      - "Booster seat visible in rear seat"
+    when_to_apply:
+      - "Any child passenger under 8 years or under 4'9\" is in the vehicle"
+    required_action: >
+      Secure child in appropriate rear-seat restraint before moving.
+      Children under 2 years: rear-facing in back seat only.
+    related_rules:
+      - CHILD_RESTRAINT_MANDATORY
+      - SEATBELT_MANDATORY_ALL
+
+  - rule_id: CA_CHILD_UNATTENDED_PROHIBITION
+    name: "Never Leave Child 6 or Younger Unattended in Vehicle"
+    priority: 1
+    category: VEHICLE_SAFETY
+    subcategory: VEHICLE_CONDITION
+    jurisdiction: US_CA
+    description: >
+      California law prohibits leaving a child 6 years old or younger
+      unattended in a vehicle without supervision from someone aged 12+.
+      Hot vehicles are deadly — temperatures can reach fatal levels in minutes.
+    vision_cues:
+      - "Child visible alone in parked vehicle"
+      - "No adult present in or near vehicle"
+      - "Hot weather conditions"
+    when_to_apply:
+      - "Before exiting or leaving any parked vehicle with child inside"
+    required_action: >
+      Never leave a child 6 or under alone in the vehicle.
+      Bring child along or ensure a responsible person (12+) remains with them.
+    related_rules:
+      - CHILD_RESTRAINT_MANDATORY
+
+  - rule_id: CA_NO_SMOKING_WITH_MINORS
+    name: "No Smoking in Vehicle When Minor (Under 18) is Present"
+    priority: 5
+    category: VEHICLE_SAFETY
+    subcategory: VEHICLE_CONDITION
+    jurisdiction: US_CA
+    description: >
+      California law prohibits smoking in a vehicle when a minor under
+      the age of 18 is present, regardless of whether windows are open.
+    vision_cues:
+      - "Smoke or cigarette visible inside vehicle with child passenger"
+      - "Child/minor visible in vehicle alongside driver who is smoking"
+    when_to_apply:
+      - "Any time a person under 18 is in the vehicle"
+    required_action: >
+      Do not smoke. Wait until minor has exited or until vehicle stop elsewhere.
+    related_rules:
+      - CHILD_RESTRAINT_MANDATORY
+
+# ─────────────────────────────────────────────
+# SECTION 7 — BICYCLE AND MOTORCYCLE RULES (CA)
+# ─────────────────────────────────────────────
+
+  - rule_id: CA_BICYCLE_3FT_PASSING_CLEARANCE
+    name: "Maintain at Least 3 Feet When Passing a Cyclist"
+    priority: 2
+    category: ROAD_USER_INTERACTION
+    subcategory: BICYCLES
+    jurisdiction: US_CA
+    description: >
+      California's Three Feet for Safety Act requires drivers to maintain
+      at least 3 feet of lateral clearance between the vehicle and a cyclist
+      when passing. If 3 feet cannot be maintained, the driver must slow
+      to a reasonable speed and pass only when safe.
+    vision_cues:
+      - "Cyclist in same lane or on right shoulder ahead"
+      - "Lane width — is 3 feet of clearance possible without changing lanes?"
+    when_to_apply:
+      - "Overtaking any cyclist on any road in California"
+    required_action: >
+      Move left if possible to give at least 3 feet of clearance.
+      If unable to maintain 3 feet: slow down, do not pass until safe gap exists.
+    related_rules:
+      - BICYCLE_PASSING_CLEARANCE
+      - CHECK_BLINDSPOT_BEFORE_LANE_CHANGE
+
+  - rule_id: CA_MOTORCYCLE_LANE_SPLITTING
+    name: "Lane Splitting by Motorcycles Is Legal in California"
+    priority: 4
+    category: ROAD_USER_INTERACTION
+    subcategory: MOTORCYCLES
+    jurisdiction: US_CA
+    description: >
+      California is the only US state that explicitly allows motorcycle lane
+      splitting (riding between rows of stopped or slow-moving traffic).
+      Other drivers must give motorcycles room and not block or impede splitting.
+    vision_cues:
+      - "Motorcycle traveling between lanes of slow or stopped traffic"
+      - "Traffic congestion — vehicles slowed or stopped"
+    when_to_apply:
+      - "Motorcycle is lane splitting in slow/stopped traffic"
+      - "Driver considering lane change in congested traffic"
+    required_action: >
+      Do not deliberately block or impede a lane-splitting motorcycle.
+      Check mirrors carefully before lane changes in congestion.
+      Give adequate lane width.
+    related_rules:
+      - MOTORCYCLE_FULL_LANE_RESPECT
+      - CHECK_BLINDSPOT_BEFORE_LANE_CHANGE
+
+  - rule_id: CA_BICYCLE_NIGHT_EQUIPMENT
+    name: "Bicycles Must Have Lights and Reflectors for Night Riding"
+    priority: 4
+    category: ROAD_USER_INTERACTION
+    subcategory: BICYCLES
+    jurisdiction: US_CA
+    description: >
+      At night, California cyclists must have: a front white light visible
+      300 feet away, a rear red reflector visible 500 feet away, and
+      pedal/wheel reflectors. Drivers should look for these and adjust
+      following distance and speed accordingly.
+    vision_cues:
+      - "White light at front of bicycle at night"
+      - "Red reflector or light at rear of bicycle"
+      - "Dimly lit cyclist on road at night"
+    when_to_apply:
+      - "Night driving — looking for cyclists"
+      - "Low-light conditions near bike lanes or roads with cycling"
+    required_action: >
+      Scan for cyclists even in dark. Reduce speed near bike lanes at night.
+      Increase following distance if cyclist ahead.
+    related_rules:
+      - BICYCLE_PASSING_CLEARANCE
+      - CA_BICYCLE_3FT_PASSING_CLEARANCE
+
+# ─────────────────────────────────────────────
+# SECTION 8 — SCHOOL BUSES (CA)
+# ─────────────────────────────────────────────
+
+  - rule_id: CA_SCHOOL_BUS_DIVIDED_HIGHWAY_EXCEPTION
+    name: "School Bus Exception: Divided / Multi-Lane Highway — Oncoming Traffic May Proceed"
+    priority: 1
+    category: SPECIAL_SITUATIONS
+    subcategory: SCHOOL_BUSES
+    jurisdiction: US_CA
+    description: >
+      On a divided highway or a highway with 3+ lanes in each direction,
+      vehicles traveling in the OPPOSITE direction from the stopped school bus
+      are NOT required to stop. Only vehicles on the SAME side of the
+      roadway must stop.
+    vision_cues:
+      - "School bus with flashing red lights stopped on opposite side of divided highway"
+      - "Physical median or multiple lanes between ego vehicle and school bus"
+    sign_names:
+      - SIGN_SCHOOL_BUS
+    when_to_apply:
+      - "School bus is stopped on opposite side of divided/multi-lane highway"
+      - "Physical median or 3+ lanes separate ego vehicle from bus"
+    required_action: >
+      If on opposite side of divided highway: may proceed with caution.
+      If in any doubt — STOP. When in same direction: always stop.
+    related_rules:
+      - SCHOOL_BUS_STOP_RED_LIGHTS
+
+# ─────────────────────────────────────────────
+# SECTION 9 — SPECIAL ROAD USER RULES (CA)
+# ─────────────────────────────────────────────
+
+  - rule_id: CA_FUNERAL_PROCESSION_YIELD
+    name: "Yield to Funeral Procession — Do Not Cut Through"
+    priority: 3
+    category: ROAD_USER_INTERACTION
+    subcategory: SLOW_MOVING
+    jurisdiction: US_CA
+    description: >
+      California law requires drivers to yield to a funeral procession.
+      It is illegal to cut through, cut into, or interfere with a
+      funeral procession (lead vehicle followed by headlights-on vehicles).
+    vision_cues:
+      - "Lead vehicle with flashing purple or amber lights"
+      - "Multiple vehicles in convoy with headlights on, same direction"
+      - "Funeral procession flag or sign on lead/following vehicles"
+    sign_names:
+      - SIGN_FUNERAL_PROCESSION
+    when_to_apply:
+      - "Funeral procession is visible in cross-traffic or ahead"
+    required_action: >
+      Do not cut through or into procession. Wait until it has passed.
+      Do not honk or otherwise interfere.
+    related_rules:
+      - EMERGENCY_VEHICLE_PRIORITY
+
+  - rule_id: CA_EMERGENCY_SCENE_NO_APPROACH
+    name: "Do Not Drive to Scene of Emergency — May Result in Arrest"
+    priority: 2
+    category: SPECIAL_SITUATIONS
+    subcategory: EMERGENCY_VEHICLES
+    jurisdiction: US_CA
+    description: >
+      In California, it is against the law to drive to the scene of
+      a fire, collision, or other disaster out of curiosity. Doing so
+      can obstruct emergency responders and result in arrest.
+    vision_cues:
+      - "Emergency vehicles at scene ahead"
+      - "Smoke, fire, or crash visible in distance"
+      - "Traffic slowing to look at incident"
+    when_to_apply:
+      - "Emergency scene visible ahead and driver has no reason to be there"
+    required_action: >
+      Proceed past the scene without stopping unless required to by signals.
+      Do not block emergency access.
+    related_rules:
+      - EMERGENCY_VEHICLE_PRIORITY
+      - NO_FOLLOW_EMERGENCY_VEHICLE_CLOSE
+
+  - rule_id: CA_DIAGONAL_CROSSWALK_ALLOWED
+    name: "Diagonal (Scramble) Crossing Allowed on Walk Signal"
+    priority: 3
+    category: PEDESTRIAN_SAFETY
+    subcategory: CROSSWALK_RULES
+    jurisdiction: US_CA
+    description: >
+      At intersections with a diagonal (scramble/Barnes Dance) pedestrian
+      crossing phase, pedestrians may cross diagonally when the walk signal
+      is active. All vehicle traffic is stopped. Drivers must remain stopped.
+    vision_cues:
+      - "Diagonal crosswalk markings across the full intersection"
+      - "Pedestrian signal allowing crossing in all directions simultaneously"
+      - "All traffic signals red — pedestrian scramble phase"
+    sign_names:
+      - SIGN_DIAGONAL_CROSSWALK
+    when_to_apply:
+      - "Diagonal crossing phase is active (all signals red)"
+    required_action: >
+      Remain stopped until all pedestrians have cleared the intersection
+      and your signal turns green.
+    related_rules:
+      - PEDESTRIAN_CROSSWALK_ROW
+      - STOP_FOR_PEDESTRIAN_AT_CROSSING
+
+  - rule_id: CA_CARGO_FLAGGING_REQUIREMENT
+    name: "Flag Extended Cargo Beyond Rear Bumper"
+    priority: 4
+    category: VEHICLE_SAFETY
+    subcategory: VEHICLE_CONDITION
+    jurisdiction: US_CA
+    description: >
+      In California, cargo extending beyond the rear bumper of a vehicle
+      must be flagged with a 12-inch red or fluorescent orange square flag
+      during the day, and with red lights visible from 500 feet at night.
+    vision_cues:
+      - "Cargo extending past rear bumper of vehicle"
+      - "Lumber, pipes, construction materials overhanging vehicle rear"
+    when_to_apply:
+      - "Any cargo extends beyond vehicle's rear bumper"
+    required_action: >
+      Attach red or fluorescent orange flag (12 inches sq.) to extended cargo.
+      At night: use red lights visible 500 feet behind.
+    related_rules:
+      - NO_OVERLOADED_VEHICLE
+
+  - rule_id: CA_AIRBAG_DISTANCE_10_INCHES
+    name: "Maintain 10 Inches Between Chest and Steering Wheel Airbag"
+    priority: 4
+    category: VEHICLE_SAFETY
+    subcategory: OCCUPANT_RESTRAINTS
+    jurisdiction: US_CA
+    description: >
+      California DMV recommends maintaining at least 10 inches between
+      the driver's breastbone and the center of the steering wheel to
+      allow airbags to deploy safely without injuring the driver.
+    vision_cues:
+      - "Driver seat position relative to steering wheel"
+      - "Driver sitting too close to steering wheel"
+    when_to_apply:
+      - "Adjusting seat position before driving"
+    required_action: >
+      Adjust seat so breastbone is at least 10 inches from steering wheel center.
+      Tilt steering wheel downward toward chest, not face.
+    related_rules:
+      - SEATBELT_MANDATORY_ALL

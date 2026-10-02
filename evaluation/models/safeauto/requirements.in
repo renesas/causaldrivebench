@@ -1,0 +1,21 @@
+# =====================================================================
+# SafeAuto evaluation wrapper dependencies
+#
+# Note: torch, torchvision, transformers, flash-attn are already
+# installed in the 'safeauto' conda environment.  Only add packages
+# needed by the evaluation wrapper that are NOT already provided there.
+# =====================================================================
+
+# Vision
+Pillow>=10.0.0
+
+# Numerics
+numpy>=1.24.0
+
+# Progress / serialisation
+tqdm
+jsonlines
+
+# LLM Judge (evaluation/common/llm_judge.py)
+anthropic>=0.40.0
+openai>=1.0.0

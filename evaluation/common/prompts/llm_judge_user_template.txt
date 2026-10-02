@@ -1,0 +1,9 @@
+Question: {question}
+
+Ground-truth answer: {ground_truth}
+
+Model response: {model_response}
+
+{criteria_section}
+
+Evaluate the model response using the four dimensions described in the system prompt.

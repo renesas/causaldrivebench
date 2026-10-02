@@ -1,0 +1,313 @@
+{
+  "questions": [
+    {
+      "id": "DQ1",
+      "rung": 0,
+      "category": "DQ",
+      "subtype": "DQ-Binary",
+      "preamble": "You are driving straight on a multi-lane road approaching a signalized intersection. The traffic light ahead is yellow. There is a crosswalk painted on the road at the intersection ahead of you, and it is currently empty with no pedestrians on or near it.",
+      "question": "Is the crosswalk at the intersection ahead currently affecting your driving?",
+      "answer_format": "binary",
+      "correct_answer": "No",
+      "reasoning": "The crosswalk is visible ahead at the intersection, but no one is on it or approaching it. You are already slowing down because of the yellow traffic signal, not because of the crosswalk. The crosswalk would only affect your driving if a pedestrian were in it or about to step into it. Right now it is just paint on the road with no one near it.",
+      "activation_plausibility": "N/A",
+      "meta": {
+        "referenced_elements": [
+          "n2"
+        ],
+        "causal_status": "dormant",
+        "effect_types": [
+          "INHIBITS_PROCEED"
+        ],
+        "latency_mechanism": "shielded",
+        "shielding_element_status": "N/A",
+        "confounding_type": null,
+        "trajectory_sensitivity": "N/A",
+        "influence_classification": "N/A",
+        "distractor_types": {},
+        "counterfactual_intervention": null
+      }
+    },
+    {
+      "id": "DQ2",
+      "rung": 0,
+      "category": "DQ",
+      "subtype": "DQ-Binary",
+      "preamble": "You are driving straight on a multi-lane road approaching a signalized intersection with a yellow light. A sedan is following behind you in your lane.",
+      "question": "Is the sedan following behind you in your lane currently affecting your driving?",
+      "answer_format": "binary",
+      "correct_answer": "No",
+      "reasoning": "The sedan is behind you in the same lane, visible in your rear cameras. It is traveling in the same direction at a slightly lower speed. Since it is behind you and maintaining its following distance, it is not restricting your speed, your lane positioning, or your path forward. You are decelerating because of the yellow signal ahead, not because of anything the sedan behind you is doing.",
+      "activation_plausibility": "N/A",
+      "meta": {
+        "referenced_elements": [
+          "vehicle_3"
+        ],
+        "causal_status": "dormant",
+        "effect_types": [
+          "CONSTRAINS_LONGITUDINAL"
+        ],
+        "latency_mechanism": "decoupled",
+        "shielding_element_status": "N/A",
+        "confounding_type": null,
+        "trajectory_sensitivity": "N/A",
+        "influence_classification": "N/A",
+        "distractor_types": {},
+        "counterfactual_intervention": null
+      }
+    },
+    {
+      "id": "DQ3",
+      "rung": 0,
+      "category": "DQ",
+      "subtype": "DQ-Select",
+      "preamble": "You are driving straight on a multi-lane road approaching a signalized intersection. There is a yellow traffic light ahead, an empty crosswalk at the intersection, a large semi-truck with a trailer in the lane to your left, and a sedan following behind you in your lane.",
+      "question": "Which of the following elements is currently affecting your driving behavior?",
+      "answer_format": "mcq",
+      "options": [
+        "A) The empty crosswalk at the intersection",
+        "B) The yellow traffic light ahead",
+        "C) The large semi-truck with trailer in the left lane",
+        "D) The sedan following behind you in your lane"
+      ],
+      "correct_answer": "B",
+      "reasoning": "You are decelerating because the traffic light ahead is yellow, which requires you to prepare to stop. The crosswalk is empty and has no pedestrians, so it is not independently constraining you. The semi-truck with trailer is in the adjacent lane to your left and is not encroaching into your lane, so it does not affect your path or speed. The sedan behind you is simply following and does not constrain your forward driving. Only the yellow light is actively causing you to slow down.",
+      "activation_plausibility": "N/A",
+      "meta": {
+        "referenced_elements": [
+          "n1",
+          "n2",
+          "vehicle_1",
+          "vehicular_trailer_1",
+          "vehicle_3"
+        ],
+        "causal_status": "dormant",
+        "effect_types": [
+          "INHIBITS_PROCEED"
+        ],
+        "latency_mechanism": "N/A",
+        "shielding_element_status": "N/A",
+        "confounding_type": null,
+        "trajectory_sensitivity": "N/A",
+        "influence_classification": "N/A",
+        "distractor_types": {
+          "A": "salience_trap",
+          "B": "correct",
+          "C": "proximity_bias",
+          "D": "type_confusion"
+        },
+        "counterfactual_intervention": null
+      }
+    },
+    {
+      "id": "EL1",
+      "rung": 1,
+      "category": "EL",
+      "subtype": "EL-Shield",
+      "preamble": "You are driving straight toward a signalized intersection. There is a crosswalk painted across your lane at the intersection. No pedestrians are currently on or near it. You are decelerating as you approach.",
+      "question": "What is the main reason the crosswalk ahead is not independently affecting your driving right now?",
+      "answer_format": "mcq",
+      "options": [
+        "A) The yellow traffic light is already causing you to decelerate before reaching the crosswalk",
+        "B) The large truck to your left is blocking your view of the crosswalk",
+        "C) The crosswalk markings are faded and hard to see in the snow",
+        "D) The crosswalk is behind you and you have already passed it"
+      ],
+      "correct_answer": "A",
+      "reasoning": "The crosswalk is directly on your path through the intersection and would matter if someone were in it. But the yellow traffic light is already making you slow down before you reach that area. The signal is what gates your entry into the intersection, so the empty crosswalk adds no additional constraint right now. If the signal were not there, you would need to check the crosswalk more carefully before proceeding. Option B is wrong because the truck is in the adjacent lane and does not block your forward view of the crosswalk. Option C is wrong because the crosswalk markings are visible in the camera images. Option D is wrong because the crosswalk is ahead of you at the intersection, not behind you.",
+      "activation_plausibility": "Medium",
+      "meta": {
+        "referenced_elements": [
+          "n2",
+          "n1"
+        ],
+        "causal_status": "dormant",
+        "effect_types": [
+          "INHIBITS_PROCEED"
+        ],
+        "latency_mechanism": "shielded",
+        "shielding_element_status": "active_sustaining",
+        "confounding_type": null,
+        "trajectory_sensitivity": "N/A",
+        "influence_classification": "N/A",
+        "distractor_types": {
+          "A": "correct",
+          "B": "wrong_shield",
+          "C": "correlation_as_cause",
+          "D": "causal_reversal"
+        },
+        "counterfactual_intervention": null
+      }
+    },
+    {
+      "id": "EL2",
+      "rung": 1,
+      "category": "EL",
+      "subtype": "EL-Conditional",
+      "preamble": "You are decelerating as you approach a yellow traffic light at an intersection. A sedan is following behind you in your lane and is also slowing down.",
+      "question": "Both you and the sedan behind you are slowing down. Does the sedan's deceleration mean it is restricting your speed?",
+      "answer_format": "binary",
+      "correct_answer": "No",
+      "reasoning": "Both you and the sedan behind you are slowing because the same yellow traffic light is ahead for both of you. The sedan is responding to the signal just as you are, not applying some constraint on your speed. A vehicle behind you in the same lane does not limit how fast or slow you can go forward. If the sedan were not there at all, you would still be slowing down for the yellow light at exactly the same rate. The shared behavior is coincidence from the same cause, not one influencing the other.",
+      "activation_plausibility": "Medium",
+      "meta": {
+        "referenced_elements": [
+          "vehicle_3",
+          "n1"
+        ],
+        "causal_status": "dormant",
+        "effect_types": [
+          "CONSTRAINS_LONGITUDINAL"
+        ],
+        "latency_mechanism": "correlated",
+        "shielding_element_status": "N/A",
+        "confounding_type": "observed",
+        "trajectory_sensitivity": "N/A",
+        "influence_classification": "N/A",
+        "distractor_types": {},
+        "counterfactual_intervention": null
+      }
+    },
+    {
+      "id": "AB1",
+      "rung": 2,
+      "category": "AB",
+      "subtype": "AB-Element",
+      "preamble": "You are traveling straight toward a signalized intersection at moderate speed, decelerating for a yellow light. Your trajectory shows you will pass through the crosswalk area in about three seconds at a speed that has begun to pick back up, suggesting you may proceed through rather than come to a full stop. The crosswalk at the intersection is currently empty.",
+      "question": "If a pedestrian suddenly stepped onto the crosswalk from the sidewalk ahead, would you need to change your driving?",
+      "answer_format": "binary",
+      "correct_answer": "Yes",
+      "reasoning": "Your trajectory shows that after an initial slowdown, you begin to accelerate again, indicating you plan to proceed through the intersection rather than stop completely. If a pedestrian stepped onto the crosswalk, you would need to come to a full stop before reaching it instead of rolling through. At your current speed and distance, you would need to brake more aggressively than you are now. Without the pedestrian you would pass through the crosswalk area, but with a pedestrian present you cannot.",
+      "activation_plausibility": "Medium",
+      "meta": {
+        "referenced_elements": [
+          "n2"
+        ],
+        "causal_status": "dormant",
+        "effect_types": [
+          "INHIBITS_PROCEED"
+        ],
+        "latency_mechanism": "shielded",
+        "shielding_element_status": "N/A",
+        "confounding_type": null,
+        "trajectory_sensitivity": "trajectory_dependent",
+        "influence_classification": "unique",
+        "distractor_types": {},
+        "counterfactual_intervention": {
+          "target_entity_id": "n2",
+          "target_entity_type": "infrastructure",
+          "operation": "activate",
+          "operation_detail": "Pedestrian steps onto the crosswalk from the sidewalk into ego's path",
+          "evaluation_mode": "llm",
+          "temporal_anchor": "t0",
+          "frozen_entities": [
+            "n1",
+            "vehicle_3",
+            "vehicle_1",
+            "vehicular_trailer_1",
+            "vehicle_2",
+            "vehicle_4"
+          ],
+          "propagated_descendants": [],
+          "trajectory_changes": true
+        }
+      }
+    },
+    {
+      "id": "AB2",
+      "rung": 2,
+      "category": "AB",
+      "subtype": "AB-Element",
+      "preamble": "You are approaching an intersection with a yellow light, decelerating in your lane. A sedan is following about four car-lengths behind you in the same lane, also moving in the same direction at a slightly lower speed.",
+      "question": "If you had to slam on your brakes right now, would the sedan behind you become a concern for your driving decisions?",
+      "answer_format": "binary",
+      "correct_answer": "Yes",
+      "reasoning": "The sedan is following you in the same lane at a slightly lower speed with a gap of roughly four car-lengths. If you braked hard, the sedan's closing speed and limited reaction time would make a rear-end collision a real risk. You would need to consider whether the sedan has enough distance to stop safely, and this awareness might lead you to brake more progressively rather than abruptly. The sedan's presence becomes a constraint on how aggressively you can decelerate, which is a change from your current situation where it does not factor into your speed choices at all.",
+      "activation_plausibility": "Medium",
+      "meta": {
+        "referenced_elements": [
+          "vehicle_3"
+        ],
+        "causal_status": "dormant",
+        "effect_types": [
+          "CONSTRAINS_LONGITUDINAL"
+        ],
+        "latency_mechanism": "decoupled",
+        "shielding_element_status": "N/A",
+        "confounding_type": null,
+        "trajectory_sensitivity": "trajectory_dependent",
+        "influence_classification": "unique",
+        "distractor_types": {},
+        "counterfactual_intervention": {
+          "target_entity_id": "vehicle_3",
+          "target_entity_type": "agent",
+          "operation": "state_change",
+          "operation_detail": "Ego slams on brakes, requiring consideration of whether the following sedan can stop in time",
+          "evaluation_mode": "planner",
+          "temporal_anchor": "t0",
+          "frozen_entities": [
+            "n1",
+            "n2",
+            "vehicle_1",
+            "vehicular_trailer_1",
+            "vehicle_2",
+            "vehicle_4"
+          ],
+          "propagated_descendants": [],
+          "trajectory_changes": true
+        }
+      }
+    },
+    {
+      "id": "AB3",
+      "rung": 2,
+      "category": "AB",
+      "subtype": "AB-Context",
+      "preamble": "You are decelerating for a yellow traffic light at an intersection. The crosswalk at the intersection is empty. Your current deceleration is moderate, and your trajectory suggests you may proceed through rather than stop fully.",
+      "question": "If the yellow signal turned green right now, would the crosswalk ahead become more important to your driving decisions?",
+      "answer_format": "binary",
+      "correct_answer": "Yes",
+      "reasoning": "Right now the yellow signal is the reason you are slowing down, and it effectively covers the crosswalk area too since you are decelerating before reaching it. If the light turned green, you would accelerate to proceed through the intersection. At that point, the crosswalk would become the only thing that could require you to stop or slow before entering the intersection. You would need to check it carefully for pedestrians, because the signal would no longer be gating your entry. The crosswalk goes from being redundant behind the yellow light to being the front-line safety check.",
+      "activation_plausibility": "Medium",
+      "meta": {
+        "referenced_elements": [
+          "n2",
+          "n1"
+        ],
+        "causal_status": "dormant",
+        "effect_types": [
+          "INHIBITS_PROCEED"
+        ],
+        "latency_mechanism": "shielded",
+        "shielding_element_status": "N/A",
+        "confounding_type": null,
+        "trajectory_sensitivity": "policy_dependent",
+        "influence_classification": "unique",
+        "distractor_types": {},
+        "counterfactual_intervention": {
+          "target_entity_id": "n1",
+          "target_entity_type": "infrastructure",
+          "operation": "state_change",
+          "operation_detail": "Yellow traffic signal changes to green, removing the signal-based deceleration requirement",
+          "evaluation_mode": "llm",
+          "temporal_anchor": "t0",
+          "frozen_entities": [
+            "vehicle_3",
+            "vehicle_1",
+            "vehicular_trailer_1",
+            "vehicle_2",
+            "vehicle_4"
+          ],
+          "propagated_descendants": [
+            "n2"
+          ],
+          "trajectory_changes": true
+        }
+      }
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 50385,
+    "completion_tokens": 6242
+  }
+}

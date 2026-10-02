@@ -1,0 +1,225 @@
+# =====================================================================
+# Docker Compose for OpenDriveVLA
+#
+# Run all commands from the repo root (neurips-dataset/):
+#
+#   # 1. Download model weights (~0.5B params)
+#   docker compose -f evaluation/models/opendrivevla/docker-compose.yml \
+#     --env-file /path/to/env_files/models/opendrivevla/dev.env \
+#     --profile setup up -d
+#
+#   # 2. Build the image
+#   docker compose -f evaluation/models/opendrivevla/docker-compose.yml \
+#     --env-file /path/to/env_files/models/opendrivevla/dev.env build
+#
+#   # 3. Run inference
+#   docker compose -f evaluation/models/opendrivevla/docker-compose.yml \
+#     --env-file /path/to/env_files/models/opendrivevla/dev.env run --rm inference
+#
+#   # 4. Start Jupyter
+#   docker compose -f evaluation/models/opendrivevla/docker-compose.yml \
+#     --env-file /path/to/env_files/models/opendrivevla/dev.env \
+#     --profile jupyter up -d jupyter
+# =====================================================================
+
+x-gpu: &gpu-config
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+
+x-volumes: &shared-volumes
+  - type: bind
+    source: ${RAW_DATA_DIR}
+    target: /workspace/data/raw_data
+    read_only: true
+  - type: bind
+    source: ${CAUSAL_BENCH_DIR}
+    target: /workspace/data/causal_drive_bench
+    read_only: true
+  - type: bind
+    source: ${CDB_OUTPUTS_DIR}
+    target: /workspace/data/cdb_outputs
+  - type: bind
+    source: ${CDB_REPORTS_DIR}
+    target: /workspace/data/cdb_reports
+  - type: bind
+    source: ${WEIGHTS_DIR}
+    target: /workspace/weights
+
+x-common-env: &common-env
+  HF_HOME: /workspace/weights
+  HF_TOKEN: ${HF_TOKEN:-}
+  EVAL_RUNTIME: docker
+  DEVICE: ${DEVICE:-cuda}
+  MODE: ${MODE:-full}
+  SCENE: ${SCENE:-}
+  USE_LLM_JUDGE: ${USE_LLM_JUDGE:-false}
+  JUDGE_PROVIDER: ${JUDGE_PROVIDER:-azure_foundry}
+  JUDGE_MODEL: ${JUDGE_MODEL:-claude-opus-4-6}
+  ANTHROPIC_FOUNDRY_API_KEY: ${ANTHROPIC_FOUNDRY_API_KEY:-}
+  ANTHROPIC_FOUNDRY_RESOURCE: ${ANTHROPIC_FOUNDRY_RESOURCE:-}
+  FOUNDRY_BASE_URL: ${FOUNDRY_BASE_URL:-}
+  FORCE: ${FORCE:-false}
+  AZURE_OPENAI_API_KEY: ${AZURE_OPENAI_API_KEY:-}
+  AZURE_OPENAI_ENDPOINT: ${AZURE_OPENAI_ENDPOINT:-}
+  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+  OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+  WEIGHTS_DIR: /workspace/weights
+  MODEL_REPO: ${MODEL_REPO:-OpenDriveVLA/OpenDriveVLA-0.5B}
+  MODEL_CHECKPOINT: ${MODEL_CHECKPOINT:-/workspace/weights/OpenDriveVLA-0.5B}
+  PRECISION: ${PRECISION:-bf16}
+
+services:
+
+  # ------------------------------------------------------------------
+  # Main benchmark inference service
+  # ------------------------------------------------------------------
+  inference:
+    build:
+      context: ../../..
+      dockerfile: evaluation/models/opendrivevla/Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    image: benchmark-opendrivevla:latest
+
+    environment:
+      <<: *common-env
+
+    volumes: *shared-volumes
+    <<: *gpu-config
+    working_dir: /workspace/repo/evaluation/models/opendrivevla
+    restart: "no"
+    command:
+      - uv
+      - run
+      - python
+      - /workspace/repo/evaluation/models/opendrivevla/inference.py
+      - --bench-dir
+      - /workspace/data/causal_drive_bench/${DATASET:-causal_nuscenes}
+      - --output-base
+      - /workspace/data/cdb_outputs
+      - --weights-path
+      - /workspace/weights
+      - --device
+      - ${DEVICE:-cuda}
+      - --mode
+      - ${MODE:-full}
+      - --batch-size
+      - "${BATCH_SIZE:-1}"
+    depends_on:
+      weight-downloader:
+        condition: service_completed_successfully
+        required: false
+
+  # ------------------------------------------------------------------
+  # Original OpenDriveVLA inference (sanity check)
+  # Runs drivevla/inference_drivevla.py on a single GPU.
+  # ------------------------------------------------------------------
+  original:
+    build:
+      context: ../../..
+      dockerfile: evaluation/models/opendrivevla/Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    image: benchmark-opendrivevla:latest
+
+    environment:
+      <<: *common-env
+
+    volumes: *shared-volumes
+    <<: *gpu-config
+    working_dir: /workspace/model
+    restart: "no"
+    profiles: [original]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        torchrun --nproc_per_node=1 drivevla/inference_drivevla.py \
+          --model-path ${MODEL_CHECKPOINT:-/workspace/weights/OpenDriveVLA-0.5B} \
+          --output /workspace/data/cdb_outputs/opendrivevla_original.json \
+          --num-workers ${NUM_WORKERS:-2} \
+          --batch-size ${BATCH_SIZE:-1} \
+          --${PRECISION:-bf16}
+
+  # ------------------------------------------------------------------
+  # Post-processing service (run with --profile postprocess)
+  # ------------------------------------------------------------------
+  postprocess:
+    image: benchmark-opendrivevla:latest
+
+    environment:
+      <<: *common-env
+
+    volumes: *shared-volumes
+    working_dir: /workspace/repo/evaluation/models/opendrivevla
+    restart: "no"
+    profiles: [postprocess]
+    command:
+      - uv
+      - run
+      - python
+      - /workspace/repo/evaluation/models/opendrivevla/postprocess.py
+      - --bench-dir
+      - /workspace/data/causal_drive_bench/${DATASET:-causal_nuscenes}
+      - --run-dir
+      - ${RUN_DIR:-/workspace/data/cdb_outputs/latest}
+      - --mode
+      - ${MODE:-full}
+
+  # ------------------------------------------------------------------
+  # Jupyter notebook server (run with --profile jupyter)
+  # Starts at http://localhost:8888 — token printed to console.
+  # ------------------------------------------------------------------
+  jupyter:
+    image: benchmark-opendrivevla:latest
+
+    environment:
+      <<: *common-env
+
+    ports:
+      - "${JUPYTER_PORT:-8888}:8888"
+    volumes: *shared-volumes
+    <<: *gpu-config
+    working_dir: /workspace/
+    restart: "no"
+    profiles: [jupyter]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        uv run jupyter notebook \
+          --ip=0.0.0.0 --port=8888 \
+          --no-browser --allow-root \
+          --NotebookApp.token=''
+
+  # ------------------------------------------------------------------
+  # Weight downloader (run with --profile setup)
+  # Downloads: OpenDriveVLA/OpenDriveVLA-0.5B
+  # ------------------------------------------------------------------
+  weight-downloader:
+    image: python:3.11-slim
+
+    environment:
+      <<: *common-env
+
+    volumes:
+      - type: bind
+        source: ${WEIGHTS_DIR}
+        target: /workspace/weights
+    restart: "no"
+    profiles: [setup]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        pip install -q huggingface_hub && \
+        hf auth login --token "$HF_TOKEN" && \
+        ( hf download "$MODEL_REPO" --local-dir /workspace/weights/OpenDriveVLA-0.5B \
+          || echo "WARNING: $MODEL_REPO download failed — if access denied, request approval at https://huggingface.co/$MODEL_REPO" )

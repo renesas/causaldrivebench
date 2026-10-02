@@ -1,0 +1,9 @@
+# Gemma 4 evaluation wrapper dependencies
+# Model inference runs in the ai/gemma4 container; this is just the client side.
+openai
+pillow
+numpy
+tqdm
+pytest
+pyyaml
+anthropic>=0.40

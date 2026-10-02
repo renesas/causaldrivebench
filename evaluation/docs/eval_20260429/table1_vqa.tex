@@ -1,0 +1,26 @@
+\begin{table}[h!]
+  \caption{Causal QA accuracy (\%) by PCH layer and question source. Higher is better. Active = entities currently constraining ego; Dormant = entities one realisable transition from constraining ego; Distractor = visible but causally irrelevant entities. The Active--Distractor gap is the discrimination diagnostic; a model relying on perceptual salience scores high on Active and low on Distractor.}
+  \label{tab:qa_results}
+  \centering
+  \footnotesize
+  \begin{tabular}{l c c c c c c c c}
+    \toprule
+    & \multicolumn{4}{c}{\textbf{By PCH layer}} & \multicolumn{3}{c}{\textbf{By source}} & \\
+    \cmidrule(lr){2-5} \cmidrule(lr){6-8}
+    Model & R0 & R1 & R2 & R3 & Active & Dormant & Distractor & Overall \\
+    \midrule
+    \multicolumn{9}{l}{\textit{Driving VLAs}} \\
+    OmniQ (OmniDrive)                & 6.8 & 25.9 & 16.5 & 37.0 & 30.9 & 20.6 & 20.9 & 24.1 \\
+    SafeAuto                         & 51.5 & 43.2 & 56.7 & 47.9 & 56.6 & 41.8 & 47.6 & 49.4 \\
+    RecogDrive                       & 57.7 & 38.2 & 59.2 & 61.3 & 69.9 & 48.6 & 45.9 & 54.2 \\
+    OpenREAD                         & 70.0 & 49.0 & 79.0 & 61.0 & 69.8 & 60.6 & 60.8 & 63.8 \\
+    AlpaMayo-1.5                     & 36.2 & 20.9 & 39.9 & 48.0 & 47.0 & 31.2 & 33.2 & 37.1 \\
+    \midrule
+    \multicolumn{9}{l}{\textit{General VLMs}} \\
+    Cosmos-Reason                    & 53.1 & 18.7 & 23.9 & 48.1 & 59.0 & 37.9 & 18.4 & 35.6 \\
+    Qwen2.5-VL                       & 71.3 & 81.0 & 83.9 & 60.2 & 60.2 & 72.8 & 82.3 & 73.1 \\
+    InternVL-3.5-8B                  & 54.2 & 51.7 & 78.3 & 64.9 & 64.7 & 56.7 & 64.3 & 62.9 \\
+    Qwen3-VL-8B                      & 53.2 & 65.0 & 82.7 & 61.4 & 56.7 & 64.1 & 73.4 & 66.0 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

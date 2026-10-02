@@ -1,0 +1,225 @@
+# =====================================================================
+# Docker Compose for ReCogDrive
+#
+# Run all commands from the repo root (neurips-dataset/):
+#
+#   # 1. Download model weights
+#   docker compose -f evaluation/models/recogdrive/docker-compose.yml \
+#     --env-file /path/to/env_files/models/recogdrive/dev.env \
+#     --profile setup up -d
+#
+#   # 2. Build the image
+#   docker compose -f evaluation/models/recogdrive/docker-compose.yml \
+#     --env-file /path/to/env_files/models/recogdrive/dev.env build
+#
+#   # 3. Run inference
+#   docker compose -f evaluation/models/recogdrive/docker-compose.yml \
+#     --env-file /path/to/env_files/models/recogdrive/dev.env run --rm inference
+#
+#   # 4. Start Jupyter
+#   docker compose -f evaluation/models/recogdrive/docker-compose.yml \
+#     --env-file /path/to/env_files/models/recogdrive/dev.env \
+#     --profile jupyter up -d jupyter
+#
+# Default: ReCogDrive-8B-RL. Change MODEL_REPO in dev.env for 2B or IL variants.
+# Requires GPU with SM >= 8 (Ampere or newer) for flash-attn.
+# =====================================================================
+
+x-gpu: &gpu-config
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+
+x-volumes: &shared-volumes
+  - type: bind
+    source: ${RAW_DATA_DIR}
+    target: /workspace/data/raw_data
+    read_only: true
+  - type: bind
+    source: ${CAUSAL_BENCH_DIR}
+    target: /workspace/data/causal_drive_bench
+    read_only: true
+  - type: bind
+    source: ${CDB_OUTPUTS_DIR}
+    target: /workspace/data/cdb_outputs
+  - type: bind
+    source: ${CDB_REPORTS_DIR}
+    target: /workspace/data/cdb_reports
+  - type: bind
+    source: ${WEIGHTS_DIR}
+    target: /workspace/weights
+
+x-common-env: &common-env
+  HF_HOME: /workspace/weights
+  HF_TOKEN: ${HF_TOKEN:-}
+  EVAL_RUNTIME: docker
+  DEVICE: ${DEVICE:-cuda}
+  MODE: ${MODE:-full}
+  SCENE: ${SCENE:-}
+  USE_LLM_JUDGE: ${USE_LLM_JUDGE:-false}
+  JUDGE_PROVIDER: ${JUDGE_PROVIDER:-azure_foundry}
+  JUDGE_MODEL: ${JUDGE_MODEL:-claude-opus-4-6}
+  ANTHROPIC_FOUNDRY_API_KEY: ${ANTHROPIC_FOUNDRY_API_KEY:-}
+  ANTHROPIC_FOUNDRY_RESOURCE: ${ANTHROPIC_FOUNDRY_RESOURCE:-}
+  FOUNDRY_BASE_URL: ${FOUNDRY_BASE_URL:-}
+  FORCE: ${FORCE:-false}
+  AZURE_OPENAI_API_KEY: ${AZURE_OPENAI_API_KEY:-}
+  AZURE_OPENAI_ENDPOINT: ${AZURE_OPENAI_ENDPOINT:-}
+  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+  OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+  WEIGHTS_DIR: /workspace/weights
+  MODEL_REPO: ${MODEL_REPO:-owl10/ReCogDrive-8B-RL}
+  MODEL_CHECKPOINT: ${MODEL_CHECKPOINT:-/workspace/weights/ReCogDrive-8B-RL}
+
+services:
+
+  # ------------------------------------------------------------------
+  # Main benchmark inference service
+  # ------------------------------------------------------------------
+  inference:
+    build:
+      context: ../../..
+      dockerfile: evaluation/models/recogdrive/Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    image: benchmark-recogdrive:latest
+
+    environment:
+      <<: *common-env
+
+    volumes: *shared-volumes
+    <<: *gpu-config
+    working_dir: /workspace/repo/evaluation/models/recogdrive
+    restart: "no"
+    command:
+      - uv
+      - run
+      - python
+      - /workspace/repo/evaluation/models/recogdrive/inference.py
+      - --bench-dir
+      - /workspace/data/causal_drive_bench/${DATASET:-causal_nuscenes}
+      - --output-base
+      - /workspace/data/cdb_outputs
+      - --weights-path
+      - /workspace/weights
+      - --device
+      - ${DEVICE:-cuda}
+      - --mode
+      - ${MODE:-full}
+      - --batch-size
+      - "${BATCH_SIZE:-1}"
+    depends_on:
+      weight-downloader:
+        condition: service_completed_successfully
+        required: false
+
+  # ------------------------------------------------------------------
+  # Original ReCogDrive inference (sanity check)
+  # Runs PDM-Score evaluation on NAVSIM.
+  # ------------------------------------------------------------------
+  original:
+    build:
+      context: ../../..
+      dockerfile: evaluation/models/recogdrive/Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    image: benchmark-recogdrive:latest
+
+    environment:
+      <<: *common-env
+
+    volumes: *shared-volumes
+    <<: *gpu-config
+    working_dir: /workspace/model
+    restart: "no"
+    profiles: [original]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        python navsim/planning/script/run_pdm_score_recogdrive.py \
+          agent.checkpoint_path=${MODEL_CHECKPOINT:-/workspace/weights/ReCogDrive-8B-RL} \
+          output_dir=/workspace/data/cdb_outputs/recogdrive_original
+
+  # ------------------------------------------------------------------
+  # Post-processing service (run with --profile postprocess)
+  # ------------------------------------------------------------------
+  postprocess:
+    image: benchmark-recogdrive:latest
+
+    environment:
+      <<: *common-env
+
+    volumes: *shared-volumes
+    working_dir: /workspace/repo/evaluation/models/recogdrive
+    restart: "no"
+    profiles: [postprocess]
+    command:
+      - uv
+      - run
+      - python
+      - /workspace/repo/evaluation/models/recogdrive/postprocess.py
+      - --bench-dir
+      - /workspace/data/causal_drive_bench/${DATASET:-causal_nuscenes}
+      - --run-dir
+      - ${RUN_DIR:-/workspace/data/cdb_outputs/latest}
+      - --mode
+      - ${MODE:-full}
+
+  # ------------------------------------------------------------------
+  # Jupyter notebook server (run with --profile jupyter)
+  # Starts at http://localhost:8888 — token printed to console.
+  # ------------------------------------------------------------------
+  jupyter:
+    image: benchmark-recogdrive:latest
+
+    environment:
+      <<: *common-env
+
+    ports:
+      - "${JUPYTER_PORT:-8888}:8888"
+    volumes: *shared-volumes
+    <<: *gpu-config
+    working_dir: /workspace/
+    restart: "no"
+    profiles: [jupyter]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        uv run jupyter notebook \
+          --ip=0.0.0.0 --port=8888 \
+          --no-browser --allow-root \
+          --NotebookApp.token=''
+
+  # ------------------------------------------------------------------
+  # Weight downloader (run with --profile setup)
+  # Downloads MODEL_REPO (default owl10/ReCogDrive-8B-RL).
+  # InternVL3 base weights are downloaded automatically at runtime.
+  # ------------------------------------------------------------------
+  weight-downloader:
+    image: python:3.11-slim
+
+    environment:
+      <<: *common-env
+
+    volumes:
+      - type: bind
+        source: ${WEIGHTS_DIR}
+        target: /workspace/weights
+    restart: "no"
+    profiles: [setup]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        pip install -q huggingface_hub && \
+        hf auth login --token "$HF_TOKEN" && \
+        MODEL_NAME=$(echo "$MODEL_REPO" | cut -d'/' -f2) && \
+        hf download "$MODEL_REPO" --local-dir /workspace/weights/${MODEL_NAME}
