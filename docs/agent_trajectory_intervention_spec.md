@@ -619,8 +619,8 @@ python neurips_sim/unified_simulator.py --from-qa \
 | `meta.json` | `records/{dataset}/{scene}/SAMPLED_X/` | Scene token, timestamp, location |
 | `ladder_qa.json` | `outputs/{dataset}/{scene}_SAMPLED_X/` | CR questions with interventions |
 | `dl_qa.json` | Same directory | AC questions with interventions |
-| Lanelet2 maps | `/spiral_hdd_3/.../nuscenes/maps/lanelet2/*.osm` | Lane graph for nuScenes |
-| OpenScene maps | `/spiral_hdd_3/.../openscene/maps/` | .gpkg for OpenScene |
+| Lanelet2 maps | `nuscenes/maps/lanelet2/*.osm` | Lane graph for nuScenes |
+| OpenScene maps | `openscene/maps/` | .gpkg for OpenScene |
 | AV2 maps | Per-scene `map/` directory | JSON lane segments |
 
 ---

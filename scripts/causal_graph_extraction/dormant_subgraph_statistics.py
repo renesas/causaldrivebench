@@ -14,7 +14,7 @@ Aggregate statistics over DORMANT causal subgraphs in three flavors:
 
 Usage:
     python scripts/causal_graph_extraction/dormant_subgraph_statistics.py \\
-        --graph-dir /spiral_hdd_3/workspace/navvrat/Neurips/outputs/nuscenes_full_ice \\
+        --graph-dir outputs/nuscenes_full_ice \\
         --output dormant_subgraph_stats_report.md \\
         [--output-json dormant_subgraph_stats.json]
 """

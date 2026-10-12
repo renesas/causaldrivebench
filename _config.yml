@@ -1,0 +1,55 @@
+# GitHub Pages (Jekyll) configuration for the CausalDriveBench project site.
+# Enable via: Settings -> Pages -> Build and deployment -> Deploy from a branch -> main / (root).
+# README.md becomes the site homepage; INDEX.md and all other Markdown docs render as pages.
+
+title: CausalDriveBench
+description: >-
+  Evaluating Causal Reasoning in Vision-Language-Action Models for Autonomous Driving
+  (NeurIPS 2026) - arXiv:2609.32157
+theme: jekyll-theme-cayman
+show_downloads: false
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+  parse_block_html: false  # README opts in per block with markdown="1" (<details>, centered link bar)
+
+plugins:
+  - jekyll-optional-front-matter
+  - jekyll-readme-index
+  - jekyll-relative-links
+  - jekyll-titles-from-headings
+  - jekyll-default-layout
+  - jekyll-seo-tag
+
+relative_links:
+  enabled: true
+  collections: false
+
+# Jekyll skips "_"-prefixed folders by default; keep the model template browsable.
+include:
+  - _template
+
+# Serve INDEX.md at /code-index/. jekyll-readme-index 0.3.0 treats any URL ending in
+# "index.html" (case-insensitive, anywhere on the site) as an existing index, which would
+# stop README.md files from becoming their folder's homepage. Hence this permalink and the
+# sample_reports exclusion below.
+defaults:
+  - scope:
+      path: INDEX.md
+    values:
+      permalink: /code-index/
+      title: Code & Document Index
+
+exclude:
+  # Prompt templates contain double-brace placeholders that Liquid would try to evaluate.
+  - prompts/
+  # Contains index.html files (see note above); browse it on GitHub or open it locally.
+  - evaluation/sample_reports/
+  - evaluation/reports/insights_output/cache/
+  # Jekyll defaults (re-listed because setting `exclude` replaces them)
+  - Gemfile
+  - Gemfile.lock
+  - node_modules/
+  - vendor/

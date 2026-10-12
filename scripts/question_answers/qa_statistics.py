@@ -16,7 +16,7 @@ subgraph_statistics.py convention).
 
 Usage:
   python scripts/causal_graph_extraction/qa_statistics.py \
-      --graph-dir /spiral_hdd_3/workspace/navvrat/Neurips/outputs/nuscenes_full_ice \
+      --graph-dir outputs/nuscenes_full_ice \
       --output qa_stats_report.md \
       --output-json qa_stats.json
 """

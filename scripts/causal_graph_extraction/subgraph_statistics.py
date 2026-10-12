@@ -18,7 +18,7 @@ Produces a comprehensive markdown report covering:
 
 Usage:
     python scripts/graph_filtering/subgraph_statistics.py \
-        --graph-dir /spiral_hdd_3/workspace/navvrat/Neurips/outputs/nuscenes_full_final \
+        --graph-dir outputs/nuscenes_full_final \
         --output subgraph_stats_report.md \
         [--output-json subgraph_stats.json]
 """

@@ -633,13 +633,13 @@ def parse_scene_range(s: str) -> tuple[int, int]:
 def main():
     parser = argparse.ArgumentParser(description="Filter causal graphs to a diverse subset")
     parser.add_argument("--graph-dir",
-                        default="/spiral_hdd_3/workspace/navvrat/Neurips/outputs/nuscenes_full_edit",
+                        default="outputs/nuscenes_full_edit",
                         help="Directory with graph JSON files")
     parser.add_argument("--records-dir",
-                        default="/spiral_hdd_3/workspace/navvrat/Neurips/records/nuscenes_full",
+                        default="records/nuscenes_full",
                         help="Directory with scene records (meta.json)")
     parser.add_argument("--bookmarks",
-                        default="/spiral_hdd_3/workspace/navvrat/Neurips/edits/naren/bookmarks.json",
+                        default="edits/naren/bookmarks.json",
                         help="Path to bookmarks.json")
     parser.add_argument("--scene-range", default="1-95",
                         help="Scene number range to include (e.g. 1-95)")

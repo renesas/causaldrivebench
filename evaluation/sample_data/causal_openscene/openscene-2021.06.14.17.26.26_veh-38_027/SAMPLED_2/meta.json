@@ -9,5 +9,5 @@
   "timestamp": 1623708962699773,
   "map_location": "us-nv-las-vegas-strip",
   "n_agents": 12,
-  "pkl_path": "/spiral_hdd_3/workspace/navvrat/Neurips/raw_data/openscene/navsim_logs/2021.06.14.17.26.26_veh-38_02740_03036.pkl"
+  "pkl_path": "raw_data/openscene/navsim_logs/2021.06.14.17.26.26_veh-38_02740_03036.pkl"
 }

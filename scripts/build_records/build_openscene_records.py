@@ -12,9 +12,9 @@ Output matches the format produced by STSBench/build_scenario_records.py:
 
 Usage:
   python scripts/build_records/build_openscene_records.py \
-      --logs /spiral_hdd_1/workspace/navvrat/data/navsim_logs/trainval \
-      --blobs /spiral_hdd_1/workspace/navvrat/data/sensor_blobs/trainval \
-      --maps /spiral_hdd_2/workspace/navvrat/Neurips/navsim/download/maps \
+      --logs data/navsim_logs/trainval \
+      --blobs data/sensor_blobs/trainval \
+      --maps navsim/download/maps \
       --records openscene_records \
       --num-scenes 3
 """

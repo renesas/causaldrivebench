@@ -1,0 +1,21 @@
+<!-- Included in <head> by the Cayman theme. Renders ```mermaid code blocks on GitHub Pages
+     (GitHub itself renders them natively). -->
+<style>
+  .markdown-body img[alt="CausalDriveBench pixel-art banner"], .main-content img[alt="CausalDriveBench pixel-art banner"] { image-rendering: pixelated; }
+  .main-content pre.mermaid { background: transparent; border: 0; text-align: center; }
+  .main-content details { margin: 0.5rem 0 1rem; padding: 0.4rem 0.8rem; border: 1px solid #dce6f0; border-radius: 0.3rem; }
+  .main-content details > summary { cursor: pointer; font-weight: 600; }
+</style>
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  const blocks = document.querySelectorAll("div.language-mermaid, pre > code.language-mermaid");
+  blocks.forEach((el) => {
+    const host = el.tagName === "CODE" ? el.parentElement : el;
+    const pre = document.createElement("pre");
+    pre.className = "mermaid";
+    pre.textContent = el.textContent;
+    host.replaceWith(pre);
+  });
+  mermaid.initialize({ startOnLoad: false, theme: "neutral", securityLevel: "strict" });
+  await mermaid.run({ querySelector: "pre.mermaid" });
+</script>

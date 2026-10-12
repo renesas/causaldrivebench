@@ -19,7 +19,7 @@ Usage:
 
     # Override graphs dir (e.g. nuscenes_full instead of nuscenes)
     python verify_graphs.py --dataset nuscenes \\
-        --graphs /spiral_hdd_3/workspace/navvrat/Neurips/outputs/nuscenes_full
+        --graphs outputs/nuscenes_full
 
     # Limit scenes for a quick test
     python verify_graphs.py --dataset nuscenes --max-samples 5

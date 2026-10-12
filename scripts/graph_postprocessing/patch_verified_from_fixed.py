@@ -16,7 +16,7 @@ Scope:
 
 Usage:
     python scripts/graph_postprocessing/patch_verified_from_fixed.py \
-        --input-dir /spiral_hdd_3/workspace/navvrat/Neurips/outputs/nuscenes_full_final \
+        --input-dir outputs/nuscenes_full_final \
         [--dry-run]
 """
 import argparse

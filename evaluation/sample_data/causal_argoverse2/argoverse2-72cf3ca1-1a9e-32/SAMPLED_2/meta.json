@@ -8,5 +8,5 @@
   "sample_idx": 2,
   "t0_timestamp_ns": 315975780360040000,
   "n_agents": 5,
-  "raw_data_dir": "/spiral_hdd_3/workspace/navvrat/Neurips/raw_data/argoverse2/sensor/val/72cf3ca1-1a9e-3254-bca0-29c62521e454"
+  "raw_data_dir": "raw_data/argoverse2/sensor/val/72cf3ca1-1a9e-3254-bca0-29c62521e454"
 }

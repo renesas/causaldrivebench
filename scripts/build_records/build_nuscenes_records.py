@@ -12,9 +12,9 @@ Output:
 
 Usage:
   python scripts/build_records/build_nuscenes_records.py \
-      --data /spiral_hdd_1/workspace/naren/nuscenes \
+      --data nuscenes \
       --version v1.0-trainval \
-      --maps /spiral_hdd_2/workspace/navvrat/Neurips/nuscenes_full/maps/expansion \
+      --maps nuscenes_full/maps/expansion \
       --records nuscenes_records \
       --num-scenes 10
 """

@@ -744,7 +744,7 @@ def generate_report(agg: AggregateStats, graph_dir: str) -> str:
 def main():
     parser = argparse.ArgumentParser(description="Compute causal graph dataset statistics")
     parser.add_argument("--graph-dir",
-                        default="/spiral_hdd_3/workspace/navvrat/Neurips/outputs/nuscenes_full_edit_backup",
+                        default="outputs/nuscenes_full_edit_backup",
                         help="Directory with graph JSON files")
     parser.add_argument("--output", required=True,
                         help="Output path for the markdown report")

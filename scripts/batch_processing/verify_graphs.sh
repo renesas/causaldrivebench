@@ -48,7 +48,7 @@ usage() {
     echo ""
     echo "Examples:"
     echo "  $0 nuscenes"
-    echo "  $0 nuscenes --graphs /spiral_hdd_3/workspace/navvrat/Neurips/outputs/nuscenes_full"
+    echo "  $0 nuscenes --graphs outputs/nuscenes_full"
     echo "  $0 nuscenes --max-samples 5 --dry-run"
     exit 0
 }

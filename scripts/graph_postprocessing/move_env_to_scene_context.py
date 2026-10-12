@@ -11,12 +11,12 @@ For each matching graph file:
 Usage:
     # Preview changes
     python scripts/graph_postprocessing/move_env_to_scene_context.py \
-        --graph-dir /spiral_hdd_3/workspace/navvrat/Neurips/outputs/nuscenes_full_final/ \
+        --graph-dir outputs/nuscenes_full_final/ \
         --dry-run
 
     # Apply in-place to _verified.json (default pattern)
     python scripts/graph_postprocessing/move_env_to_scene_context.py \
-        --graph-dir /spiral_hdd_3/workspace/navvrat/Neurips/outputs/nuscenes_full_final/
+        --graph-dir outputs/nuscenes_full_final/
 
     # Apply to multiple variants
     python scripts/graph_postprocessing/move_env_to_scene_context.py \

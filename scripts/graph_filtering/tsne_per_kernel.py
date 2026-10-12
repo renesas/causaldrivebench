@@ -21,9 +21,9 @@ from robust_multimodal_filter import (
     build_distractor_kernel,
 )
 
-TREE = Path('/spiral_hdd_3/workspace/navvrat/Neurips/outputs/nuscenes_full_final/clusters_tree.json')
-D = Path('/spiral_hdd_3/workspace/navvrat/Neurips/outputs/nuscenes_full_final')
-R = Path('/spiral_hdd_3/workspace/navvrat/Neurips/records/nuscenes_full')
+TREE = Path('outputs/nuscenes_full_final/clusters_tree.json')
+D = Path('outputs/nuscenes_full_final')
+R = Path('records/nuscenes_full')
 OUT_PNG = D / "tsne_per_kernel.png"
 VLLM = "http://194.68.245.163:22169"
 

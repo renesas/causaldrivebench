@@ -8,7 +8,7 @@ overwrites them rather than writing a new suffix.
 
 Usage:
     python scripts/graph_postprocessing/prune_unreachable_nodes.py \
-        --input-dir /spiral_hdd_3/workspace/navvrat/Neurips/outputs/nuscenes_full_final \
+        --input-dir outputs/nuscenes_full_final \
         [--dry-run] [--workers 16]
 """
 

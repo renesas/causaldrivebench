@@ -11,8 +11,8 @@ Usage:
     python render_nuplan_results.py \
         --results /path/to/nuplan/results.json \
         --nuplan-base /path/to/nuplan-devkit \
-        --records-base /spiral_hdd_3/.../records \
-        --outputs-base /spiral_hdd_3/.../outputs
+        --records-base records \
+        --outputs-base outputs
 """
 
 import argparse
@@ -208,7 +208,7 @@ def process_entry(entry, nuplan_base, records_base, outputs_base):
 
 def load_manifests(outputs_base):
     """Load all stage4cf manifests to build key→slug lookup."""
-    manifest_base = Path("/spiral_hdd_3/workspace/navvrat/Neurips/nuscences_batchjobs")
+    manifest_base = Path("nuscences_batchjobs")
     key_to_slug = {}
     for ds in ["nuscenes_50", "openscene_50", "argoverse2_50"]:
         ds_short = ds.split("_")[0]
@@ -224,8 +224,8 @@ def main():
     parser = argparse.ArgumentParser(description="Render nuPlan counterfactual results")
     parser.add_argument("--results", required=True, help="Path to nuplan results.json")
     parser.add_argument("--nuplan-base", required=True, help="Path to nuplan-devkit root")
-    parser.add_argument("--records-base", default="/spiral_hdd_3/workspace/navvrat/Neurips/records")
-    parser.add_argument("--outputs-base", default="/spiral_hdd_3/workspace/navvrat/Neurips/outputs")
+    parser.add_argument("--records-base", default="records")
+    parser.add_argument("--outputs-base", default="outputs")
     args = parser.parse_args()
 
     results = json.loads(Path(args.results).read_text())

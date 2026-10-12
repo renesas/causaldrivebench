@@ -12,7 +12,7 @@ Output matches the format produced by STSBench/build_scenario_records.py:
 
 Usage:
   python scripts/build_records/build_argoverse2_records.py \
-      --data /spiral_hdd_1/workspace/navvrat/data/argoverse2/sensor \
+      --data data/argoverse2/sensor \
       --split val \
       --records argoverse2_records \
       --num-scenes 3
