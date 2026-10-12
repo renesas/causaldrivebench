@@ -624,7 +624,7 @@ def main():
     p = argparse.ArgumentParser(description="Render clustering results as HTML")
     p.add_argument("--path", "--clusters", dest="clusters", required=True)
     p.add_argument("--output", default=None)
-    p.add_argument("--base-url", default="http://20.110.191.2:8999/outputs/nuscenes_full_final")
+    p.add_argument("--base-url", default="http://w.x.y.z:8999/outputs/nuscenes_full_final")
     p.add_argument("--graph-dir", default=None,
                    help="Dir with graph JSONs (for auto-annotation if descriptions missing)")
     p.add_argument("--records-dir", default=None,

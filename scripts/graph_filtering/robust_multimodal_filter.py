@@ -33,7 +33,7 @@ from sklearn.metrics import silhouette_score
 
 @dataclass
 class ClusteringConfig:
-    embedding_endpoint: str = ""  # vLLM endpoint, e.g. "http://194.68.245.163:22169"
+    embedding_endpoint: str = ""  # vLLM endpoint, e.g. "http://<host>:<port>"
     embedding_model: str = "jinaai/jina-embeddings-v5-text-small-text-matching"
     embedding_dim: int = 256
     wl_intra_k: int = 3  # sub-clusters per node/edge group (from elbow analysis)

@@ -7,6 +7,7 @@ metric='precomputed'. This shows the exact space we're clustering in.
 """
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -30,7 +31,7 @@ D = Path('outputs/nuscenes_full_final')
 R = Path('records/nuscenes_full')
 OUT_PNG = D / "tsne.png"
 OUT_HTML = D / "tsne.html"
-VLLM = "http://194.68.245.163:22169"
+VLLM = os.environ.get("VLLM_ENDPOINT", "")  # optional vLLM embedding endpoint, e.g. "http://<host>:<port>"
 
 
 # ── Load clusters ─────────────────────────────────────────────

@@ -2,6 +2,7 @@
 """t-SNE per kernel — one panel per kernel + combined, colored by topology."""
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -25,7 +26,7 @@ TREE = Path('outputs/nuscenes_full_final/clusters_tree.json')
 D = Path('outputs/nuscenes_full_final')
 R = Path('records/nuscenes_full')
 OUT_PNG = D / "tsne_per_kernel.png"
-VLLM = "http://194.68.245.163:22169"
+VLLM = os.environ.get("VLLM_ENDPOINT", "")  # optional vLLM embedding endpoint, e.g. "http://<host>:<port>"
 
 print("Loading clusters...")
 with open(TREE) as f:

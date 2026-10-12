@@ -637,7 +637,7 @@ def main():
                    help="Path to clusters.json produced by qa_kernel_filter.py")
     p.add_argument("--output", default=None,
                    help="HTML output path (default: <clusters_dir>/qa_clustering_results.html)")
-    p.add_argument("--base-url", default="http://20.110.191.2:8999/outputs/nuscenes_full_final",
+    p.add_argument("--base-url", default="http://w.x.y.z:8999/outputs/nuscenes_full_final",
                    help="Base URL for per-scene HTML pages (prepended to {key}.html)")
     p.add_argument("--graph-dir", default=None,
                    help="Dir with *_verified.json (for auto-annotation if descriptions missing)")
